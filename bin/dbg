@@ -1,0 +1,44 @@
+#!/bin/bash
+
+## @file dbg
+## @brief shell script debugger
+## @depends shelp
+## @package coreutils
+## @env PS4 Debugger prompt
+
+## @desc Run a script in path with the -x bash option (and more).
+## You should set the PS4 variable for better output.
+
+
+include check.sh
+include color.sh
+include usage.sh
+
+check; [ $# -eq 0 ] && usage
+
+main() {
+    case "$1" in
+        ## @option -t, --test
+        ## Read the script and warn for encountered syntax errors.
+        ## Do not actually run the script.
+        -t|--test) FLAGS=-n; SCRIPT=$2 ;;
+        ## @option -v, --verbose
+        ## Run the script with verbose option.
+        -v|--verbose) FLAGS=-xv; SCRIPT=$2 ;;
+        ## @option -n, --dry-run
+        ## Options test and verbose combined. Validate the syntax
+        ## and print the script to stdout.
+        -n|--dry-run) FLAGS=-xvn; SCRIPT=$2 ;;
+        ## @option -h, --help
+        ## Prints this help and exit.
+        -h|--help) shelp -t "$0"; exit 0 ;;
+        *) FLAGS=-x; SCRIPT=$1 ;;
+    esac
+    shift
+
+    /bin/bash $FLAGS $SCRIPT "$@"
+    color $c_default
+}
+
+## @synopsis [--test|--verbose|--dry-run] SCRIPT
+main "$@"

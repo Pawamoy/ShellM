@@ -1,0 +1,8 @@
+#!/bin/bash
+dir="$(dirname "$0")"
+dir="$(cd "$dir"/..; pwd)"
+export shellm="$dir"
+. "$shellm/shellm_core"
+
+script=$1; shift
+[ -f "$shellm/bin/$script" ] && . "$shellm/bin/$script" "$@"

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+## @file del
+## @brief delete a file or a directory in your shellm/usr/bin directory
+## @depends shelp
+## @package coreutils
+
+include check.sh
+include message.sh
+include usage.sh
+include question.sh
+
+check; [ $# -eq 0 ] && usage
+
+main() {
+    case $1 in
+        ## @option -h, --help
+        ## Prints this help and exit
+        -h|--help) shelp -t "$0"; exit 0 ;;
+    esac
+    
+    if [ -f "$shellm/bin/$1" ]; then
+        rm "$shellm/bin/$1"
+        local data="$shellm/media/script/$1"
+        [ -e "$data" ] &&
+            question "'$1' found in shellm/media/script, delete it too? [yN]" &&
+                { [ -d "$data" ] && { rm -rf "$data"; true; } || rm "$data"; }
+    elif [ -d "$shellm/bin/$1" ]; then
+        rm -rf "$shellm/bin/$1"
+    else
+        err "del: $1: no such file or directory in shellm/bin"
+    fi
+}
+
+## @synopsis FILE|DIR
+main "$@"

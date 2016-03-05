@@ -1,1 +1,9 @@
+# Path variables
+export PATH="$shellm/usr/bin:$shellm/bin:$PATH"
+export MANPATH="$shellm/usr/man:$shellm/man:$(manpath)"
+export LIBPATH="$shellm/usr/lib:$shellm/lib"
+
+# Core libraries
+. "$shellm/lib/core.sh"
+
 . "$shellm/usr/shellmrc" "$shellm/usr"

@@ -1,6 +1,9 @@
 # Path variables
-export PATH="$shellm/usr/bin:$shellm/bin:$PATH"
-export MANPATH="$shellm/usr/man:$shellm/man:$(manpath)"
+if ! echo "$PATH" | grep -q "$shellm"; then
+  export PATH="$shellm/usr/bin:$shellm/bin:$PATH"
+fi
+
+MANPATH="$shellm/usr/man:$shellm/man:"
 export LIBPATH="$shellm/usr/lib:$shellm/lib"
 
 # Core libraries

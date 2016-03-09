@@ -1,0 +1,348 @@
+if ndef __FILE_SH; then
+define  __FILE_SH
+
+## @file file.sh
+## @brief Provide functions to manage text files (read, write)
+
+include message.sh
+include string.sh
+
+cgLinePrefix=no
+
+## @fn void activate_line_prefix ()
+## @brief Activate line number prefix of echo* functions
+activate_line_prefix() {
+	cgLinePrefix=yes
+}
+
+deactivate_line_prefix() {
+	cgLinePrefix=no
+}
+
+deleteBlank() {
+	# take a file at $1 or read stdin
+	sed -e '/^[[:blank:]]*$/d' $1
+}
+
+deleteBashComments() {
+	# take a file at $1 or read stdin
+	sed -e '/^[[:blank:]]*#[^!]/d' $1
+}
+
+deleteCComments() {
+	# take a file at $1 or read stdin
+	sed -e '/^[[:blank:]]*\/\//d' $1
+}
+
+deleteSQLComments() {
+	# take a file at $1 or read stdin
+	sed -e '/^[[:blank:]]*--/d' $1
+}
+
+## @fn void genRandName ()
+## @brief Generate a random filename prefix with
+## B</tmp/CALLING_FUNCTION_NAME>. Echo on stdout
+genRandName() {
+	local n=/tmp/${FUNCNAME[1]}-$RANDOM
+	while [ -f "$n" ]; do
+		n=n=/tmp/${FUNCNAME[1]}-$RANDOM
+	done
+	echo "$n"
+}
+
+## @fn void write (string, file)
+## @brief Append text at the bottom of a file
+## @param $1 Text to append
+## @param $2 File to write in
+write() {
+	[ $# -eq 2 ] && echo "$1" >> "$2"
+}
+
+## @fn void writeOnTop (string, file)
+## @brief Write text at the top of a file
+## @param $1 Text to write
+## @param $2 File to write in
+writeOnTop() {
+	[ $# -eq 2 ] && echo "$(echo "$1"; cat "$2")" > "$2"
+}
+
+## @fn void writeAtLine (line, string, file)
+## @brief Replace text at the Nth line of a file (start at 1)
+## @param $1 Line to write at (default: last line)
+## @param $2 Text to write
+## @param $3 File to write in
+## @pre File exists
+writeAtLine() {
+	local l=$1 output=$(genRandName)
+	[ $1 -gt 0 ] || { write "$2" "$3"; return 0; }
+	if [ $# -eq 3 ]; then
+		head -n$((l-1)) "$3" > "$output"
+		echo "$2" >> "$output"
+		tail -n+$((l+1)) "$3" >> "$output"
+	fi
+	mv "$output" "$3"
+}
+
+## @fn void insertAtLine (line, string, file)
+## @brief Insert text at the Nth line of a file (start at 1)
+## @param $1 Line to write at (default: last line)
+## @param $2 Text to write
+## @param $3 File to write in
+## @pre File exists
+insertAtLine() {
+	local l=$1 output=$(genRandName)
+	[ $1 -gt 0 ] || { write "$2" "$3"; return 0; }
+	if [ $# -eq 3 ]; then
+		head -n$((l-1)) "$3" > "$output"
+		echo "$2" >> "$output"
+		tail -n+$l "$3" >> "$output"
+	fi
+	mv "$output" "$3"
+}
+
+## @fn void echoLine (line, file)
+## @brief Output the Nth line of a file on stdout, prefixed with
+## its line number and a colon
+## @param $1 Line number (default: last line)
+## @param $2 File
+## @pre File exists
+echoLine() {
+	if [ $# -eq 2 ]; then
+		[ "$cgLinePrefix" = "yes" ] && echo -n "$1:"
+		head -n$1 "$2" | tail -n1
+	fi 
+}
+
+## @fn void echoFirstLine (file)
+## @brief Output the first line of a file on stdout (not prefixed)
+## @param $1 File
+## @pre File exists
+echoFirstLine() {
+	if [ $# -eq 1 ]; then
+		[ "$cgLinePrefix" = "yes" ] && echo -n "1:"
+		head -n1 "$1"
+	fi
+}
+
+## @fn void echoLastLine (file)
+## @brief Output the last line of a file on stdout (not prefixed)
+## @param $1 File
+## @pre File exists
+echoLastLine() {
+	if [ $# -eq 1 ]; then
+		[ "$cgLinePrefix" = "yes" ] && echo -n "$(wc -l "$1"):"
+		tail -n1 "$1"
+	fi
+}
+
+## @fn void echoFirstNLines (line, file)
+## @brief Output the first N lines of a file on stdout, prefixed with
+## their line number and a colon
+## @param $1 Number of lines
+## @param $2 File
+## @pre File exists
+echoFirstNLines() {
+	if [ $# -eq 2 ]; then
+		if [ "$cgLinePrefix" = "yes" ]; then
+			head -n$1 "$2" | awk '{printf "%d:%s\n", NR, $0}'
+		else
+			head -n$1 "$2"
+		fi
+	fi
+}
+
+## @fn void echoLastNLines (line, file)
+## @brief Output the last N lines of a file on stdout, prefixed with
+## their line number and a colon
+## @param $1 Number of lines
+## @param $2 File
+## @pre File exists
+echoLastNLines() {
+	local nl
+	if [ $# -eq 2 ]; then
+		if [ "$cgLinePrefix" = "yes" ]; then
+			nl=$(cat "$2" | wc -l)
+			tail -n$1 "$2" | awk '{printf "%d:%s\n", NR+'$((nl-$1))', $0}'
+		else
+			tail -n$1 "$2"
+		fi
+	fi
+}
+
+## @fn void echoFromLineToLine (line, line, file)
+## @brief Output a bloc of lines of a file on stdout, prefixed with
+## their line number and a colon
+## @param $1 Starting line
+## @param $2 The line number or the number of lines to print below
+## the starting line, in this case use like this: +N
+## @param $3 File
+## @pre File exists
+echoFromLineToLine() {
+	#~ [ $# -eq 3 ] && head -n$2 "$3" | tail -n$(($2-$1))
+	local stop="$([ ${2:0:1} = + ] && echo $(($1+$2+1))q || echo $(($2+1))q)"
+	if [ $# -eq 3 ]; then
+		if [ "$cgLinePrefix" = "yes" ]; then
+			sed -n "$1,$2p; $stop" "$3" | awk '{printf "%d:%s\n", NR+'$1'-1, $0}'
+		else
+			sed -n "$1,$2p; $stop" "$3"
+		fi
+	fi
+}
+
+## @fn void echoLineFor (firstline, linestep, lastline, file)
+## @brief Output from line $1 to line $3, with a step equal to $2
+## @param $1 Starting line 
+## @param $2 Line step 
+## @param $3 Ending line 
+## @param $4 File 
+## @pre File exists
+echoLineFor() {	
+	local i=0 j line nl=$(($3-$1+1))
+	echoFromLineToLine $1 $3 "$4" | {
+		read line
+		while [ $i -le $nl ]; do
+			echo "$line"
+			for ((j=0; j<$2; j++)); do
+				read line
+				let i++
+			done
+		done
+	}
+}
+
+## @fn int search (pattern, file)
+## @brief Output all pattern-matching lines of a file,
+## prefixed with the line number (case-insensitive)
+## @param $1 Pattern/Regexp
+## @param $2 File to search in
+search() {
+	local opt=i
+	[ "$cgLinePrefix" = "yes" ] && opt=n$opt
+	[ $# -eq 2 ] && grep -$opt "$1" "$2"
+}
+
+## @fn int searchFirst (pattern, file)
+## @brief Output the first pattern-matching line of a file,
+## prefixed with the line number (case-insensitive)
+## @param $1 Pattern/Regexp
+## @param $2 File to search in
+searchFirst() {
+	local opt=i
+	[ "$cgLinePrefix" = "yes" ] && opt=n$opt
+	[ $# -eq 2 ] && grep -$opt -m 1 "$1" "$2"
+}
+
+## @fn int searchLast (pattern, file)
+## @brief Output the last pattern-matching line of a file,
+## prefixed with the line number (case-insensitive)
+## @param $1 Pattern/Regexp
+## @param $2 File to search in
+searchLast() {
+	[ $# -eq 2 ] && search "$1" "$2" | tail -n1
+}
+
+## @fn int searchN (pattern, line, file)
+## @brief Output the Nth pattern-matching line of a file,
+## prefixed with the line number (case-insensitive)
+## @param $1 Pattern/Regexp
+## @param $2 File to search in
+searchN() {
+	[ $# -eq 2 ] && search "$1" "$3" | cgLinePrefix=no echoLine "$2"
+}
+
+# Not very useful... see how sed works at
+# http://www.commentcamarche.net/faq/6699-sed-trucs-et-astuces
+## @fn int replace (pattern, string, file)
+## @fn int replaceFirst (pattern, file)
+## @fn int replaceLast (pattern, file)
+## @fn int replaceN (pattern, line, file)
+
+## @fn void fsort (options, file)
+## @brief Sort a file in place. First argument (optionnal)
+## is the sorting format. It is a list of keyword separated by
+## commas. Keywords are: B<unique>|B<squeeze>,
+## B<lexical>|B<numeric>|B<month>|B<version>|B<random>,
+## B<reverse>, B<ignore-case>, B<ignore-leading-blanks>.
+## Shortcuts, in the same order, are:
+## B<u>|B<s>, B<l>|B<n>|B<m>|B<v>|B<r>, B<i>, B<c>, B<b>.
+## B<unique> option will only keep one line of each repeated lines,
+## whereas B<squeeze> option will reduce to one line each
+## I<sequence> of reapeated lines.
+## @param [$1] Format (comma separated keyword list)
+## @param $2 File to sort
+fsort() {
+	local opt_unique=0
+	local opt_squeeze=0
+	local opt_sort=
+	local opt_inverse=0
+	local opt_case=0
+	local opt_blank=0
+	local opt
+	
+	local c w stFORMAT
+	[ $# -eq 2 ] && { stFORMAT=$1; shift; } || stFORMAT=${stFORMAT:-l}
+	stFORMAT=${stFORMAT//,/ }
+	
+	local file="$1"
+	local output=/tmp/fsort-$RANDOM
+	while [ -f "$output" ]; do
+		output=output=/tmp/fsort-$RANDOM
+	done
+	
+	for w in $stFORMAT; do
+		case $w in
+			u|unique) opt_unique=1; opt_squeeze=0 ;;
+			s|squeeze) opt_unique=0; opt_squeeze=1 ;;
+			l|lexical) opt_sort= ;;
+			n|numeric) opt_sort=g ;;
+			m|month) opt_sort=M ;;
+			v|version) opt_sort=V ;;
+			r|random) opt_sort=R ;;
+			i|inverse) opt_inverse=1 ;;
+			c|ignore-case) opt_case=1 ;;
+			b|ignore-leading-blanks) opt_blank=1 ;;
+			*)
+				for c in $(separateChars $w); do
+					case $c in
+						u) opt_unique=1; opt_squeeze=0 ;;
+						s) opt_unique=0; opt_squeeze=1 ;;
+						l) opt_sort=   ;;
+						n) opt_sort=g ;;
+						m) opt_sort=M ;; 
+						v) opt_sort=V ;;
+						r) opt_sort=R ;;
+						i) opt_inverse=1 ;;
+						c) opt_case=1 ;;
+						b) opt_blank=1 ;;
+						?) die "Unkown format: $c" ;;
+					esac
+				done
+			;;
+		esac
+	done
+	
+	opt=$opt_sort
+	[ $opt_inverse -eq 1 ] && opt=r$opt
+	[ $opt_blank -eq 1   ] && opt=b$opt
+	[ $opt_case -eq 1    ] && opt=f$opt
+	[ $opt_unique -eq 1  ] && opt=u$opt
+	
+	if [ $opt_squeeze -eq 1 ]; then
+		/usr/bin/sort -$opt "$file" | uniq > "$output"
+	else
+		/usr/bin/sort -$opt "$file" -o "$output"
+	fi
+	
+	[ -f "$output" ] && /bin/mv "$output" "$file"
+}
+
+## @fn void reverseFile (file)
+## @brief Rewrite a file in reverse
+## @param $1 File to reverse
+reverseFile() {
+	local output=$(genRandName)
+	tac "$1" > "$output"
+	[ -f "$output" ] && mv "$output" "$1"
+}
+
+fi # __FILE_SH

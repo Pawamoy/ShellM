@@ -1,5 +1,5 @@
-## @file shellm core libraries
-## @desc Core libraries contain the include function,
+## @file include.sh
+## @brief Include functions for scripts (ndef, define, include)
 
 ## @fn int define (name, value)
 ## @brief Defines an environment variable in the current shell
@@ -24,31 +24,16 @@ ndef() {
 ## @return Code: 1 (and exits if subshell) if no args or error while including contents, 0 otherwise
 ## @return Echo: message on stderr if return code 1
 include() {
-  local dir
-	for libdir in ${LIBPATH//:/ }; do
-  	if [ -f "$libdir/$1" ]; then
-      . "$libdir/$1" && break
+  local libdir
+	local libdirarray
+	IFS=':' read -r -a libdirarray <<< "${LIBPATH}"
+	for libdir in "${libdirarray[@]}"; do
+  	if [ -f "${libdir}/$1" ]; then
+      . "${libdir}/$1" && break
   		[ $# -ge 1 ] && echo "include: error while including $1 from $0" >&2;
       [ "$0" != "bash" ] && exit 1 || return 1;
     fi
   done
-}
-
-real_path() {
-  local readlink=$(which readlink)
-  local script_location=${BASH_SOURCE[0]}
-  if [ -x "$readlink" ]; then
-    while [ -L "$script_location" ]; do
-      script_location=$("$readlink" -e "$script_location")
-    done
-  fi
-  echo "$script_location"
-}
-
-init() {
-  DATADIR="$shellm/usr/data/${BASH_SOURCE[0]##*/}"
-  mkdir -p "$DATADIR" 2>/dev/null
-
 }
 
 export -f define

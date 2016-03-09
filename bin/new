@@ -25,30 +25,40 @@ main() {
     esac
 
     # Test if the script already exists
-    if [ -f "$shellm/bin/$1" ]; then
+    if [ -f "${shellm}/bin/$1" ]; then
         err "$1 already exists in $shellm/bin"
         question "Would you like to overwrite it? [yN]" || return 0
     fi
 
     # Output the script headers in the file
-    {   printf "#!/bin/bash\n\n## @file %s\n## @brief %s\n" "$1" "$1"
-        printf "## @depends shelp\n## @package coreutils\n\n"
-        printf "include check.sh\ninclude usage.sh\n\n"
-        printf 'check; [ $# -eq 0 ] && usage\n\n'
-        printf 'main() {\n    case $1 in\n    '
-        printf '    ## @option -h, --help\n    '
-        printf '    ## Prints this help and exit.\n    '
-        printf '    -h|--help) shelp -t "$0"; exit 0 ;;\n    esac\n}\n\n'
-        printf '## @synopsis\nmain "$@"\n\n'
-    } > "$shellm/bin/$1"
+    content='#!/bin/bash
+
+## @file %s
+## @brief %s
+## @package coreutils
+
+init; [ $# -eq 0 ] && usage
+
+main() {
+  case $1 in
+    ## @option -h, --help
+    ## Prints this help and exit.
+    -h|--help) shellman -t "$0"; exit 0 ;;
+  esac
+}
+
+## @synopsis -h
+main "$@"
+'
+    printf "${content}" "$1" "$1" > "${shellm}/bin/$1"
 
     # Make it executable
-    chmod +x "$shellm/bin/$1"
+    chmod +x "${shellm}/bin/$1"
 
     # Open the file
     [ ! -n "$2" ] &&
-        { edit "$shellm/bin/$1"; return $?; } ||
-            eval $2 "$shellm/bin/$1"
+        { edit "${shellm}/bin/$1"; return $?; } ||
+            eval $2 "${shellm}/bin/$1"
 }
 
 ## @synopsis FILENAME [EDITOR]

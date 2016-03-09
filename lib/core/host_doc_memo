@@ -1,5 +1,0 @@
-h() {
-  ( grep -nE '##.*@host.*[ ,  ]'$HOSTNAME'[ ,  ]?' "$1"
-    grep -nv '##.*@host' "$1"
-  ) | sort -g | cut -d':' -f2-
-}

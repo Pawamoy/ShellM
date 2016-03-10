@@ -654,3 +654,81 @@ main() {
 
 ## @synopsis [-pmst] FILE
 main "$@"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+preprocess_input() {
+  # instr       -> blank
+  # instr + doc -> doc
+  # blank       -> blank
+  # doc         -> doc
+
+  # careful to instr like
+  echo '## @tag'
+  # or like this one ## @tag
+
+  # for the first one we an add a tag like \nodoc which would be added at the end of line
+  echo '## \tag' ## @nodoc
+  echo '## \tag' ## @validtag and valid doc but @nodoc
+  # to fix the above, add another tag: \kldoc (keep last doc), which will keep only the last tag
+  echo '## \tag' ## @validtag and valid doc even if @kldoc
+
+  # for the second one, well, we can as well use the \nodoc !!
+  # this is a comment with a valid ## \tag but we cancel it with \nodoc
+
+  # the following is not a problem
+  echo "## \nodoc
+  string continues here"
+  # because you can't add a doc at the first line
+  # and nodoc says to ignore the first line, which is the right thing to do
+
+  # things like ${var##*/} are not a problem because:
+    # doc ending instr always has a @tag
+    # multi line doc always start with ##
+
+  # what about
+  echo ${var## @tag }
+  # -> we must always add an empty space before ##
+}
+
+process_one_line() {
+  echo
+}
+
+process_multiple_lines() {
+  echo
+}
+
+recursive_parse() {
+  local line
+  while read line; do
+    process_one_line
+  done
+}
+
+parse() {
+  recursive_parse < "${file}"
+}

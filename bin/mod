@@ -5,12 +5,11 @@
 ## @depends shelp
 ## @package coreutils
 
-include check.sh
-include message.sh
+include out/message.sh
 include edit.sh
 include usage.sh
 
-check; [ $# -eq 0 ] && usage
+[ $# -eq 0 ] && usage
 
 main() {
     case $1 in
@@ -18,18 +17,18 @@ main() {
         ## Prints this help and exit
         -h|--help) shelp -t "$0"; exit 0 ;;
     esac
-    
-    if [ -f "$shellm/bin/$1" ]; then
+
+    if [ -f "${shellm}/usr/bin/$1" ]; then
         if [ -n "$2" ]; then
-            $2 "$shellm/bin/$1"
+            $2 "${shellm}/usr/bin/$1"
         else
-            edit "$shellm/bin/$1"
+            edit "${shellm}/usr/bin/$1"
         fi
-    elif [ -f "$shellm/lib/${1%.sh}.sh" ]; then
+    elif [ -f "${shellm}/usr/lib/${1%.sh}.sh" ]; then
         if [ -n "$2" ]; then
-            $2 "$shellm/lib/${1%.sh}.sh"
+            $2 "${shellm}/usr/lib/${1%.sh}.sh"
         else
-            edit "$shellm/lib/${1%.sh}.sh"
+            edit "${shellm}/usr/lib/${1%.sh}.sh"
         fi
     else
         die "mod: $1: no such file in shellm bin or lib"

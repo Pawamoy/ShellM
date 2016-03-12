@@ -7,19 +7,18 @@ LN=$(which ln)
 MORE=$(which more)
 
 SCRIPT_LOCATION=${BASH_SOURCE[0]}
-if [ -x "$READLINK" ]; then
-  while [ -L "$SCRIPT_LOCATION" ]; do
-    SCRIPT_LOCATION=$("$READLINK" -e "$SCRIPT_LOCATION")
+if [ -x "${READLINK}" ]; then
+  while [ -L "${SCRIPT_LOCATION}" ]; do
+    SCRIPT_LOCATION=$("${READLINK}" -e "${SCRIPT_LOCATION}")
   done
 fi
-PARENT_DIR="$(cd "$("$DIRNAME" "$SCRIPT_LOCATION")" && pwd)"
+PARENT_DIR="$(cd "$("${DIRNAME}" "${SCRIPT_LOCATION}")" && pwd)"
 
 run_shellm() {
-  export shellm="$PARENT_DIR"
+  export shellm="${PARENT_DIR}"
   (
     exec bash -i 4<<SCRIPT 5<&0 <&4
-cd
-. "$shellm/shellmrc"
+. "$shellm/usr/shellmrc"
 # You are now in an interactive shell with shellm loaded.
 # Use some commands and stuff
 exec 4>&- <&5
@@ -28,23 +27,15 @@ SCRIPT
 }
 
 discover() {
-  for ((i=0; i<10; i++)); do
-    echo
     echo "TODO: welcome, here is what you can do, etc."
-    echo
-    read -p "Hit Enter -- " _
-  done
 }
-export -f discover
 
 main() {
-  local DISCOVER=false
   while [ $# -ne 0 ]; do
     case $1 in
-      --discover) DISCOVER=true; shift ;;
+      --discover) discover ;;
     esac
   done
-  $DISCOVER && discover
   run_shellm
 }
 

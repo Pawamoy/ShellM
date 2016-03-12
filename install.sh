@@ -7,12 +7,12 @@ LN=$(which ln)
 GIT=$(which git)
 
 SCRIPT_LOCATION=${BASH_SOURCE[0]}
-if [ -x "$READLINK" ]; then
-  while [ -L "$SCRIPT_LOCATION" ]; do
-    SCRIPT_LOCATION=$("$READLINK" -e "$SCRIPT_LOCATION")
+if [ -x "${READLINK}" ]; then
+  while [ -L "${SCRIPT_LOCATION}" ]; do
+    SCRIPT_LOCATION=$("${READLINK}" -e "${SCRIPT_LOCATION}")
   done
 fi
-PARENT_DIR="$(cd "$("$DIRNAME" "$SCRIPT_LOCATION")" && pwd)"
+PARENT_DIR="$(cd "$("${DIRNAME}" "${SCRIPT_LOCATION}")" && pwd)"
 
 USE_QUESTION="How do you want to use shellm?"
 USE_OPTIONS=(
@@ -35,31 +35,31 @@ REPO_OPTIONS=(
 REPO_URL_QUESION="Please enter the full URL of the repository: "
 
 install_always() {
-  printf "\n\n# shellm\nexport shellm=$PARENT_DIR\n. \$shellm/shellmrc\n" >> "$HOME/.bashrc"
+  printf "\n\n# shellm\nexport shellm=${PARENT_DIR}\n. \$shellm/shellmrc\n" >> "${HOME}/.bashrc"
 }
 
 install_alias() {
-  printf "\n\nalias shellm='\"$PARENT_DIR/shellm\"'\n" >> "$HOME/.bash_aliases"
+  printf "\n\nalias shellm='\"${PARENT_DIR}/shellm\"'\n" >> "${HOME}/.bash_aliases"
 }
 
 install_symlink() {
-  sudo "$RM" /usr/bin/shellm 2>/dev/null
-  sudo "$LN" -s "$PARENT_DIR/shellm" /usr/bin/shellm
+  sudo "${RM}" /usr/bin/shellm 2>/dev/null
+  sudo "${LN}" -s "${PARENT_DIR}/shellm" /usr/bin/shellm
 }
 
 start_shellm() {
-  "$PARENT_DIR/shellm" --discover
+  "${PARENT_DIR}/shellm" --discover
 }
 
 main() {
-  echo "$USE_QUESTION"
+  echo "${USE_QUESTION}"
   select _ in "${USE_OPTIONS[@]}"; do
-    case $REPLY in
+    case ${REPLY} in
       1) install_always; break ;;
       2)
-        echo "$INVOK_QUESTION"
+        echo "${INVOK_QUESTION}"
         select _ in "${INVOK_OPTIONS[@]}"; do
-          case $REPLY in
+          case ${REPLY} in
             1) install_alias; break ;;
             2) install_symlink; break ;;
           esac
@@ -68,12 +68,12 @@ main() {
       ;;
     esac
   done
-  echo "$REPO_QUESTION"
+  echo "${REPO_QUESTION}"
   select _ in "${REPO_OPTIONS[@]}"; do
-    case $REPLY in
+    case ${REPLY} in
       1)
-        read -p "$REPO_URL_QUESION" REPO_URL
-        "$GIT" clone "$REPO_URL" "$PARENT_DIR/usr"
+        read -p "${REPO_URL_QUESION}" REPO_URL
+        "${GIT}" clone "${REPO_URL}" "${PARENT_DIR}/usr"
         break
       ;;
       2) break ;;

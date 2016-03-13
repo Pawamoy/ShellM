@@ -680,7 +680,7 @@ main "$@"
 
 
 
-preprocess_input() {
+:() {
   # instr       -> blank
   # instr + doc -> doc
   # blank       -> blank
@@ -693,8 +693,7 @@ preprocess_input() {
   # for the first one we an add a tag like \nodoc which would be added at the end of line
   echo '## \tag' ## @nodoc
   echo '## \tag' ## @validtag and valid doc but @nodoc
-  # to fix the above, add another tag: \kldoc (keep last doc), which will keep only the last tag
-  echo '## \tag' ## @validtag and valid doc even if @kldoc
+  # at process, just keep the last doc we find
 
   # for the second one, well, we can as well use the \nodoc !!
   # this is a comment with a valid ## \tag but we cancel it with \nodoc
@@ -704,6 +703,11 @@ preprocess_input() {
   string continues here"
   # because you can't add a doc at the first line
   # and nodoc says to ignore the first line, which is the right thing to do
+
+  # the following IS a problem
+  echo "## \tag content \nodoc
+  string continues here"
+  # because without \nodoc, \tag will be interpreted, but we don't want \nodoc to be in the string
 
   # things like ${var##*/} are not a problem because:
     # doc ending instr always has a @tag
@@ -715,14 +719,19 @@ preprocess_input() {
 }
 
 process_one_line() {
-  echo
+  if [ -z "${line}" ]; then
+    in_tag=false
+  fi
+  
+  doc=${line##*##}
+
 }
 
 process_multiple_lines() {
   echo
 }
 
-recursive_parse() {
+_parse() {
   local line
   while read line; do
     process_one_line
@@ -730,5 +739,9 @@ recursive_parse() {
 }
 
 parse() {
-  recursive_parse < "${file}"
+  _parse < <(preprocess_input "$1")
+}
+
+preprocess_input() {
+  sed '/^[ \t]*##/!s/^.*$//g;s/^[ \t]*//' "$1" | uniq | expand
 }

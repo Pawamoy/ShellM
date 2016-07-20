@@ -1,6 +1,5 @@
 #!/bin/bash
 
-## @file new
 ## @brief creates a new script in your shellm/usr/bin directory
 ## @depends shelp
 ## @package coreutils

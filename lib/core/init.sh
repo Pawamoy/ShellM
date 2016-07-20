@@ -1,9 +1,10 @@
 ## @fn void init (void)
 ## @brief Initialize environment variables for shellm scripts
 init() {
-  DATADIR="${shellm}/usr/data/${BASH_SOURCE[0]##*/}"
-  mkdir -p "${DATADIR}" 2>/dev/null
-
+  if ! echo "$*" | grep -q 'no-data'; then
+    DATADIR="${shellm}/usr/data/${BASH_SOURCE[0]##*/}"
+    mkdir -p "${DATADIR}" 2>/dev/null
+  fi
 }
 
 ## @fn void check (file)
@@ -12,14 +13,14 @@ init() {
 ## @param [$1] File to check (default $0)
 ## @return Echo: missing packages/executables, question if $0
 check() {
-	[ "$cgIgnoreCheck" = "yes" ] && return 0
+	[ "$shellm_ignore_check" = "yes" ] && return 0
 	local s ret=true a=${1:-$0}
-	for s in $(getPackages "$a"); do
-		havePackage "$s" || { err "Package $s not found !"; false; }
+	for s in $(get_packages "$a"); do
+		have_package "$s" || { err "Package $s not found !"; false; }
 		ret=$( ([ $? -eq 0 ] && $ret) && echo true || echo false)
 	done
-	for s in $(getDepends "$a"); do
-		haveExec "$s" || { err "Executable $s not found !"; false; }
+	for s in $(get_depends "$a"); do
+		have_command "$s" || { err "Executable $s not found !"; false; }
 		ret=$( ([ $? -eq 0 ] && $ret) && echo true || echo false)
 	done
 	if [ -z "$1" ] && ! $ret; then
@@ -29,10 +30,39 @@ check() {
 	fi
 }
 
-activate_check() {
-	export cgIgnoreCheck=no
+shellm_activate_check() {
+	export shellm_ignore_check=no
 }
 
-deactivate_check() {
-	export cgIgnoreCheck=yes
+shellm_deactivate_check() {
+	export shellm_ignore_check=yes
+}
+
+reWORD='^[[:space:]]*##[[:space:]]*[@\]WORD[[:space:]]'
+shellm_re_synopsis=${reWORD/WORD/synopsis}
+shellm_re_package=${reWORD/WORD/package}
+shellm_re_depends=${reWORD/WORD/depends}
+unset reWORD
+
+usage() {
+	grep "$shellm_re_synopsis" "$1" | expand | sed 's/'"$shellm_re_synopsis"'*//'
+	return 0
+}
+
+get_packages() {
+	grep "$shellm_re_package" "$1" | expand | sed 's/'"$shellm_re_package"'*//'
+	return 0
+}
+
+get_depends() {
+	grep "$shellm_re_depends" "$1" | expand | sed 's/'"$shellm_re_depends"'*//'
+	return 0
+}
+
+have_command() {
+	command -v "$1" >/dev/null
+}
+
+have_package() {
+	dpkg-query -W -f '${Package}\n' | /bin/grep -wq "$1"
 }

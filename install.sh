@@ -75,8 +75,6 @@ create_new_user_dir() {
   cp -r "${PARENT_DIR}/usr-template" "${PARENT_DIR}/usr"
 }
 
-
-
 main() {
   echo -e "${LOGO}"
   echo "${USE_QUESTION}"

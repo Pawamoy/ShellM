@@ -5,16 +5,16 @@ main() {
 
   while [ $# -ne 0 ]; do
     case $1 in
-      ## @option -m, --man
+      ## \option -m, --man
       ## Output MAN documentation on stdout
       '-m'|'--man') FORMAT='man' ;;
-      ## @option -s, --shellm
-      ## Output MAN documentation in shellm/man/man1/FILE
+      ## \option -s, --shellm
+      ## Write MAN documentation in shellm/usr/man/man1/FILE
       '-s'|'--shellm') FORMAT='man'; REDIRECT=true ;;
-      ## @option -t, --text
-      ## Outputs help text on stdout (synopsis, description, options, examples)
+      ## \option -t, --text
+      ## Outputs help text on stdout
       '-t'|'--text') FORMAT='text' ;;
-      ## @option -h, --help
+      ## \option -h, --help
       ## Print this help and exit
       '-h'|'--help') shellman -t "$0"; exit 0 ;;
       *) [ -f "$1" ] && SCRIPT="$1" ||
@@ -31,5 +31,5 @@ main() {
   fi
 }
 
-## \synopsis [-hmst] FILE
+## \synopsis [-mst] FILE | -h
 main "$@"

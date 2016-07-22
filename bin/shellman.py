@@ -31,7 +31,7 @@ TAGS = {
     'note': ('+', '+'),
     'option': ('+', '+'),
     'out': ('+', '+'),
-    'package': (1, 1),
+    'require': (1, 1),
     'param': ('+', 1),
     'pre': ('+', 1),
     'return': ('+', 1),
@@ -160,7 +160,7 @@ class Base(object):
             'NOTES': self.get_render('notes'),
             'OPTIONS': self.get_render('options'),
             # 'OUT': self.get_render('out'),
-            'PACKAGE': self.get_render('package'),
+            'REQUIRE': self.get_render('require'),
             # 'PARAM': self.get_render('param'),
             # 'PRE': self.get_render('pre'),
             # 'RETURN': self.get_render('return'),
@@ -293,7 +293,7 @@ class Man(Base):
     def render_out(self, title):
         pass
 
-    def render_package(self, title):
+    def render_require(self, title):
         pass
 
     def render_param(self, title):
@@ -411,7 +411,7 @@ class Text(Base):
     def render_out(self, title):
         pass
 
-    def render_package(self, title):
+    def render_require(self, title):
         pass
 
     def render_param(self, title):

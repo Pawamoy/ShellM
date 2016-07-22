@@ -1,0 +1,86 @@
+if ndef __ASK_SH; then
+define __ASK_SH
+
+include switchCG.sh
+include message.sh
+
+shellm_ask_confirm=
+shellm_ask_timeout=-1
+
+set_ask_timeout() {
+	shellm_ask_timeout=${1:-$shellm_ask_timeout}
+}
+
+unset_ask_timeout() {
+	shellm_ask_timeout=-1
+}
+
+ask_cli() {
+	local a timeout
+	[ ${shellm_ask_timeout:--1} -ne -1 ] &&
+		timeout="-t $shellm_ask_timeout"
+	if read $timeout -p "$* " a; then
+		case $a in
+			[Yy]|[Yy][Ee][Ss]) return 0 ;;
+			[Nn]|[Nn][Oo]) return 1 ;;
+			[Aa]|[Yy][Aa]|[Yy][Aa][Ll][Ll]) return 2 ;;
+			[Qq]|[Nn][Aa]|[Nn][Aa][Ll][Ll]) return 3 ;;
+			*) return 1 ;;
+		esac
+	else
+		echo
+		return 1
+	fi
+}
+
+ask_gui() {
+	local timeout yad
+	[ ${shellm_ask_timeout:--1} -ne -1 ] &&
+		timeout="--timeout=$shellm_ask_timeout" 
+	yad="/usr/bin/yad $timeout \
+		--question \
+		--text '$*'"
+	[ -n "$shellm_ask_confirm" ] &&
+		yad="$yad --button 'Yes:0' \
+		--button 'No:1' \
+		--button 'Yes to all:2' \
+		--button 'No to all:3'"
+	eval "$yad"
+	[ $? -eq 70 ] && return 1
+}
+
+activate_ask_extra() {
+	shellm_ask_confirm=help
+}
+
+deactivate_ask_extra() {
+	shellm_ask_confirm=
+}
+
+ask() {
+	case ${shellm_ask_confirm} in
+		"") switchCG "ask_cli '$*'" "ask_gui '$*'"
+			case $? in
+				0|2) return 0 ;;
+				1|3) return 1 ;;
+			esac
+		;;
+		help)
+			err "*** y:yes / n:no / a:yes-to-all / q:no-to-all"
+			shellm_ask_confirm=ask
+			ask "$@"
+		;;
+		ask)
+			switchCG "ask_cli '$*'" "ask_gui '$*'"
+			case $? in
+				0|1) return $? ;;
+				2) shellm_ask_confirm=yes-to-all; return 0 ;;
+				3) shellm_ask_confirm=no-to-all; return 1 ;;
+			esac
+		;;
+		yes-to-all) return 0 ;;
+		no-to-all) return 1 ;;
+	esac
+}
+
+fi # __ASK_SH

@@ -1,13 +1,12 @@
 #!/bin/bash
 
-## @file ren
-## @brief rename a file (or dir in shellm/bin or shellm/lib
-## @depends shelp
-## @package coreutils
+## \brief rename a file
+## \require coreutils
+## \depends shellman
 
-include check.sh
+include init.sh
 include edit.sh
-include question.sh
+include in/ask.sh
 include usage.sh
 
 check; [ $# -eq 0 ] && usage
@@ -28,14 +27,14 @@ exists() {
 
 main() {
     case $1 in
-        ## @option -h, --help
+        ## \option -h, --help
         ## Prints this help and exit
-        -h|--help) shelp -t "$0"; exit 0 ;;
+        -h|--help) shellman -t "$0"; exit 0 ;;
     esac
-    
+
     # Test if the file/dir already exists
     local found1 found2
-    
+
     if [ -e "$shellm/bin/$1" ]; then
         exists "$2" bin
         /bin/mv "$shellm/bin/$1" "$shellm/bin/$2"
@@ -43,11 +42,11 @@ main() {
         local type=$(exists "$2" lib)
         [ "$type" = "d" ] &&
             { /bin/mv "$shellm/lib/$1" "$shellm/lib/$2"; return $?; } ||
-            /bin/mv "$shellm/lib/$1" "$shellm/lib/${2%.sh}.sh" 
+            /bin/mv "$shellm/lib/$1" "$shellm/lib/${2%.sh}.sh"
     else
         die "ren: $1: no such file in shellm bin or lib"
     fi
 }
 
-## @synopsis FILENAME NEW_NAME
+## \synopsis FILENAME NEW_NAME
 main "$@"

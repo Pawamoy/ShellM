@@ -5,6 +5,7 @@ shellman_re='^[[:space:]]*##[[:space:]]*[@\]'
 
 usage() {
 	echo "usage: $(shellman_get usage "${1:-$0}")"
+  exit 0
 }
 
 shellman_get() {
@@ -39,8 +40,16 @@ shellman() {
       ## \option -h, --help
       ## Print this help and exit
       '-h'|'--help') shellman -t "$0"; exit 0 ;;
-      *) [ -f "$1" ] && SCRIPT="$1" ||
-          die "shellman: $1: no such regular file" ;;
+      *)
+        if [ -f "$1" ]; then
+          SCRIPT="$1"
+        elif [ -f "${shellm}/usr/bin/$1" ]; then
+          SCRIPT="${shellm}/usr/bin/$1"
+        else
+          echo "shellman: $1: no such script in shellm bin" >&2
+          exit 1
+        fi
+      ;;
     esac
     shift
   done

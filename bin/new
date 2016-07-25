@@ -16,14 +16,14 @@ init_data
 
 main() {
   case $1 in
-    ## @option -h, --help
+    ## \option -h, --help
     ## Prints this help and exit
     -h|--help) shellman -t "$0"; exit 0 ;;
   esac
 
   # Test if the script already exists
   if [ -f "${shellm}/usr/bin/$1" ]; then
-    echo "$1 already exists in $shellm/usr/bin" >&2
+    echo "new: $1 already exists in $shellm/usr/bin" >&2
     exit 1
   fi
 
@@ -34,7 +34,7 @@ main() {
     if [ -f "${DATADIR}/$2" ]; then
       cp "${DATADIR}/$2" "${shellm}/usr/bin/$1"
     else
-      echo "template $2 does not exist in ${DATADIR}" >&2
+      echo "new: template $2 does not exist in ${DATADIR}" >&2
       exit 2
     fi
   fi
@@ -46,5 +46,5 @@ main() {
   xdg-open "${shellm}/usr/bin/$1"
 }
 
-## \usage FILENAME [TEMPLATE]
-main "$1" "$2"
+## \usage new FILENAME [TEMPLATE] | -h
+main "$@"

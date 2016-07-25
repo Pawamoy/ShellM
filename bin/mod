@@ -1,39 +1,36 @@
 #!/bin/bash
 
-## @file mod
-## @brief open a file in shellm/bin or shellm/lib
-## @depends shelp
-## @package coreutils
+## \brief open a file in shellm/bin or shellm/lib
+## \require coreutils
 
-include out/message.sh
-include edit.sh
-include usage.sh
+include core/shellman.sh
 
 [ $# -eq 0 ] && usage
 
 main() {
-    case $1 in
-        ## @option -h, --help
-        ## Prints this help and exit
-        -h|--help) shelp -t "$0"; exit 0 ;;
-    esac
+  case $1 in
+    ## \option -h, --help
+    ## Prints this help and exit
+    -h|--help) shellman -t "$0"; exit 0 ;;
+  esac
 
-    if [ -f "${shellm}/usr/bin/$1" ]; then
-        if [ -n "$2" ]; then
-            $2 "${shellm}/usr/bin/$1"
-        else
-            edit "${shellm}/usr/bin/$1"
-        fi
-    elif [ -f "${shellm}/usr/lib/${1%.sh}.sh" ]; then
-        if [ -n "$2" ]; then
-            $2 "${shellm}/usr/lib/${1%.sh}.sh"
-        else
-            edit "${shellm}/usr/lib/${1%.sh}.sh"
-        fi
+  if [ -f "${shellm}/usr/bin/$1" ]; then
+    if [ -n "$2" ]; then
+      $2 "${shellm}/usr/bin/$1"
     else
-        die "mod: $1: no such file in shellm bin or lib"
+      xdg-open "${shellm}/usr/bin/$1"
     fi
+  elif [ -f "${shellm}/usr/lib/${1%.sh}.sh" ]; then
+    if [ -n "$2" ]; then
+      $2 "${shellm}/usr/lib/${1%.sh}.sh"
+    else
+      xdg-open "${shellm}/usr/lib/${1%.sh}.sh"
+    fi
+  else
+    echo "mod: $1: no such file in shellm bin or lib" >&2
+    exit 1
+  fi
 }
 
-## @synopsis FILENAME [EDITOR]
+## \usage mod FILENAME [EDITOR] | -h
 main "$@"

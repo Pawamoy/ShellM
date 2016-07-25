@@ -2,51 +2,27 @@
 
 ## \brief rename a file
 ## \require coreutils
-## \depends shellman
 
-include init.sh
-include edit.sh
-include in/ask.sh
-include usage.sh
+include core/shellman.sh
 
-check; [ $# -eq 0 ] && usage
-
-exists() {
-    local found dir=$2
-    if [ -f "$shellm/$dir/${1%.sh}.sh" ]; then
-        err "${1%.sh}.sh already exists (file) in shellm/$dir"
-        question "Would you like to overwrite it? [yN]" || end 0
-    elif [ -f "$shellm/$dir/$1" ]; then
-        err "$1 already exists (file) in shellm/$dir"
-        question "Would you like to overwrite it? [yN]" || end 0
-    elif [ -d "$shellm/$dir/$1" ]; then
-        err "$1 already exists (dir) in shellm/$dir"
-        question "Do you want to continue anyway? [yN]" || end 0
-    fi
-}
+[ $# -eq 0 ] && usage
 
 main() {
-    case $1 in
-        ## \option -h, --help
-        ## Prints this help and exit
-        -h|--help) shellman -t "$0"; exit 0 ;;
-    esac
+  case $1 in
+    ## \option -h, --help
+    ## Prints this help and exit
+    -h|--help) shellman -t "$0"; exit 0 ;;
+  esac
 
-    # Test if the file/dir already exists
-    local found1 found2
-
-    if [ -e "$shellm/bin/$1" ]; then
-        exists "$2" bin
-        /bin/mv "$shellm/bin/$1" "$shellm/bin/$2"
-    elif [ -e "$shellm/lib/${1%.sh}.sh" ]; then
-        local type=$(exists "$2" lib)
-        [ "$type" = "d" ] &&
-            { /bin/mv "$shellm/lib/$1" "$shellm/lib/$2"; return $?; } ||
-            /bin/mv "$shellm/lib/$1" "$shellm/lib/${2%.sh}.sh"
-    else
-        die "ren: $1: no such file in shellm bin or lib"
-    fi
+  if [ -e "$shellm/usr/bin/$1" ]; then
+    mv "$shellm/usr/bin/$1" "$shellm/usr/bin/$2"
+  elif [ -e "$shellm/usr/lib/$1" ]; then
+    mv "$shellm/usr/lib/$1" "$shellm/usr/lib/$2"
+  else
+    echo "ren: $1: no such file in shellm bin or lib" >&2
+    exit 1
+  fi
 }
 
-## \synopsis FILENAME NEW_NAME
+## \usage FILENAME NEW_NAME
 main "$@"

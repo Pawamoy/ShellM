@@ -15,7 +15,6 @@ TAGS = {
     'caveat': ('+', '+'),
     'copyright': (1, '+'),
     'date': (1, 1),
-    'depends': (1, 1),
     'desc': (1, '+'),
     'env': ('+', '+'),
     'err': ('+', '+'),
@@ -143,7 +142,6 @@ class Base(object):
             'CAVEATS': self.get_render('caveats'),
             'COPYRIGHT': self.get_render('copyright'),
             'DATE': self.get_render('date'),
-            'DEPENDS': self.get_render('depends'),
             'DESCRIPTION': self.get_render('description'),
             'ENVIRONMENT VARIABLES': self.get_render('environment_variables'),
             # 'ERR': self.get_render('err'),
@@ -233,9 +231,6 @@ class Man(Base):
         self.render_single_many(title, self.doc['copyright'])
 
     def render_date(self, title):
-        pass
-
-    def render_depends(self, title):
         pass
 
     def render_description(self, title):
@@ -360,9 +355,6 @@ class Text(Base):
 
     def render_date(self, title):
         print('Date: %s' % self.doc['date'])
-
-    def render_depends(self, title):
-        pass
 
     def render_description(self, title):
         if self.doc['desc']:

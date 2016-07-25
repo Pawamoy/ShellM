@@ -2,62 +2,49 @@
 
 ## \brief creates a new script in your shellm/usr/bin directory
 ## \require coreutils
-## \depends shellman
 
 ## \desc This script creates a new file in your shellm/usr/bin directory,
 ## makes it executable, writes some lines in it, like the shebang
 ## #!/bin/bash, documentation lines and others, then
 ## opens it for you to write the rest of the code.
 
-include init.sh
-include in/ask.sh
-include edit.sh
+include core/shellman.sh
+include core/init/data.sh
 
-check; [ $# -eq 0 ] && usage
-
-main() {
-    case $1 in
-        ## @option -h, --help
-        ## Prints this help and exit
-        -h|--help) shelp -t "$0"; exit 0 ;;
-    esac
-
-    # Test if the script already exists
-    if [ -f "${shellm}/bin/$1" ]; then
-        err "$1 already exists in $shellm/bin"
-        question "Would you like to overwrite it? [yN]" || return 0
-    fi
-
-    # Output the script headers in the file
-    content='#!/bin/bash
-
-## @file %s
-## @brief %s
-## @package coreutils
-
-init; [ $# -eq 0 ] && usage
+[ $# -eq 0 ] && usage
+init_data
 
 main() {
   case $1 in
     ## @option -h, --help
-    ## Prints this help and exit.
+    ## Prints this help and exit
     -h|--help) shellman -t "$0"; exit 0 ;;
   esac
+
+  # Test if the script already exists
+  if [ -f "${shellm}/usr/bin/$1" ]; then
+    echo "$1 already exists in $shellm/usr/bin" >&2
+    exit 1
+  fi
+
+  # Copy the template
+  if [ -z "$2" ]; then
+    cp "${DATADIR}/default" "${shellm}/usr/bin/$1"
+  else
+    if [ -f "${DATADIR}/$2" ]; then
+      cp "${DATADIR}/$2" "${shellm}/usr/bin/$1"
+    else
+      echo "template $2 does not exist in ${DATADIR}" >&2
+      exit 2
+    fi
+  fi
+
+  # Make it executable
+  chmod +x "${shellm}/usr/bin/$1"
+
+  # Open the file
+  xdg-open "${shellm}/usr/bin/$1"
 }
 
-## @synopsis -h
-main "$@"
-'
-    printf "${content}" "$1" "$1" > "${shellm}/bin/$1"
-
-    # Make it executable
-    chmod +x "${shellm}/bin/$1"
-
-    # Open the file
-    [ ! -n "$2" ] &&
-        { edit "${shellm}/bin/$1"; return $?; } ||
-            eval $2 "${shellm}/bin/$1"
-}
-
-## @synopsis FILENAME [EDITOR]
+## \usage FILENAME [TEMPLATE]
 main "$1" "$2"

@@ -1,5 +1,5 @@
-if ndef __AUTO_UI_CG_SH; then
-define __AUTO_UI_CG_SH
+if ndef __UI_AUTO_SH; then
+define __UI_AUTO_SH
 
 ## \brief Provides auto_ui function
 ## \desc The auto_ui function takes two arguments, the first one is the
@@ -27,4 +27,4 @@ auto_ui() {
 	esac
 }
 
-fi # __AUTO_UI_CG_SH
+fi # __UI_AUTO_SH

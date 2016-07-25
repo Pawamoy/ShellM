@@ -31,12 +31,12 @@ TAGS = {
     'note': ('+', '+'),
     'option': ('+', '+'),
     'out': ('+', '+'),
-    'require': (1, 1),
     'param': ('+', 1),
     'pre': ('+', 1),
+    'require': (1, 1),
     'return': ('+', 1),
     'seealso': ('+', 1),
-    'synopsis': ('+', '+'),
+    'usage': ('+', '+'),
     'version': (1, 1)
 }
 
@@ -160,12 +160,13 @@ class Base(object):
             'NOTES': self.get_render('notes'),
             'OPTIONS': self.get_render('options'),
             # 'OUT': self.get_render('out'),
-            'REQUIRE': self.get_render('require'),
             # 'PARAM': self.get_render('param'),
             # 'PRE': self.get_render('pre'),
+            'REQUIRE': self.get_render('require'),
             # 'RETURN': self.get_render('return'),
             'SEE ALSO': self.get_render('see_also'),
-            'SYNOPSIS': self.get_render('synopsis'),
+            'SYNOPSIS': self.get_render('usage'),
+            'USAGE': self.get_render('usage'),
             'VERSION': self.get_render('version')
         }
 
@@ -293,13 +294,13 @@ class Man(Base):
     def render_out(self, title):
         pass
 
-    def render_require(self, title):
-        pass
-
     def render_param(self, title):
         pass
 
     def render_pre(self, title):
+        pass
+
+    def render_require(self, title):
         pass
 
     def render_return(self, title):
@@ -308,12 +309,12 @@ class Man(Base):
     def render_see_also(self, title):
         pass
 
-    def render_synopsis(self, title):
+    def render_usage(self, title):
         print('.SH "%s"' % title)
         rep_reg_opt = re.compile(r'(--?[a-z0-9-]+=?)')
         rep_reg_arg = re.compile(r'([A-Z]+)')
-        for synopsis in self.doc['synopsis']:
-            syn = ''.join(synopsis)
+        for usage in self.doc['usage']:
+            syn = ''.join(usage)
             syn = rep_reg_arg.sub(r'\\fI\1\\fR', syn)  # order is important!
             syn = rep_reg_opt.sub(r'\\fB\1\\fR', syn)
             print('.br')
@@ -334,7 +335,8 @@ class Text(Base):
             print(title)
             for v in value:
                 print('  %s' % v[0].rstrip('\n'))
-                print('    %s' % ''.join(v[1:]))
+                if len(v) > 1:
+                    print('    %s' % ''.join(v[1:]))
 
     def render_multi_many_no_head(self, title, value):
         if value:
@@ -411,13 +413,13 @@ class Text(Base):
     def render_out(self, title):
         pass
 
-    def render_require(self, title):
-        pass
-
     def render_param(self, title):
         pass
 
     def render_pre(self, title):
+        pass
+
+    def render_require(self, title):
         pass
 
     def render_return(self, title):
@@ -426,12 +428,11 @@ class Text(Base):
     def render_see_also(self, title):
         pass
 
-    def render_synopsis(self, title):
-        if self.doc['synopsis']:
-            print('Usage: %s %s' % (self.doc['_file'],
-                                    ''.join(self.doc['synopsis'][0])))
-            for v in self.doc['synopsis'][1:]:
-                print('      %s %s' % (self.doc['_file'], ''.join(v)))
+    def render_usage(self, title):
+        if self.doc['usage']:
+            print('Usage: %s' % ''.join(self.doc['usage'][0]))
+            for v in self.doc['usage'][1:]:
+                print('       %s %s' % (self.doc['_file'], ''.join(v)))
 
     def render_version(self, title):
         print('Version: %s' % self.doc['version'])

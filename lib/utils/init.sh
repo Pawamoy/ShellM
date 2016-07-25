@@ -38,27 +38,6 @@ shellm_deactivate_check() {
 	export shellm_ignore_check=yes
 }
 
-reWORD='^[[:space:]]*##[[:space:]]*[@\]WORD[[:space:]]'
-shellm_re_synopsis=${reWORD/WORD/synopsis}
-shellm_re_package=${reWORD/WORD/package}
-shellm_re_depends=${reWORD/WORD/depends}
-unset reWORD
-
-usage() {
-	grep "$shellm_re_synopsis" "$1" | expand | sed 's/'"$shellm_re_synopsis"'*//'
-	return 0
-}
-
-get_packages() {
-	grep "$shellm_re_package" "$1" | expand | sed 's/'"$shellm_re_package"'*//'
-	return 0
-}
-
-get_depends() {
-	grep "$shellm_re_depends" "$1" | expand | sed 's/'"$shellm_re_depends"'*//'
-	return 0
-}
-
 have_command() {
 	command -v "$1" >/dev/null
 }

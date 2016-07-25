@@ -1,7 +1,7 @@
 if ndef __ASK_SH; then
 define __ASK_SH
 
-include switchCG.sh
+include ui/auto.sh
 include message.sh
 
 shellm_ask_confirm=
@@ -36,7 +36,7 @@ ask_cli() {
 ask_gui() {
 	local timeout yad
 	[ ${shellm_ask_timeout:--1} -ne -1 ] &&
-		timeout="--timeout=$shellm_ask_timeout" 
+		timeout="--timeout=$shellm_ask_timeout"
 	yad="/usr/bin/yad $timeout \
 		--question \
 		--text '$*'"
@@ -59,7 +59,7 @@ deactivate_ask_extra() {
 
 ask() {
 	case ${shellm_ask_confirm} in
-		"") switchCG "ask_cli '$*'" "ask_gui '$*'"
+		"") auto_ui "ask_cli '$*'" "ask_gui '$*'"
 			case $? in
 				0|2) return 0 ;;
 				1|3) return 1 ;;
@@ -71,7 +71,7 @@ ask() {
 			ask "$@"
 		;;
 		ask)
-			switchCG "ask_cli '$*'" "ask_gui '$*'"
+			auto_ui "ask_cli '$*'" "ask_gui '$*'"
 			case $? in
 				0|1) return $? ;;
 				2) shellm_ask_confirm=yes-to-all; return 0 ;;

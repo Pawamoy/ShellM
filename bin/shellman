@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 main() {
   local OUTPUT SCRIPT REDIRECT=false FORMAT='text'
@@ -31,5 +31,5 @@ main() {
   fi
 }
 
-## \synopsis [-mst] FILE | -h
+## \usage shellman [-mst] FILE | -h
 main "$@"

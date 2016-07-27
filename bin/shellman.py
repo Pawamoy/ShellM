@@ -279,6 +279,8 @@ class Man(Base):
         self.render_multi_many_no_head(title, self.doc['note'])
 
     def render_options(self, title):
+        if not self.doc['option']:
+            return
         print('.SH "%s"' % title)
         for option in self.doc['option']:
             print('.IP "\\fB%s\\fR" 4' % option[0]
@@ -305,6 +307,8 @@ class Man(Base):
         pass
 
     def render_usage(self, title):
+        if not self.doc['usage']:
+            return
         print('.SH "%s"' % title)
         rep_reg_opt = re.compile(r'(--?[a-z0-9-]+=?)')
         rep_reg_arg = re.compile(r'([A-Z]+)')

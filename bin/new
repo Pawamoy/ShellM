@@ -12,7 +12,7 @@ include core/shellman.sh
 include core/init/data.sh
 
 [ $# -eq 0 ] && usage
-init_data
+data_dir=$(init_data)
 
 main() {
   case $1 in
@@ -29,12 +29,12 @@ main() {
 
   # Copy the template
   if [ -z "$2" ]; then
-    cp "${DATADIR}/default" "${shellm}/usr/bin/$1"
+    cp "${data_dir}/default" "${shellm}/usr/bin/$1"
   else
-    if [ -f "${DATADIR}/$2" ]; then
-      cp "${DATADIR}/$2" "${shellm}/usr/bin/$1"
+    if [ -f "${data_dir}/$2" ]; then
+      cp "${data_dir}/$2" "${shellm}/usr/bin/$1"
     else
-      echo "new: template $2 does not exist in ${DATADIR}" >&2
+      echo "new: template $2 does not exist in ${data_dir}" >&2
       exit 2
     fi
   fi

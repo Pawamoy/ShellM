@@ -4,6 +4,7 @@
 ## \require coreutils
 
 include core/shellman.sh
+include core/init/data.sh
 
 [ $# -eq 0 ] && usage
 
@@ -16,6 +17,9 @@ main() {
 
   if [ -e "$shellm/usr/bin/$1" ]; then
     mv "$shellm/usr/bin/$1" "$shellm/usr/bin/$2"
+    data_dir=$(get_data_dir)
+    if [ -e "${data_dir}" ]; then
+      mv "${data_dir}" "${data_dir%/*}/$2"
   elif [ -e "$shellm/usr/lib/$1" ]; then
     mv "$shellm/usr/lib/$1" "$shellm/usr/lib/$2"
   else

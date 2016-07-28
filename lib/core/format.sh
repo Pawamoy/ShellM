@@ -1,5 +1,7 @@
 if ndef __CORE_FORMAT_SH; then
-define __CORE_FORMAT_SH
+define __CORE_FORMAT_SH "format VAR"
+
+VAR="Hello"
 
 ## \usage format [OPTIONS...] [-- STRING...]
 ## \example format onblack lightgreen dim bold; echo SUCCESS!
@@ -206,7 +208,7 @@ else # 16 colors
       esac
       shift
     done
-    
+
     [ "$f" != "$esc" ] && echo -en "${f}m"
 
     if [ $# -ne 0 ]; then

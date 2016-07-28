@@ -1,5 +1,5 @@
 if ndef __UI_AUTO_SH; then
-define __UI_AUTO_SH
+define __UI_AUTO_SH "auto_ui"
 
 ## \brief Provides auto_ui function
 ## \desc The auto_ui function takes two arguments, the first one is the

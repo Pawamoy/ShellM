@@ -1,10 +1,13 @@
 if ndef __CORE_SHELLMAN_SH; then
-define __CORE_SHELLMAN_SH
+define __CORE_SHELLMAN_SH "shellman_re
+                           usage
+                           shellm_get
+                           shellman"
 
 shellman_re='^[[:space:]]*##[[:space:]]*[@\]'
 
 usage() {
-	echo "usage: $(shellman_get usage "${1:-$0}")"
+  echo "usage: $(shellman_get usage "${1:-$0}")"
   exit 0
 }
 

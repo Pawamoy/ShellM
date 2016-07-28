@@ -6,7 +6,7 @@
 ## \param value Optional, variable content (default: 'def')
 ## \return false if no args or error while affectation, true otherwise
 define() {
-  [ $# -ge 1 ] && eval "$1=${2:-def}" || return 1;
+  [ $# -ge 1 ] && eval "$1=\"${2:-DEF}\"" || return 1;
 }
 
 ## \fn filter_host (file, [host])

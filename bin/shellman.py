@@ -10,33 +10,33 @@ SHELLMAN_VERSION = '1.0'
 # tag: (occurrences, lines)
 TAGS = {
     'author': ('+', 1),
-    'brief': ('+', 1),
+    'brief': ('+', 1),  # script / function brief
     'bug': ('+', '+'),
     'caveat': ('+', '+'),
     'copyright': (1, '+'),
     'date': (1, 1),
-    'desc': (1, '+'),
+    'desc': (1, '+'),  # script description
     'env': ('+', '+'),
-    'err': ('+', '+'),
     'error': ('+', '+'),
     'export': ('+', 1),
     'example': ('+', '+'),
-    'exit': ('+', '+'),
+    'exit': ('+', '+'),  # script exit code
     'file': ('+', '+'),
-    'fn': ('+', 1),
+    'fn': ('+', 1),  # prototype / usage of a function
     'history': (1, '+'),
     'host': ('+', 1),
-    'in': ('+', '+'),
     'license': (1, '+'),
     'note': ('+', '+'),
-    'option': ('+', '+'),
-    'out': ('+', '+'),
-    'param': ('+', 1),
+    'option': ('+', '+'),  # script option
+    'param': ('+', 1),  # function argument / parameter
     'pre': ('+', 1),
     'require': (1, 1),
-    'return': ('+', 1),
+    'return': ('+', 1),  # function return code
     'seealso': ('+', 1),
-    'usage': ('+', '+'),
+    'stderr': ('+', '+'),
+    'stdin': ('+', '+'),
+    'stdout': ('+', '+'),
+    'usage': ('+', '+'),  # script usage
     'version': (1, 1)
 }
 

@@ -1,0 +1,33 @@
+
+#!/bin/bash
+
+## \brief Consumer: ?
+## \require coreutils
+
+include core/shellman.sh
+include daemon/consumer.sh
+
+consumer_consume() {
+  # Write this function
+  sleep 3
+}
+
+main() {
+  case $1 in
+    ## \option -h, --help
+    ## Prints this help and exit.
+    -h|--help)
+      shellman -t "$0"
+      shellman -t "${shellm}/lib/daemon/consumer.sh"
+      exit 0
+    ;;
+  esac
+
+  # Change this variable and assert the directory exists
+  consumed_dir="~/consume"
+
+  consumer "$@"
+}
+
+## \usage daemon [options] [command ARGS]
+main "$@"

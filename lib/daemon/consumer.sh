@@ -77,12 +77,34 @@ consumer_unlocked() {
   ! consumer_locked
 }
 
-consumer_send() {
-  echo # TODO
+consumer_get() {
+  local get_to="$(consumer_location)"
+  local item
+  for item in "$@"; do
+    # FIXME: if lock fails?
+    consumer_lock "${item}"
+    mv "${item}" "${get_to}"
+    consumer_unlock "${item}"
+  done
 }
 
-consumer_get() {
-  echo # TODO
+consumer_send() {
+  # TODO: handle name variants
+  local daemon="$1"
+  local send_to="$(${daemon} location)"
+  local set_lock="$(get_data_dir ${daemon})"
+  shift
+  local item
+  for item in "$@"; do
+    # FIXME: if lock fails?
+    consumer_lock "${item}" "${set_lock}"
+    mv "${item}" "${send_to}"
+    consumer_unlock "${item}" "${set_lock}"
+  done
+}
+
+consumer_location() {
+  echo "${consumed_dir}"
 }
 
 consumer_empty() {
@@ -91,18 +113,8 @@ consumer_empty() {
 }
 
 consumer_consume() {
-  # compute the post-process file name
-  postprocess_name="$1"
-  # dummy process: rename file to postprocess_name
-  [ "$1" != "${postprocess_name}" ] && mv "$1" "${postprocess_name}"
-  # typically delete remaining useless files
-  # remove obsolete locks
-  if [ "$1" != "${postprocess_name}" ]; then
-    [ -e "$1" ] && rm -rf "$1"
-    consumer_unlock "$1"
-  fi
-
-  consumer_unlock "$1"
+  echo "consumer: (dummy) processing $1"
+  sleep 3
 }
 
 ## \fn consumer [options] [command]
@@ -123,18 +135,11 @@ consumer() {
       ## \param locked-wait SECONDS
       ## Time to wait when item is locked
       locked-wait) locked_wait="$2"; shift ;;
-      ## \param chained-with DAEMON
-      ## Next processing daemon in case of chain
-      chained-with) next_daemon="$2"; shift ;;
-      ## \param move-to DIR
-      ## Where to move the files once processed.
-      ## This option is ignored if chained-with is given
-      move-to) next_location="$2"; shift ;;
       ## \param (command) get ITEM...
       ## Move specified items into consumed directory
       get) command=get; shift; break ;;
       ## \param (command) send ITEM... DIR
-      ## Move specified items from consumed directory into specified DIR
+      ## Lock then send specified items from consumed directory to another consumer
       send) command=send; shift; break ;;
       ## \param (command) location
       ## Return the path of the consumed directory
@@ -151,7 +156,7 @@ consumer() {
   case $command in
     get) consumer_get "$@"; exit $? ;;
     send) consumer_send "$@"; exit $? ;;
-    location) echo "${consumed_dir}"; exit 0 ;;
+    location) consumer_location; exit 0 ;;
   esac
 
   if [ -z "${empty_wait}" ]; then
@@ -162,11 +167,6 @@ consumer() {
     locked_wait=0.5
   fi
 
-  if [ -n "${next_daemon}" ]; then
-    local next_location=$(${next_daemon} location)
-    local next_set_lock_dir=$(init_data "${next_daemon}")
-  fi
-
   local all_locked item
   while true; do
     if ! consumer_empty "${consumed_dir}"; then
@@ -174,7 +174,8 @@ consumer() {
       for item in "${consumed_dir}"/*; do
         if consumer_lock "${item}"; then
           all_locked=false
-          consumer_consume "${item}" "${next_location}" "${next_set_lock_dir}"
+          consumer_consume "${item}"
+          consumer_unlock "${item}"
         fi
       done
       ${all_locked} && sleep ${locked_wait}

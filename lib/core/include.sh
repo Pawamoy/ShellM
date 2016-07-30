@@ -32,7 +32,7 @@ include() {
       . <(filter_host "${libdir}/$1") && break
       [ $# -ge 1 ] && echo "include: error while including $1 from $0" >&2;
       # FIXME: zsh, sh, dash, csh, tcsh, ksh, xonsh...
-      [ "$0" != "bash" ] && exit 1 || return 1;
+      [ "$0" != "-bash" ] && exit 1 || return 1;
     fi
   done
 }

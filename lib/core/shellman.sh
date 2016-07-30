@@ -42,15 +42,27 @@ shellman() {
       '-t'|'--text') FORMAT='text' ;;
       ## \option -h, --help
       ## Print this help and exit
-      '-h'|'--help') shellman -t "$0"; exit 0 ;;
+      '-h'|'--help') shellman -t "$0"; return 0 ;;
       *)
         if [ -f "$1" ]; then
           SCRIPT="$1"
         elif [ -f "${shellm}/usr/bin/$1" ]; then
           SCRIPT="${shellm}/usr/bin/$1"
+        elif [ -f "${shellm}/bin/$1" ]; then
+          SCRIPT="${shellm}/bin/$1"
         else
-          echo "shellman: $1: no such script in shellm bin" >&2
-          exit 1
+          local libdir array
+          IFS=':' read -r -a array <<< "${LIBPATH}"
+          for libdir in "${array[@]}"; do
+            if [ -f "${libdir}/$1" ]; then
+              SCRIPT="${libdir}/$1"
+              break
+            fi
+          done
+          if [ -z "${SCRIPT}" ]; then
+            echo "shellman: $1: no such script in shellm bin" >&2
+            return 1
+          fi
         fi
       ;;
     esac

@@ -45,38 +45,49 @@ include core/init/data.sh
 ##     potential post-process name of the file) for the next directory in the
 ##     chain. This is done to avoid files being processed by the next consumers
 ##     before the files are completely moved to the next directory.
-##
-## Variables that can be overwritten as global variables in script:
-##
-## consumed_dir
-## empty_wait
-## locked_wait
-## next_daemon
-## next_location
 
+## \fn sha STRING
+## \brief Compute sha256sum of string
+## \param STRING String to compute sum for
 sha() {
   echo "${1##*/}" | sha256sum | cut -d' ' -f1
 }
 
-## \fn consumer_lock NAME DIR
+## \fn consumer_lock NAME [DIR]
+## \brief Lock the given item thanks to its name
 ## \param NAME Name of the item to lock
-## \param DIR Directory in which to create the lock
+## \param DIR Directory in which to create the lock (default to data)
 consumer_lock() {
   mkdir "${2:-$set_lock_dir}/$(sha "$1")" 2>/dev/null
 }
 
+## \fn consumer_unlock NAME [DIR]
+## \brief Unlock the given item thanks to its name
+## \param NAME Name of the item to unlock
+## \param DIR Directory in which to remove the lock (default to data)
 consumer_unlock() {
   rm -rf "${2:-$set_lock_dir}/$(sha "$1")" 2>/dev/null
 }
 
+## \fn consumer_locked NAME [DIR]
+## \brief Test if NAME is locked
+## \param NAME Name of the item to test
+## \param DIR Directory in which to check the lock (default to data) (default to data)
 consumer_locked() {
   [ -d "${2:-$get_lock_dir}/$(sha "$1")" ]
 }
 
+## \fn consumer_unlocked NAME [DIR]
+## \brief Test if NAME is unlocked
+## \param NAME Name of the item to test
+## \param DIR Directory in which to check the lock (default to data)
 consumer_unlocked() {
-  ! consumer_locked
+  ! consumer_locked "$@"
 }
 
+## \fn consumer_get FILE...
+## \brief Lock then move each given file into consumed directory
+## \param FILE Single or multiple files to move into consumed directory
 consumer_get() {
   local get_to="$(consumer_location)"
   local item
@@ -88,6 +99,10 @@ consumer_get() {
   done
 }
 
+## \fn consumer_get DAEMON FILE...
+## \brief Lock then move each given file in consumed directory of DAEMON
+## \param DAEMON The daemon to send the files to (into its consumed directory)
+## \param FILE Single or multiple files to move into consumed directory
 consumer_send() {
   # TODO: handle name variants
   local daemon="$1"
@@ -103,22 +118,30 @@ consumer_send() {
   done
 }
 
+## \fn consumer_location
+## \brief Return the path to the consumed directory
 consumer_location() {
   echo "${consumed_dir}"
 }
 
+## \fn consumer_empty [DIR]
+## \brief Test if consumed directory is empty
+## \param DIR Directory to check (default to consumed directory)
 consumer_empty() {
   local dir="${1:-$consumed_dir}"
   ( [ -d "${dir}" ] && cd "${dir}"; [ "$(echo .* *)" = ". .. *" ]; )
 }
 
+## \fn consumer_consume NAME
+## \brief Consume (process) file identified by NAME. You must rewrite this function.
+## \param NAME Name of the file/folder to process
 consumer_consume() {
   echo "consumer: (dummy) processing $1"
   sleep 3
 }
 
-## \fn consumer [options] [command]
-## \brief Main consumer function
+## \fn consumer [params] [command]
+## \brief Main consumer function. Handle arguments, launch the loop.
 consumer() {
   local command
   get_lock_dir=$(init_data)
@@ -130,10 +153,10 @@ consumer() {
       ## Directory to consume
       consume) consumed_dir="$2"; shift ;;
       ## \param empty-wait SECONDS
-      ## Time to wait when consumed directory is empty
+      ## Time to wait (in seconds) when consumed directory is empty
       empty-wait) empty_wait="$2"; shift ;;
       ## \param locked-wait SECONDS
-      ## Time to wait when item is locked
+      ## Time to wait (in seconds) when item is locked
       locked-wait) locked_wait="$2"; shift ;;
       ## \param (command) get ITEM...
       ## Move specified items into consumed directory
@@ -148,6 +171,7 @@ consumer() {
     shift
   done
 
+  ## \env consumed_dir Path to directory to consume
   if [ ! -d "${consumed_dir}" ]; then
     echo "consumer: consumed dir ${consumed_dir} does not exist" >&2
     exit 1
@@ -160,10 +184,14 @@ consumer() {
   esac
 
   if [ -z "${empty_wait}" ]; then
+    ## \env empty_wait
+    ## Time to wait (in seconds) when consumed directory is empty.
     empty_wait=2
   fi
 
   if [ -z "${locked_wait}" ]; then
+    ## \env locked_wait
+    ## Time to wait (in seconds) when all items in consumed directory are locked.
     locked_wait=0.5
   fi
 

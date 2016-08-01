@@ -7,40 +7,58 @@ import sys
 
 SHELLMAN_VERSION = '1.0'
 
-# tag: (occurrences, lines)
+
+class Tag(object):
+    MANY = '+'
+
+    def __init__(self, occurrences, lines):
+        self.occurrences = occurrences
+        self.lines = lines
+
+
 TAGS = {
-    'author': ('+', 1),
-    'brief': ('+', 1),  # script / function brief
-    'bug': ('+', '+'),
-    'caveat': ('+', '+'),
-    'copyright': (1, '+'),
-    'date': (1, 1),
-    'desc': (1, '+'),  # script description
-    'env': ('+', '+'),
-    'error': ('+', '+'),
-    'export': ('+', 1),
-    'example': ('+', '+'),
-    'exit': ('+', '+'),  # script exit code
-    'file': ('+', '+'),
-    'fn': ('+', 1),  # prototype / usage of a function
-    'history': (1, '+'),
-    'host': ('+', 1),
-    'license': (1, '+'),
-    'note': ('+', '+'),
-    'option': ('+', '+'),  # script option
-    'param': ('+', 1),  # function argument / parameter
-    'pre': ('+', 1),
-    'require': (1, 1),
-    'return': ('+', 1),  # function return code
-    'seealso': ('+', 1),
-    'stderr': ('+', '+'),
-    'stdin': ('+', '+'),
-    'stdout': ('+', '+'),
-    'usage': ('+', '+'),  # script usage
-    'version': (1, 1)
+    'author':    Tag(Tag.MANY, 1),
+    'bug':       Tag(Tag.MANY, Tag.MANY),
+    'brief':     Tag(1,  1),
+    'caveat':    Tag(Tag.MANY, Tag.MANY),
+    'copyright': Tag(1, Tag.MANY),
+    'date':      Tag(1, 1),
+    'desc':      Tag(1, Tag.MANY),
+    'env':       Tag(Tag.MANY, Tag.MANY),
+    'error':     Tag(Tag.MANY, Tag.MANY),
+    'export':    Tag(Tag.MANY, 1),
+    'example':   Tag(Tag.MANY, Tag.MANY),
+    'exit':      Tag(Tag.MANY, Tag.MANY),
+    'file':      Tag(Tag.MANY, Tag.MANY),
+    'history':   Tag(1, Tag.MANY),
+    'host':      Tag(Tag.MANY, 1),
+    'license':   Tag(1, Tag.MANY),
+    'note':      Tag(Tag.MANY, Tag.MANY),
+    'option':    Tag(Tag.MANY, Tag.MANY),
+    'require':   Tag(Tag.MANY, 1),
+    'seealso':   Tag(Tag.MANY, 1),
+    'stderr':    Tag(Tag.MANY, Tag.MANY),
+    'stdin':     Tag(Tag.MANY, Tag.MANY),
+    'stdout':    Tag(Tag.MANY, Tag.MANY),
+    'usage':     Tag(Tag.MANY, Tag.MANY),
+    'version':   Tag(1, 1)
 }
 
-MAN_SECTIONS_ORDER = [
+FN_TAG = 'fn'
+FN_TAGS = {
+    'fn':      Tag(1, 1),
+    'brief':   Tag(1, 1),
+    'desc':    Tag(1, Tag.MANY),
+    'param':   Tag(Tag.MANY, Tag.MANY),
+    'pre':     Tag(Tag.MANY, Tag.MANY),
+    'return':  Tag(Tag.MANY, Tag.MANY),
+    'seealso': Tag(Tag.MANY, 1),
+    'stderr':  Tag(Tag.MANY, Tag.MANY),
+    'stdin':   Tag(Tag.MANY, Tag.MANY),
+    'stdout':  Tag(Tag.MANY, Tag.MANY)
+}
+
+MAN_SECTIONS_ORDER = (
     'NAME',
     'SYNOPSIS',
     'DESCRIPTION',
@@ -49,6 +67,7 @@ MAN_SECTIONS_ORDER = [
     'FILES',
     'EXAMPLES',
     'EXIT STATUS',
+    'FUNCTIONS',
     'ERRORS',
     'BUGS',
     'CAVEATS',
@@ -58,14 +77,28 @@ MAN_SECTIONS_ORDER = [
     'HISTORY',
     'NOTES',
     'SEE ALSO',
-]
+)
 
-TEXT_SECTIONS_ORDER = [
+TEXT_SECTIONS_ORDER = (
     'SYNOPSIS',
     'DESCRIPTION',
     'OPTIONS',
-    'EXAMPLES'
-]
+    'EXAMPLES',
+    'FUNCTIONS'
+)
+
+FUNCTION_ORDER = (
+    'fn',
+    'brief',
+    'desc',
+    'param',
+    'stdin',
+    'stdout',
+    'stderr',
+    'return',
+    'pre',
+    'seealso',
+)
 
 
 class Doc(object):
@@ -73,6 +106,7 @@ class Doc(object):
         self.file = file
         self.doc = {k: None for k in TAGS.keys()}
         self.doc['_file'] = os.path.basename(self.file)
+        self.doc['_fn'] = []
 
     @staticmethod
     def tag_value(line):
@@ -88,8 +122,8 @@ class Doc(object):
         return None, line
 
     def update_value(self, tag, value, end=False):
-        if TAGS[tag][0] == '+':
-            if TAGS[tag][1] == '+':
+        if TAGS[tag].occurrences == Tag.MANY:
+            if TAGS[tag].lines == Tag.MANY:
                 if self.doc[tag] is None:
                     self.doc[tag] = [[]]
                 elif end:
@@ -100,7 +134,7 @@ class Doc(object):
                 self.doc[tag] = []
             self.doc[tag].append(value.rstrip('\n'))
             return False
-        if TAGS[tag][1] == '+':
+        if TAGS[tag].lines == Tag.MANY:
             if self.doc[tag] is None:
                 self.doc[tag] = []
             self.doc[tag].append(value)
@@ -108,9 +142,31 @@ class Doc(object):
         self.doc[tag] = value.rstrip('\n')
         return False
 
+    def update_fn_value(self, tag, value, end=False):
+        if FN_TAGS[tag].occurrences == Tag.MANY:
+            if FN_TAGS[tag].lines == Tag.MANY:
+                if self.doc['_fn'][-1][tag] is None:
+                    self.doc['_fn'][-1][tag] = [[]]
+                elif end:
+                    self.doc['_fn'][-1][tag].append([])
+                self.doc['_fn'][-1][tag][-1].append(value)
+                return True
+            if self.doc['_fn'][-1][tag] is None:
+                self.doc['_fn'][-1][tag] = []
+            self.doc['_fn'][-1][tag].append(value.rstrip('\n'))
+            return False
+        if FN_TAGS[tag].lines == Tag.MANY:
+            if self.doc['_fn'][-1][tag] is None:
+                self.doc['_fn'][-1][tag] = []
+            self.doc['_fn'][-1][tag].append(value)
+            return True
+        self.doc['_fn'][-1][tag] = value.rstrip('\n')
+        return False
+
     def read(self):
         current_tag = None
         in_tag = False
+        in_function = False
         with open(self.file) as f:
             for line in f:
                 line = line.lstrip(' \t')
@@ -120,14 +176,30 @@ class Doc(object):
                 elif re.search(r'^##', line):
                     tag, value = Doc.tag_value(line)
                     if tag is not None:
-                        if tag not in TAGS.keys():
-                            continue  # ignore invalid tags
                         current_tag = tag
-                        in_tag = self.update_value(
-                            current_tag, value, end=True)
+                        if tag == FN_TAG:
+                            in_function = True
+                            self.doc['_fn'].append(
+                                {k: None for k in FN_TAGS.keys()})
+                            in_tag = self.update_fn_value(
+                                current_tag, value, end=True)
+                        else:
+                            if in_function and tag in FN_TAGS.keys():
+                                in_tag = self.update_fn_value(
+                                    current_tag, value, end=True)
+                            elif tag in TAGS.keys():
+                                in_function = False
+                                in_tag = self.update_value(
+                                    current_tag, value, end=True)
+                            else:
+                                continue  # ignore invalid tags
                     else:
                         if in_tag:
-                            in_tag = self.update_value(current_tag, value)
+                            if in_function:
+                                in_tag = self.update_fn_value(
+                                    current_tag, value)
+                            else:
+                                in_tag = self.update_value(current_tag, value)
                         else:
                             pass  # doc without tag, ignored
         return self.doc
@@ -145,26 +217,20 @@ class Base(object):
             'DATE': self.get_render('date'),
             'DESCRIPTION': self.get_render('description'),
             'ENVIRONMENT VARIABLES': self.get_render('environment_variables'),
-            # 'ERR': self.get_render('err'),
             'ERRORS': self.get_render('errors'),
             'EXAMPLES': self.get_render('examples'),
-            # 'EXPORT': self.get_render('export'),
             'EXIT STATUS': self.get_render('exit_status'),
             'FILES': self.get_render('files'),
             'FUNCTIONS': self.get_render('functions'),
             'HISTORY': self.get_render('history'),
-            # 'HOST': self.get_render('host'),
-            # 'IN': self.get_render('in'),
             'LICENSE': self.get_render('license'),
             'NAME': self.get_render('name'),
             'NOTES': self.get_render('notes'),
             'OPTIONS': self.get_render('options'),
-            # 'OUT': self.get_render('out'),
-            # 'PARAM': self.get_render('param'),
-            # 'PRE': self.get_render('pre'),
-            'REQUIRE': self.get_render('require'),
-            # 'RETURN': self.get_render('return'),
             'SEE ALSO': self.get_render('see_also'),
+            'STDERR': self.get_render('stderr'),
+            'STDIN': self.get_render('stdin'),
+            'STDOUT': self.get_render('stdout'),
             'SYNOPSIS': self.get_render('usage'),
             'USAGE': self.get_render('usage'),
             'VERSION': self.get_render('version')
@@ -207,8 +273,13 @@ class Man(Base):
         if value:
             print('.SH "%s"' % title)
             for v in value:
-                print('.IP "\\fB%s\\fR" 4' % v[0].rstrip('\n'))
-                print(self.esc(''.join(v[1:])).rstrip('\n'))
+                if len(v) == 1:
+                    s = v[0].split(' ')
+                    h, b = s[0], ' '.join(s[1:]).rstrip('\n')
+                else:
+                    h, b = v[0].rstrip('\n'), ''.join(v[1:]).rstrip('\n')
+                print('.IP "\\fB%s\\fR" 4' % h)
+                print(self.esc(b))
 
     def render_multi_many_no_head(self, title, value):
         if value:
@@ -256,8 +327,99 @@ class Man(Base):
     def render_files(self, title):
         self.render_multi_many(title, self.doc['file'])
 
+    def _render_function_fn(self, fn):
+        print('.IP "\\fB%s\\fR" 4' % self.esc(fn['fn']))
+
+    def _render_function_brief(self, fn):
+        if fn['brief']:
+            print('%s' % self.esc(fn['brief']))
+            print
+
+    def _render_function_desc(self, fn):
+        if fn['desc']:
+            print('%s' % self.esc(''.join(fn['desc'])))
+
+    def _render_function_param(self, fn):
+        if fn['param']:
+            print('.ul')
+            print('Parameters:')
+            for param in fn['param']:
+                if len(param) == 1:
+                    s = param[0].split(' ')
+                    param, desc = s[0], s[1:]
+                    print('  \\fB%-12s\\fR %s' % (
+                        param, self.esc(' '.join(desc)).rstrip('\n')))
+                else:
+                    param, desc = param[0], param[1:]
+                    print('  \\fB%s\\fR' % self.esc(param).rstrip('\n'))
+                    print('    %s' % self.esc(''.join(desc)))
+            print
+
+    def _render_function_pre(self, fn):
+        if fn['pre']:
+            print('.ul')
+            print('Preconditions:')
+            for pre in fn['pre']:
+                print('  %s' % self.esc(''.join(pre)))
+            print
+
+    def _render_function_return(self, fn):
+        if fn['return']:
+            print('.ul')
+            print('Return code:')
+            for ret in fn['return']:
+                print('  %s' % self.esc(''.join(ret)))
+            print
+
+    def _render_function_seealso(self, fn):
+        if fn['seealso']:
+            print('.ul')
+            print('See also:')
+            for seealso in fn['seealso']:
+                print('  %s' % self.esc(''.join(seealso)))
+            print
+
+    def _render_function_stderr(self, fn):
+        if fn['stderr']:
+            print('.ul')
+            print('Standard error:')
+            for stderr in fn['stderr']:
+                print('  %s' % self.esc(''.join(stderr)))
+            print
+
+    def _render_function_stdin(self, fn):
+        if fn['stdin']:
+            print('.ul')
+            print('Standard input:')
+            for stdin in fn['stdin']:
+                print('  %s' % self.esc(''.join(stdin)))
+            print
+
+    def _render_function_stdout(self, fn):
+        if fn['stdout']:
+            print('.ul')
+            print('Standard output:')
+            for stdout in fn['stdout']:
+                print('  %s' % self.esc(''.join(stdout)))
+            print
+
+    def _render_function(self, fn):
+        for order in FUNCTION_ORDER:
+            getattr(self, '_render_function_%s' % order)(fn)
+
     def render_functions(self, title):
-        pass
+        if not self.doc['_fn']:
+            return
+
+        print('.SH "%s"' % title)
+        # summary
+        for fn in self.doc['_fn']:
+            print('%s' % self.esc(fn['fn']))
+            print('.br')
+
+        # all
+        for fn in self.doc['_fn']:
+            self._render_function(fn)
 
     def render_history(self, title):
         self.render_single_many(title, self.doc['history'])
@@ -275,7 +437,7 @@ class Man(Base):
         if self.doc['brief']:
             print('.SH "%s"' % title)
             print('%s \- %s' % (self.doc['_file'],
-                                self.esc(self.doc['brief'][0])))
+                                self.esc(self.doc['brief'])))
 
     def render_notes(self, title):
         self.render_multi_many_no_head(title, self.doc['note'])
@@ -384,8 +546,87 @@ class Text(Base):
     def render_files(self, title):
         self.render_multi_many('Files:', self.doc['file'])
 
+    def _render_function_fn(self, fn):
+        print('  %s' % fn['fn'])
+
+    def _render_function_brief(self, fn):
+        if fn['brief']:
+            print('    %s' % fn['brief'])
+            print
+
+    def _render_function_desc(self, fn):
+        if fn['desc']:
+            print('    %s' % fn['desc'])
+
+    def _render_function_param(self, fn):
+        if fn['param']:
+            print('    Parameters:')
+            for param in fn['param']:
+                if len(param) == 1:
+                    s = param[0].split(' ')
+                    param, desc = s[0], s[1:]
+                    print('      %-12s %s' % (
+                        param, ' '.join(desc).rstrip('\n')))
+                else:
+                    param, desc = param[0], param[1:]
+                    print('      %s' % param.rstrip('\n'))
+                    print('        %s' % ''.join(desc))
+            print
+
+    def _render_function_pre(self, fn):
+        if fn['pre']:
+            print('    Preconditions:')
+            print('      %s' % fn['pre'])
+            print
+
+    def _render_function_return(self, fn):
+        if fn['return']:
+            print('    Return code:')
+            print('      %s' % fn['return'])
+            print
+
+    def _render_function_seealso(self, fn):
+        if fn['seealso']:
+            print('    See also:')
+            print('      %s' % fn['seealso'])
+            print
+
+    def _render_function_stderr(self, fn):
+        if fn['stderr']:
+            print('    Standard error:')
+            print('      %s' % fn['stderr'])
+            print
+
+    def _render_function_stdin(self, fn):
+        if fn['stdin']:
+            print('    Standard input:')
+            print('      %s' % fn['stdin'])
+            print
+
+    def _render_function_stdout(self, fn):
+        if fn['stdout']:
+            print('    Standard output:')
+            print('      %s' % fn['stdout'])
+            print
+
+    def _render_function(self, fn):
+        for order in FUNCTION_ORDER:
+            getattr(self, '_render_function_%s' % order)(fn)
+
     def render_functions(self, title):
-        pass
+        if not self.doc['_fn']:
+            return
+
+        print('Functions:')
+        print
+        # summary
+        for fn in self.doc['_fn']:
+            print('  %s' % fn['fn'])
+        print
+        print
+        # all
+        for fn in self.doc['_fn']:
+            self._render_function(fn)
 
     def render_history(self, title):
         self.render_single_many('History:', self.doc['history'])

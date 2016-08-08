@@ -18,7 +18,6 @@ shellman_get() {
       re='##[[:space:]]*[@\]host[[:space:]]'
       grep "$re" "$2"
     ;;
-    # bug|caveat|copyright|desc|env|err|error|example|exit|file|history|in|license|note|option|out|synopsis) return 1 ;;
     *)
       re="${shellman_re}$1"'[[:space:]]'
       grep "$re" "$2" | expand | sed 's/'"$re"'*//'
@@ -69,7 +68,8 @@ shellman() {
     shift
   done
 
-  OUTPUT=$(SHELLMAN_FORMAT="$FORMAT" shellman.py "$SCRIPT")
+  local shellman_py="${shellm}/bin/shellman/shellman.py"
+  OUTPUT=$(SHELLMAN_FORMAT="$FORMAT" "${shellman_py}" "$SCRIPT")
   if ${REDIRECT}; then
     echo "$OUTPUT" > "$shellm/usr/man/man1/${SCRIPT##*/}.1"
   else

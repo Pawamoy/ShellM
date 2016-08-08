@@ -30,14 +30,18 @@ REPO_OPTIONS=(
 REPO_URL_QUESION="Please enter the full URL of the repository: "
 
 LOGO="\e[7m
-                                                        
-            _|                  _|  _|                  
-    _|_|_|  _|_|_|      _|_|    _|  _|  _|_|_|  _|_|    
-  _|_|      _|    _|  _|_|_|_|  _|  _|  _|    _|    _|  
-      _|_|  _|    _|  _|        _|  _|  _|    _|    _|  
-  _|_|_|    _|    _|    _|_|_|  _|  _|  _|    _|    _|  
-                                                        
+
+            _|                  _|  _|
+    _|_|_|  _|_|_|      _|_|    _|  _|  _|_|_|  _|_|
+  _|_|      _|    _|  _|_|_|_|  _|  _|  _|    _|    _|
+      _|_|  _|    _|  _|        _|  _|  _|    _|    _|
+  _|_|_|    _|    _|    _|_|_|  _|  _|  _|    _|    _|
+
 \e[0m"
+
+install_shellman() {
+  git clone https://github.com/Pawamoy/shellman.git bin/shellman
+}
 
 install_always() {
   local bashrc_content
@@ -77,6 +81,7 @@ create_new_user_dir() {
 
 main() {
   echo -e "${LOGO}"
+  install_shellman
   echo "${USE_QUESTION}"
   select _ in "${USE_OPTIONS[@]}"; do
     case ${REPLY} in

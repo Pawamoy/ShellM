@@ -219,4 +219,4 @@ else # 16 colors
 
 fi
 
-fi # __COLOR_SH
+fi # __CORE_FORMAT_SH

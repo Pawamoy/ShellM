@@ -8,9 +8,7 @@ export LIBPATH="${shellm}/usr/lib:${shellm}/lib"
 
 # Core libraries ---------------------------------------------------------------
 . "${shellm}/lib/core/include.sh"
-include "core/shellman.sh"
-include "core/init.sh"
-include "core/utils.sh"
+#include "core/shellman.sh"
 
 # User environment -------------------------------------------------------------
-#include "something.sh"
+#include "env/something.sh"

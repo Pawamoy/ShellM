@@ -79,10 +79,15 @@ create_new_user_dir() {
   cp -r "${PARENT_DIR}/usr-template" "${PARENT_DIR}/usr"
 }
 
+echo_line() {
+  printf "\e[7m%56s\e[0m\n" " "
+}
+
 main() {
   echo -e "${LOGO}"
   install_shellman
-  printf "\e[7m%56s\e[0m\n" " "
+  echo
+  echo_line
   echo
   echo "${USE_QUESTION}"
   select _ in "${USE_OPTIONS[@]}"; do
@@ -92,7 +97,7 @@ main() {
       3) install_none; break ;;
     esac
   done
-  printf "\e[7m%56s\e[0m\n" " "
+  echo_line
   echo
   echo "${REPO_QUESTION}"
   select _ in "${REPO_OPTIONS[@]}"; do
@@ -104,6 +109,8 @@ main() {
       ;;
       2)
         create_new_user_dir
+        cd usr
+        git init
         break
       ;;
     esac

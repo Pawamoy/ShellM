@@ -4,8 +4,6 @@ define __CORE_INIT_EXPORT_SH "init_export"
 ## \brief Improve scripts performance by [recursively] exporting libraries
 ## of sub-scripts from the current top-script.
 
-# TODO: export tag in shellman
-
 include core/shellman.sh
 
 ## \fn init_export ()
@@ -16,7 +14,7 @@ init_export() {
 
   sub_scripts=$(shellman_get export "${1:-$0}")
   for sub_script in $sub_scripts; do
-    includes=$(grep -o 'include [a-zA-Z_/]*\.sh' $shellm/bin/$sub_script | cut -d' ' -f2)
+    includes=$(grep -o 'include [a-zA-Z_/]*\.sh' $shellm/usr/bin/$sub_script | cut -d' ' -f2)
     for include in $includes; do
       include $include
       include_header=${include//[\/.]/_}
@@ -30,7 +28,7 @@ init_export() {
         fi
       done
     done
-    init_export "$shellm/bin/$sub_script"
+    init_export "$shellm/usr/bin/$sub_script"
   done
 }
 

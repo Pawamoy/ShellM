@@ -1,8 +1,9 @@
 if ndef __CORE_SHELLMAN_SH; then
-define __CORE_SHELLMAN_SH "shellman_re
-                           usage
-                           shellm_get
-                           shellman"
+define __CORE_SHELLMAN_SH "
+  shellman_re
+  usage
+  shellm_get
+  shellman"
 
 shellman_re='^[[:space:]]*##[[:space:]]*[@\]'
 
@@ -31,16 +32,16 @@ shellman() {
   while [ $# -ne 0 ]; do
     case $1 in
       ## \option -m, --man
-      ## Output MAN documentation on stdout
+      ## Output MAN documentation on stdout.
       '-m'|'--man') FORMAT='man' ;;
       ## \option -s, --shellm
-      ## Write MAN documentation in shellm/usr/man/man1/FILE
+      ## Write MAN documentation in shellm/usr/man/man1/FILE.
       '-s'|'--shellm') FORMAT='man'; REDIRECT=true ;;
       ## \option -t, --text
-      ## Outputs help text on stdout
+      ## Output help text on stdout.
       '-t'|'--text') FORMAT='text' ;;
       ## \option -h, --help
-      ## Print this help and exit
+      ## Print this help and exit.
       '-h'|'--help') shellman -t "$0"; return 0 ;;
       *)
         if [ -f "$1" ]; then

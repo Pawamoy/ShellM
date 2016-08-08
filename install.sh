@@ -82,6 +82,8 @@ create_new_user_dir() {
 main() {
   echo -e "${LOGO}"
   install_shellman
+  printf "\e[7m%56s\e[0m\n" " "
+  echo
   echo "${USE_QUESTION}"
   select _ in "${USE_OPTIONS[@]}"; do
     case ${REPLY} in

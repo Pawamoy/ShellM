@@ -1,8 +1,6 @@
 if ndef __CORE_FORMAT_SH; then
 define __CORE_FORMAT_SH "format VAR"
 
-VAR="Hello"
-
 ## \usage format [OPTIONS...] [-- STRING...]
 ## \example format onblack lightgreen dim bold; echo SUCCESS!
 ## Bold, diminished, light-green foreground and black background
@@ -52,7 +50,7 @@ VAR="Hello"
 ## be replaced by their 8-colors equivalent (white by lightgray).
 ## Also underline, dim and blink will have no effects.
 
-if [ $TERM = linux ]; then # 8 colors
+if [ "${TERM}" = linux ]; then # 8 colors
 
   ## \fn format (args...)
   ## \brief Format the output with style and color (8)
@@ -130,7 +128,7 @@ if [ $TERM = linux ]; then # 8 colors
     [ "$f" != "$esc" ] && echo -en "${f}m"
 
     if [ $# -ne 0 ]; then
-      printf "$@"
+      echo -n "$@"
       echo -en '\e[0m'
     fi
   }
@@ -212,7 +210,7 @@ else # 16 colors
     [ "$f" != "$esc" ] && echo -en "${f}m"
 
     if [ $# -ne 0 ]; then
-      printf "$@"
+      echo -n "$@"
       echo -en '\e[0m'
     fi
   }

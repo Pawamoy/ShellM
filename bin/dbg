@@ -33,7 +33,7 @@ main() {
   SCRIPT=$1
   shift
 
-  /bin/bash $FLAGS $SCRIPT "$@"
+  /bin/bash "${FLAGS}" "${SCRIPT}" "$@"
   format R d
 }
 

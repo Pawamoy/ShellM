@@ -44,6 +44,7 @@ shellman() {
       ## Print this help and exit.
       '-h'|'--help') shellman -t "$0"; return 0 ;;
       *)
+        # shellcheck disable=SC2154
         if [ -f "$1" ]; then
           SCRIPT="$1"
         elif [ -f "${shellm}/usr/bin/$1" ]; then

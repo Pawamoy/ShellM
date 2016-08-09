@@ -2,6 +2,7 @@
 ## @brief Initialize environment variables for shellm scripts
 init() {
   if ! echo "$*" | grep -q 'no-data'; then
+    # shellcheck disable=SC2154
     DATADIR="${shellm}/usr/data/${BASH_SOURCE[0]##*/}"
     mkdir -p "${DATADIR}" 2>/dev/null
   fi
@@ -43,5 +44,6 @@ have_command() {
 }
 
 have_package() {
+  # shellcheck disable=SC2016
 	dpkg-query -W -f '${Package}\n' | /bin/grep -wq "$1"
 }

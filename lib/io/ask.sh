@@ -8,7 +8,7 @@ shellm_ask_confirm=
 shellm_ask_timeout=-1
 
 set_ask_timeout() {
-	shellm_ask_timeout=${1:-$shellm_ask_timeout}
+	shellm_ask_timeout=${1:-${shellm_ask_timeout}}
 }
 
 unset_ask_timeout() {
@@ -18,8 +18,9 @@ unset_ask_timeout() {
 ask_cli() {
 	local a timeout
 	[ ${shellm_ask_timeout:--1} -ne -1 ] &&
-		timeout="-t $shellm_ask_timeout"
-	if read $timeout -p "$* " a; then
+		timeout="-t ${shellm_ask_timeout}"
+  # shellcheck disable=SC2086
+	if read ${timeout} -p "$* " a; then
 		case $a in
 			[Yy]|[Yy][Ee][Ss]) return 0 ;;
 			[Nn]|[Nn][Oo]) return 1 ;;
@@ -36,11 +37,11 @@ ask_cli() {
 ask_gui() {
 	local timeout yad
 	[ ${shellm_ask_timeout:--1} -ne -1 ] &&
-		timeout="--timeout=$shellm_ask_timeout"
-	yad="/usr/bin/yad $timeout \
+		timeout="--timeout=${shellm_ask_timeout}"
+	yad="/usr/bin/yad ${timeout} \
 		--question \
 		--text '$*'"
-	[ -n "$shellm_ask_confirm" ] &&
+	[ -n "${shellm_ask_confirm}" ] &&
 		yad="$yad --button 'Yes:0' \
 		--button 'No:1' \
 		--button 'Yes to all:2' \

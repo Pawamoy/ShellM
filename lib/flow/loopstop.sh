@@ -14,19 +14,22 @@ define _LOOPSTOP_SH
 ## @return Echo: Current scripts or conditions.
 ## @return Code: 0 when conditions are valid, 1 otherwise.
 loopstop() {
-	local cond_dir="$shellm/media/script/loopstop"
+	local cond_dir
+  # shellcheck disable=SC2154
+  cond_dir="$shellm/media/script/loopstop"
 	[ ! -d "$cond_dir" ] && mkdir "$cond_dir"
 	[ -z "$1" ] && { /bin/ls "$cond_dir"; return; }
-	
+
 	local short_name="${1##*/}"
 	if [ -z "$2" ]; then
-		local list=$(/bin/ls "$cond_dir/$short_name" 2>/dev/null)
+		local list
+    list=$(/bin/ls "$cond_dir/$short_name" 2>/dev/null)
 		local ret=$?
 		[ $ret -ne 0 ] && return $ret
-		[ -z "$list" ] && /bin/rm -rf "$cond_dir/$short_name"
+		[ -z "$list" ] && /bin/rm -rf "${cond_dir:?}/$short_name"
 		echo "$list"
 	fi
-	
+
     shift
 	local stop_var n=0 ret=0 i
 	while [ $# -ne 0 ]; do
@@ -35,11 +38,11 @@ loopstop() {
 		let n++
 	done
 	[ -z "$stop_var" ] && return 1
-	
+
 	if [ ! -d "$cond_dir/$short_name" ]; then
 		mkdir "$cond_dir/$short_name"
 	fi
-	
+
 	case ${stop_var[$(( n-1 ))]} in
 		'start')
 			for ((i=0; i<n-1; i++)); do
@@ -64,4 +67,3 @@ loopstop() {
 }
 
 fi # __LOOPSTOP_SH
-

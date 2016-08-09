@@ -14,17 +14,18 @@ init_export() {
 
   sub_scripts=$(shellman_get export "${1:-$0}")
   for sub_script in $sub_scripts; do
-    includes=$(grep -o 'include [a-zA-Z_/]*\.sh' $shellm/usr/bin/$sub_script | cut -d' ' -f2)
+    # shellcheck disable=SC2154
+    includes=$(grep -o 'include [a-zA-Z_/]*\.sh' "${shellm}/usr/bin/${sub_script}" | cut -d' ' -f2)
     for include in $includes; do
-      include $include
+      include "${include}"
       include_header=${include//[\/.]/_}
       include_header=__${include_header^^}
       include_header=${!include_header}
       for defined in $include_header; do
-        if [ "$(type -t $defined)" = "function" ]; then
-          export -f $defined
+        if [ "$(type -t "${defined}")" = "function" ]; then
+          export -f ${defined}
         else
-          export $defined
+          export ${defined}
         fi
       done
     done

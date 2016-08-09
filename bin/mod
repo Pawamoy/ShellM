@@ -14,6 +14,7 @@ main() {
     -h|--help) shellman -t "$0"; exit 0 ;;
   esac
 
+  # shellcheck disable=SC2154
   if [ -f "${shellm}/usr/bin/$1" ]; then
     if [ -n "$2" ]; then
       $2 "${shellm}/usr/bin/$1"

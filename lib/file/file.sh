@@ -21,22 +21,22 @@ deactivate_line_prefix() {
 
 deleteBlank() {
 	# take a file at $1 or read stdin
-	sed -e '/^[[:blank:]]*$/d' $1
+	sed -e '/^[[:blank:]]*$/d' "$1"
 }
 
 deleteBashComments() {
 	# take a file at $1 or read stdin
-	sed -e '/^[[:blank:]]*#[^!]/d' $1
+	sed -e '/^[[:blank:]]*#[^!]/d' "$1"
 }
 
 deleteCComments() {
 	# take a file at $1 or read stdin
-	sed -e '/^[[:blank:]]*\/\//d' $1
+	sed -e '/^[[:blank:]]*\/\//d' "$1"
 }
 
 deleteSQLComments() {
 	# take a file at $1 or read stdin
-	sed -e '/^[[:blank:]]*--/d' $1
+	sed -e '/^[[:blank:]]*--/d' "$1"
 }
 
 ## @fn void genRandName ()
@@ -63,7 +63,9 @@ write() {
 ## @param $1 Text to write
 ## @param $2 File to write in
 writeOnTop() {
-	[ $# -eq 2 ] && echo "$(echo "$1"; cat "$2")" > "$2"
+	if [ $# -eq 2 ]; then
+    sed -i '1s/^/'"$1"'\n/' "$2"
+  fi
 }
 
 ## @fn void writeAtLine (line, string, file)
@@ -73,8 +75,9 @@ writeOnTop() {
 ## @param $3 File to write in
 ## @pre File exists
 writeAtLine() {
-	local l=$1 output=$(genRandName)
-	[ $1 -gt 0 ] || { write "$2" "$3"; return 0; }
+	local l=$1 output
+  output=$(genRandName)
+	[ "$1" -gt 0 ] || { write "$2" "$3"; return 0; }
 	if [ $# -eq 3 ]; then
 		head -n$((l-1)) "$3" > "$output"
 		echo "$2" >> "$output"
@@ -90,12 +93,13 @@ writeAtLine() {
 ## @param $3 File to write in
 ## @pre File exists
 insertAtLine() {
-	local l=$1 output=$(genRandName)
-	[ $1 -gt 0 ] || { write "$2" "$3"; return 0; }
+	local l=$1 output
+  output=$(genRandName)
+	[ "$1" -gt 0 ] || { write "$2" "$3"; return 0; }
 	if [ $# -eq 3 ]; then
 		head -n$((l-1)) "$3" > "$output"
 		echo "$2" >> "$output"
-		tail -n+$l "$3" >> "$output"
+		tail -n+"$l" "$3" >> "$output"
 	fi
 	mv "$output" "$3"
 }
@@ -109,8 +113,8 @@ insertAtLine() {
 echoLine() {
 	if [ $# -eq 2 ]; then
 		[ "$cgLinePrefix" = "yes" ] && echo -n "$1:"
-		head -n$1 "$2" | tail -n1
-	fi 
+		head -n"$1" "$2" | tail -n1
+	fi
 }
 
 ## @fn void echoFirstLine (file)
@@ -144,9 +148,9 @@ echoLastLine() {
 echoFirstNLines() {
 	if [ $# -eq 2 ]; then
 		if [ "$cgLinePrefix" = "yes" ]; then
-			head -n$1 "$2" | awk '{printf "%d:%s\n", NR, $0}'
+			head -n"$1" "$2" | awk '{printf "%d:%s\n", NR, $0}'
 		else
-			head -n$1 "$2"
+			head -n"$1" "$2"
 		fi
 	fi
 }
@@ -161,10 +165,10 @@ echoLastNLines() {
 	local nl
 	if [ $# -eq 2 ]; then
 		if [ "$cgLinePrefix" = "yes" ]; then
-			nl=$(cat "$2" | wc -l)
-			tail -n$1 "$2" | awk '{printf "%d:%s\n", NR+'$((nl-$1))', $0}'
+			nl=$(wc -l < "$2")
+			tail -n"$1" "$2" | awk '{printf "%d:%s\n", NR+'$((nl-$1))', $0}'
 		else
-			tail -n$1 "$2"
+			tail -n"$1" "$2"
 		fi
 	fi
 }
@@ -179,10 +183,11 @@ echoLastNLines() {
 ## @pre File exists
 echoFromLineToLine() {
 	#~ [ $# -eq 3 ] && head -n$2 "$3" | tail -n$(($2-$1))
-	local stop="$([ ${2:0:1} = + ] && echo $(($1+$2+1))q || echo $(($2+1))q)"
+	local stop
+  stop="$([ "${2:0:1}" = + ] && echo $(($1+$2+1))q || echo $(($2+1))q)"
 	if [ $# -eq 3 ]; then
 		if [ "$cgLinePrefix" = "yes" ]; then
-			sed -n "$1,$2p; $stop" "$3" | awk '{printf "%d:%s\n", NR+'$1'-1, $0}'
+			sed -n "$1,$2p; $stop" "$3" | awk '{printf "%d:%s\n", NR+'"$1"'-1, $0}'
 		else
 			sed -n "$1,$2p; $stop" "$3"
 		fi
@@ -191,14 +196,14 @@ echoFromLineToLine() {
 
 ## @fn void echoLineFor (firstline, linestep, lastline, file)
 ## @brief Output from line $1 to line $3, with a step equal to $2
-## @param $1 Starting line 
-## @param $2 Line step 
-## @param $3 Ending line 
-## @param $4 File 
+## @param $1 Starting line
+## @param $2 Line step
+## @param $3 Ending line
+## @param $4 File
 ## @pre File exists
-echoLineFor() {	
+echoLineFor() {
 	local i=0 j line nl=$(($3-$1+1))
-	echoFromLineToLine $1 $3 "$4" | {
+	echoFromLineToLine "$1" "$3" "$4" | {
 		read line
 		while [ $i -le $nl ]; do
 			echo "$line"
@@ -278,22 +283,22 @@ fsort() {
 	local opt_case=0
 	local opt_blank=0
 	local opt
-	
+
 	local c w stFORMAT
 	[ $# -eq 2 ] && { stFORMAT=$1; shift; } || stFORMAT=${stFORMAT:-l}
 	stFORMAT=${stFORMAT//,/ }
-	
+
 	local file="$1"
 	local output=/tmp/fsort-$RANDOM
 	while [ -f "$output" ]; do
 		output=output=/tmp/fsort-$RANDOM
 	done
-	
+
 	for w in $stFORMAT; do
 		case $w in
 			u|unique) opt_unique=1; opt_squeeze=0 ;;
 			s|squeeze) opt_unique=0; opt_squeeze=1 ;;
-			l|lexical) opt_sort= ;;
+			l|lexical) opt_sort='' ;;
 			n|numeric) opt_sort=g ;;
 			m|month) opt_sort=M ;;
 			v|version) opt_sort=V ;;
@@ -302,13 +307,13 @@ fsort() {
 			c|ignore-case) opt_case=1 ;;
 			b|ignore-leading-blanks) opt_blank=1 ;;
 			*)
-				for c in $(separateChars $w); do
+				for c in $(separateChars "$w"); do
 					case $c in
 						u) opt_unique=1; opt_squeeze=0 ;;
 						s) opt_unique=0; opt_squeeze=1 ;;
-						l) opt_sort=   ;;
+						l) opt_sort='' ;;
 						n) opt_sort=g ;;
-						m) opt_sort=M ;; 
+						m) opt_sort=M ;;
 						v) opt_sort=V ;;
 						r) opt_sort=R ;;
 						i) opt_inverse=1 ;;
@@ -320,19 +325,19 @@ fsort() {
 			;;
 		esac
 	done
-	
+
 	opt=$opt_sort
 	[ $opt_inverse -eq 1 ] && opt=r$opt
 	[ $opt_blank -eq 1   ] && opt=b$opt
 	[ $opt_case -eq 1    ] && opt=f$opt
 	[ $opt_unique -eq 1  ] && opt=u$opt
-	
+
 	if [ $opt_squeeze -eq 1 ]; then
 		/usr/bin/sort -$opt "$file" | uniq > "$output"
 	else
 		/usr/bin/sort -$opt "$file" -o "$output"
 	fi
-	
+
 	[ -f "$output" ] && /bin/mv "$output" "$file"
 }
 
@@ -340,7 +345,8 @@ fsort() {
 ## @brief Rewrite a file in reverse
 ## @param $1 File to reverse
 reverseFile() {
-	local output=$(genRandName)
+	local output
+  output=$(genRandName)
 	tac "$1" > "$output"
 	[ -f "$output" ] && mv "$output" "$1"
 }

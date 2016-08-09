@@ -11,8 +11,8 @@ LOG_FD=3
 ## @pre Variable shellm is defined
 ## @seealso log
 activate_log() {
-	[ ! -e /proc/$$/fd/$LOG_FD ] &&
-		eval "exec $LOG_FD>>\"$shellm/log/${0##*/}\""
+  # shellcheck disable=SC2154
+	[ ! -e /proc/$$/fd/$LOG_FD ] &&	eval "exec $LOG_FD>>\"$shellm/log/${0##*/}\""
 }
 
 ## @fn void deactivate_log ()

@@ -89,7 +89,8 @@ consumer_unlocked() {
 ## \brief Lock then move each given file into consumed directory
 ## \param FILE Single or multiple files to move into consumed directory
 consumer_get() {
-  local get_to="$(consumer_location)"
+  local get_to
+  get_to="$(consumer_location)"
   local item
   for item in "$@"; do
     # FIXME: if lock fails?
@@ -106,8 +107,10 @@ consumer_get() {
 consumer_send() {
   # TODO: handle name variants
   local daemon="$1"
-  local send_to="$(${daemon} location)"
-  local set_lock="$(get_data_dir ${daemon})"
+  local send_to
+  local set_lock
+  send_to="$(${daemon} location)"
+  set_lock=="$(get_data_dir "${daemon}")"
   shift
   local item
   for item in "$@"; do
@@ -129,7 +132,7 @@ consumer_location() {
 ## \param DIR Directory to check (default to consumed directory)
 consumer_empty() {
   local dir="${1:-$consumed_dir}"
-  ( [ -d "${dir}" ] && cd "${dir}"; [ "$(echo .* *)" = ". .. *" ]; )
+  ( [ -d "${dir}" ] && cd "${dir}"; [ "$(echo .* ./*)" = ". .. ./*" ]; )
 }
 
 ## \fn consumer_consume NAME

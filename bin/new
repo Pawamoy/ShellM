@@ -22,8 +22,9 @@ main() {
   esac
 
   # Test if the script already exists
+  # shellcheck disable=SC2154
   if [ -f "${shellm}/usr/bin/$1" ]; then
-    echo "new: $1 already exists in $shellm/usr/bin" >&2
+    echo "new: $1 already exists in ${shellm}/usr/bin" >&2
     exit 1
   fi
 

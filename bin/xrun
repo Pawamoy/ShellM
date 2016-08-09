@@ -2,7 +2,7 @@
 dir="$(dirname "$0")"
 dir="$(cd "$dir"/..; pwd)"
 export shellm="$dir"
-. "$shellm/usr/shellmrc"
+. "${shellm}/usr/shellmrc"
 
 script=$1; shift
-. "$script" "$@"
+. "${script}" "$@"

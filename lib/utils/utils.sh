@@ -4,7 +4,8 @@
 ## @brief Echo the the real (not symlink) absolute path to $0
 ## @return Echo: the real path to $0
 real_path() {
-  local readlink=$(which readlink)
+  local readlink
+  readlink=$(which readlink)
   local script_location=${BASH_SOURCE[0]}
   if [ -x "${readlink}" ]; then
     while [ -L "${script_location}" ]; do

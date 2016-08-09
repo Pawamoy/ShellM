@@ -7,7 +7,7 @@ define  __STRING_SH
 ## @fn separateChars (string)
 separateChars() {
 	local i l=${#1}
-	for ((i=0; i<$l; i++)); do
+	for ((i=0; i<l; i++)); do
 		echo -n "${1:$i:1} "
 	done
 	echo
@@ -17,13 +17,13 @@ separateChars() {
 ## @brief Output the B<TEXT> field of a string like LINE:TEXT
 ## @param $1 String like LINE:TEXT
 getLineString() {
-	echo ${1#*:}
+	echo "${1#*:}"
 }
 ## @fn void getLineNumber (string)
 ## @brief Output the B<LINE> field of a string like LINE:TEXT
 ## @param $1 String like LINE:TEXT
 getLineNumber() {
-	echo ${1%%:*}
+	echo "${1%%:*}"
 }
 
 ## @fn void reverseString (string)

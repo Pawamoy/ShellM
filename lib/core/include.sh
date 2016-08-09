@@ -14,7 +14,7 @@ define() {
 ## \param host Optional, name of the host to filter, default to $HOSTNAME
 ## \echo Filtered file
 filter_host() {
-  { grep -nE '##.*[\@]host.*[ ,  ]'${2:-$HOSTNAME}'[ ,  ]?' "$1"
+  { grep -nE '##.*[\@]host.*[ ,  ]'"${2:-$HOSTNAME}"'[ ,  ]?' "$1"
     grep -nv '##.*[\@]host' "$1"
   } | sort -g | cut -d':' -f2-
 }
@@ -42,6 +42,7 @@ include() {
 ## \param varname Variable name
 ## \return true if empty (unset), false otherwise
 ndef() {
+  # shellcheck disable=SC2086
   [[ $# -ge 1 && -z "$(eval echo \$$1)" ]] || return 1;
 }
 

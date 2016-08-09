@@ -19,10 +19,10 @@ define __UI_AUTO_SH "auto_ui"
 auto_ui() {
 	case $TERM in
 		xterm*|rxvt*|linux*|screen*)
-			eval $1
+			eval "$1"
 			return $? ;;
 		*)
-			eval $2
+			eval "$2"
 			return $? ;;
 	esac
 }

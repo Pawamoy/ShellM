@@ -23,11 +23,12 @@ main() {
     -h|--help) shellman -t "$0"; exit 0 ;;
   esac
 
-  $purge && rm -rf "${data_dir}/$1" 2>/dev/null
-  if [ -e "$shellm/usr/bin/$1" ]; then
-    rm -rf "$shellm/usr/bin/$1"
-  elif [ -e "$shellm/usr/lib/$1" ]; then
-    rm -rf "$shellm/usr/lib/$1"
+  ${purge} && rm -rf "${data_dir:?}/$1" 2>/dev/null
+  # shellcheck disable=SC2154
+  if [ -e "${shellm}/usr/bin/$1" ]; then
+    rm -rf "${shellm}/usr/bin/$1"
+  elif [ -e "${shellm}/usr/lib/$1" ]; then
+    rm -rf "${shellm}/usr/lib/$1"
   else
     echo "del: $1: no such file or directory in shellm bin or lib" >&2
     exit 1

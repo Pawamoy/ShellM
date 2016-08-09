@@ -128,7 +128,7 @@ if [ "${TERM}" = linux ]; then # 8 colors
     [ "$f" != "$esc" ] && echo -en "${f}m"
 
     if [ $# -ne 0 ]; then
-      echo -n "$@"
+      echo -en "$@"
       echo -en '\e[0m'
     fi
   }
@@ -210,7 +210,7 @@ else # 16 colors
     [ "$f" != "$esc" ] && echo -en "${f}m"
 
     if [ $# -ne 0 ]; then
-      echo -n "$@"
+      echo -en "$@"
       echo -en '\e[0m'
     fi
   }

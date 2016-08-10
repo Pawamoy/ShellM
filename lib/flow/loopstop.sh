@@ -1,5 +1,5 @@
-if ndef __LOOPSTOP_SH; then
-define _LOOPSTOP_SH
+if ndef __FLOW_LOOPSTOP_SH; then
+define __FLOW_LOOPSTOP_SH
 
 ## @file loopstop.sh
 ## @brief Provide a loop control function
@@ -66,4 +66,4 @@ loopstop() {
 	esac
 }
 
-fi # __LOOPSTOP_SH
+fi # __FLOW_LOOPSTOP_SH

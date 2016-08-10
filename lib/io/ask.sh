@@ -1,5 +1,5 @@
-if ndef __ASK_SH; then
-define __ASK_SH
+if ndef __IO_ASK_SH; then
+define __IO_ASK_SH
 
 include ui/auto.sh
 include message.sh
@@ -84,4 +84,4 @@ ask() {
 	esac
 }
 
-fi # __ASK_SH
+fi # __IO_ASK_SH

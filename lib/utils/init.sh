@@ -1,3 +1,14 @@
+if ndef __UTILS_INIT_SH; then
+define  __UTILS_INIT_SH "
+  init
+  check
+  shellm_activate_check
+  shellm_deactivate_check
+  have_command
+  have_package"
+
+## \brief Old functions, DO NOT USE.
+
 ## @fn void init (void)
 ## @brief Initialize environment variables for shellm scripts
 init() {
@@ -47,3 +58,5 @@ have_package() {
   # shellcheck disable=SC2016
 	dpkg-query -W -f '${Package}\n' | /bin/grep -wq "$1"
 }
+
+fi  # __CORE_UTILS_INIT_SH

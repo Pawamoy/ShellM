@@ -1,5 +1,5 @@
-if ndef __MESSAGE_SH; then
-define __MESSAGE_SH
+if ndef __IO_MESSAGE_SH; then
+define __IO_MESSAGE_SH
 
 ## @file message.sh
 ## @brief Provide useful message functions
@@ -73,4 +73,4 @@ line() {
   fi
 }
 
-fi # __MESSAGE_SH
+fi # __IO_MESSAGE_SH

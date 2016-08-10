@@ -1,4 +1,13 @@
-## @file shellm core utils
+if ndef __UTILS_UTILS_SH; then
+define  __UTILS_UTILS_SH "
+  init
+  check
+  shellm_activate_check
+  shellm_deactivate_check
+  have_command
+  have_package"
+
+## \brief shellm core utils
 
 ## @fn string real_path (void)
 ## @brief Echo the the real (not symlink) absolute path to $0
@@ -18,3 +27,5 @@ real_path() {
 shellm_got() {
   command -v "$1" >/dev/null 2>&1
 }
+
+fi # __UTILS_UTILS_SH

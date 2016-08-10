@@ -7,27 +7,35 @@
 include core/format.sh
 include core/shellman.sh
 
-# shellcheck disable=SC2154
-scripts=$(file bin/* | grep 'shell script' | cut -d: -f1)
-libs=$(find lib -name '*.sh')
-
 success=0
 failure=1
 
 check_files_suite() {
   local status=${success}
-  format B -- "==============================================================\n"
-  format B -- "=                       $1\n"
-  format B -- "==============================================================\n"
+  format B nl -- "============================================================="
+  format B nl -- "=                       $1"
+  format B nl -- "============================================================="
   echo
-  format y -- "-------------------- Checking test script --------------------\n"
-  ${check_script_command} "$0" || status=${failure}
-  format y -- "-------------------- Checking shellm/bin ---------------------\n"
-  # shellcheck disable=SC2086
-  ${check_bin_command} ${scripts} || status=${failure}
-  format y -- "-------------------- Checking shellm/lib ---------------------\n"
-  # shellcheck disable=SC2086
-  ${check_lib_command} ${libs} || status=${failure}
+  if [ "${check_script_command}" = "true" ]; then
+    format nl -- "-------------------- Ignore test script ---------------------"
+  else
+    format y nl -- "-------------------- Checking test script -------------------"
+    ${check_script_command} "$0" || status=${failure}
+  fi
+  if [ "${check_bin_command}" = "true" ]; then
+    format nl -- "-------------------- Ignore scripts -------------------------"
+  else
+    format y nl -- "-------------------- Checking scripts -----------------------"
+    # shellcheck disable=SC2086
+    ${check_bin_command} ${scripts} || status=${failure}
+  fi
+  if [ "${check_lib_command}" = "true" ]; then
+    format nl -- "-------------------- Ignore libraries -----------------------"
+  else
+    format y nl -- "-------------------- Checking libraries ---------------------"
+    # shellcheck disable=SC2086
+    ${check_lib_command} ${libs} || status=${failure}
+  fi
 
   # shellcheck disable=SC2015
   [ ${status} -eq 0 ] &&
@@ -157,20 +165,80 @@ documentation() {
 
   check_lib_command=check_tag
 
+  # FIXME: should not succeed if only fn-brief is found...
   checked_tag='brief'
   check_files_suite "BRIEF" || status=${failure}
 
-  check_script_command=check_help
-  check_bin_command=check_help
-  check_lib_command=true # ignore help for libs
+  # This could be harmful!
+  # check_script_command=check_help
+  # check_bin_command=check_help
+  # check_lib_command=true # ignore help for libs
+  #
+  # check_files_suite "HELP OPTION" || status=${failure}
 
-  check_files_suite "HELP OPTION" || status=${failure}
+  return ${status}
+}
+
+# shellcheck disable=SC2120
+libraries() {
+  # font stop on http://patorjk.com/software/taag/#p=display&f=Stop&t=libraries
+  format B c nl -- "
+   _ _ _                      _
+  | (_) |                    (_)
+  | |_| | _   ____ ____  ____ _  ____  ___
+  | | | || \ / ___) _  |/ ___) |/ _  )/___)
+  | | | |_) ) |  ( ( | | |   | ( (/ /|___ |
+  |_|_|____/|_|   \_||_|_|   |_|\____|___/
+  "
+
+  check_if_ndef_define_fi() {
+    local ifndef_clause define_clause def1 def2 expected lib status=${success}
+    for lib in "$@"; do
+      [ "${lib}" = "lib/core/include.sh" ] && continue
+      ifndef_clause=$(grep -E '^[[:space:]]*if[[:space:]]+ndef[[:space:]]+[a-zA-Z_][a-zA-Z0-9_]*' "${lib}")
+      define_clause=$(grep -E '^[[:space:]]*define[[:space:]]+[a-zA-Z_][a-zA-Z0-9_]*' "${lib}")
+      if [ ! -n "${ifndef_clause}" ] ; then
+        status=${failure}
+        echo "$(format ib -- "${lib}"): missing $(format B -- 'if ndef' clause)"
+      fi
+      if [ ! -n "${define_clause}" ] ; then
+        status=${failure}
+        echo "$(format ib -- "${lib}"): missing $(format B -- 'define' clause)"
+      fi
+      def1=$(echo "${ifndef_clause}" | tr -s ' ' | cut -d' ' -f3 | sed 's/\;//g')
+      def2=$(echo "${define_clause}" | tr -s ' ' | cut -d' ' -f2)
+      if [ "${def1}" != "${def2}" ]; then
+        status=${failure}
+        echo "$(format iy -- "${lib}"): define don't match ifndef $(format B -- "${def1} / ${def2}")"
+      fi
+      expected=${lib#lib/}
+      expected=${expected^^}
+      expected=${expected//\//_}
+      expected=__${expected//./_}
+      if [ "${def1}" != "${expected}" ]; then
+        status=${failure}
+        echo "$(format ir -- "${lib}"): define should be $(format B -- "${expected}")"
+      fi
+    done
+    return ${status}
+  }
+
+  local status=${success}
+
+  check_script_command=true
+  check_bin_command=true
+  check_lib_command=check_if_ndef_define_fi
+  check_files_suite "IFNDEF / DEFINE" || status=${failure}
 
   return ${status}
 }
 
 main() {
-  local LINTING=true COMPATIBILITY=true DOCUMENTATION=true
+  local LINTING=true
+  local COMPATIBILITY=true
+  local DOCUMENTATION=true
+  local LIBRARY=true
+  local USR=false
   while [ $# -ne 0 ]; do
     case "$1" in
       ## \option -a, --all
@@ -196,6 +264,9 @@ main() {
       ## \option -d, --documentation
       ## Run the documentation tests.
       -d|--documentation) DOCUMENTATION=true ;;
+      ## \option -b, --library
+      ## Run the library tests.
+      -b|--library) LIBRARY=true ;;
       ## \option -L, --no-linting
       ## Don't run the linting tests.
       -L|--no-linting) LINTING=false ;;
@@ -205,12 +276,28 @@ main() {
       ## \option -d, --documentation
       ## Don't run the documentation tests.
       -D|--no-documentation) DOCUMENTATION=false ;;
+      ## \option -B, --no-library
+      ## Don't run the library tests.
+      -B|--no-library) LIBRARY=false ;;
+      ## \option -u, --user
+      ## Run the tests in the usr directory.
+      -u|--user) USR=true ;;
       ## \option -h, --help
       ## Print this help and exit.
       -h|--help) shellman -t "$0"; exit 0 ;;
     esac
     shift
   done
+
+  if ${USR}; then
+    # shellcheck disable=SC2154
+    cd "${shellm}/usr"
+    echo "(running tests in user directory: $(pwd))"
+  fi
+
+  # shellcheck disable=SC2154
+  scripts=$(file bin/* | grep 'shell script' | cut -d: -f1)
+  libs=$(find lib -name '*.sh')
 
   local status=${success}
 
@@ -225,9 +312,13 @@ main() {
   if ${DOCUMENTATION}; then
     documentation || status=${failure}
   fi
+  # shellcheck disable=SC2119
+  if ${LIBRARY}; then
+    libraries || status=${failure}
+  fi
 
   return ${status}
 }
 
-## \usage ./test.sh [-h] | [-anlcdLCD]
+## \usage ./test.sh [-h] | [-anlcdLCDu]
 main "$@"

@@ -1,5 +1,5 @@
-if ndef __STRING_SH; then
-define  __STRING_SH
+if ndef __STRING_STRING_SH; then
+define  __STRING_STRING_SH
 
 ## @file string.sh
 ## @brief Functions for string manipulations.
@@ -37,4 +37,4 @@ reverseString() {
 	echo
 }
 
-fi # __STRING_SH
+fi # __STRING_STRING_SH

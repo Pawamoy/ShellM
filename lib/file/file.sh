@@ -1,5 +1,5 @@
-if ndef __FILE_SH; then
-define  __FILE_SH
+if ndef __FILE_FILE_SH; then
+define  __FILE_FILE_SH
 
 ## @file file.sh
 ## @brief Provide functions to manage text files (read, write)
@@ -351,4 +351,4 @@ reverseFile() {
 	[ -f "$output" ] && mv "$output" "$1"
 }
 
-fi # __FILE_SH
+fi # __FILE_FILE_SH

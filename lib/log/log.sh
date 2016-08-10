@@ -1,5 +1,5 @@
-if ndef __LOG_SH; then
-define __LOG_SH
+if ndef __LOG_LOG_SH; then
+define __LOG_LOG_SH
 
 ## @file log.sh
 ## @brief Provide message logging functions
@@ -29,4 +29,4 @@ log() {
 	eval "echo \"[$(/bin/date '+%F %T')] (${0##*/})  $1\" >&$LOG_FD 2>&1" 2>/dev/null
 }
 
-fi # __LOG_SH
+fi # __LOG_LOG_SH

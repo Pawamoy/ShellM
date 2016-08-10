@@ -1,6 +1,13 @@
+language: bash
+addons:
+  apt:
+    sources:
+      - debian-sid
+    packages:
+      - shellcheck
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y shellcheck devscripts zsh
+  - sudo apt-get install -y devscripts zsh
 install:
   - printf "3\n2\n" | ./install.sh
   - export shellm="$(pwd)"

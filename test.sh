@@ -117,7 +117,7 @@ compatibility() {
   check_script_command=check_shells
   check_bin_command=check_shells
   check_lib_command=check_shells
-  check_files_suite "OTHER SHELLS (${shells[*]})" || status=${failure}
+  check_files_suite "SHELLS (${shells[*]})" || status=${failure}
 
   return ${status}
 }

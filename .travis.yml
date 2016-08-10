@@ -1,0 +1,4 @@
+install: printf "3\n2\n" | ./install.sh
+script:
+  - ./test.sh -C
+  - ./test.sh -C -u

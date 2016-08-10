@@ -29,6 +29,7 @@ include() {
   IFS=':' read -r -a array <<< "${LIBPATH}"
   for libdir in "${array[@]}"; do
     if [ -f "${libdir}/$1" ]; then
+      # shellcheck disable=SC1090
       . <(filter_host "${libdir}/$1") && break
       [ $# -ge 1 ] && echo "include: error while including $1 from $0" >&2;
       # FIXME: zsh, sh, dash, csh, tcsh, ksh, xonsh...

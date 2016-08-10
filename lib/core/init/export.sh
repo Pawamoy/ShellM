@@ -23,8 +23,10 @@ init_export() {
       include_header=${!include_header}
       for defined in $include_header; do
         if [ "$(type -t "${defined}")" = "function" ]; then
+          # shellcheck disable=SC2163
           export -f ${defined}
         else
+          # shellcheck disable=SC2163
           export ${defined}
         fi
       done

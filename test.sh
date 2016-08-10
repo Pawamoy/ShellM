@@ -64,9 +64,9 @@ linting() {
 
   local status=${success}
 
-  check_script_command=shellcheck
-  check_bin_command=shellcheck
-  check_lib_command="shellcheck -e SC2148"
+  check_script_command="shellcheck -x"
+  check_bin_command="shellcheck -x"
+  check_lib_command="shellcheck -xe SC2148"
   check_files_suite "SHELLCHECK" || status=${failure}
 
   return ${status}
@@ -298,7 +298,10 @@ main() {
 
   if ${USR}; then
     # shellcheck disable=SC2154
-    cd "${shellm}/usr"
+    if ! cd "${shellm}/usr"; then
+      echo "test.sh: can't cd into usr directory, abort" >&2
+      exit 1
+    fi
     echo "(running tests in user directory: $(pwd))"
     test_script="../$0"
   fi

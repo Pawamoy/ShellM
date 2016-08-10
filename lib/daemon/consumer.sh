@@ -110,7 +110,7 @@ consumer_send() {
   local send_to
   local set_lock
   send_to="$(${daemon} location)"
-  set_lock=="$(get_data_dir "${daemon}")"
+  set_lock="$(get_data_dir "${daemon}")"
   shift
   local item
   for item in "$@"; do
@@ -132,6 +132,7 @@ consumer_location() {
 ## \param DIR Directory to check (default to consumed directory)
 consumer_empty() {
   local dir="${1:-$consumed_dir}"
+  # shellcheck disable=SC2164
   ( [ -d "${dir}" ] && cd "${dir}"; [ "$(echo .* ./*)" = ". .. ./*" ]; )
 }
 

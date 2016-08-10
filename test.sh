@@ -28,6 +28,8 @@ check_files_suite() {
   fi
   if [ "${check_bin_command}" = "true" ]; then
     format nl -- "-------------------- Ignore scripts -------------------------"
+  elif [ ! -n "${scripts}" ]; then
+    format nl -- "-------------------- No scripts -----------------------------"
   else
     format y nl -- "-------------------- Checking scripts -----------------------"
     # shellcheck disable=SC2086
@@ -35,6 +37,8 @@ check_files_suite() {
   fi
   if [ "${check_lib_command}" = "true" ]; then
     format nl -- "-------------------- Ignore libraries -----------------------"
+  elif [ ! -n "${libs}" ]; then
+    format nl -- "-------------------- No libraries -----------------------------"
   else
     format y nl -- "-------------------- Checking libraries ---------------------"
     # shellcheck disable=SC2086

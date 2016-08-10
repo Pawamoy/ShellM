@@ -1,63 +1,76 @@
 if ndef __CORE_FORMAT_SH; then
 define __CORE_FORMAT_SH "format VAR"
 
-## \usage format [OPTIONS...] [-- STRING...]
-## \example format onblack lightgreen dim bold; echo SUCCESS!
-## Bold, diminished, light-green foreground and black background
-## \example format B lg U olu; echo INFO
-## Bold, underline, dark-gray foreground and light-blue background
+## \usage format [OPTIONS...] [--] [STRING...]
+## \example format onBlack intenseGreen faint bold newLine; echo SUCCESS!
+## Black background, intense-green foreground, fainted, bold and new line.
+## \example format B k U oib nl INFO
+## Bold, black foreground, underline, intense-blue background and new line.
 
 ## \desc Available arguments to the 'format' function:
 ##
-##     Foreground       |  Foreground (extended)
+##     Foreground       |  Foreground (intense)
 ##     _________________|________________________________
 ##                      |
-##     d,  default      |
-##     b,  black        |  w,  white
-##     r,  red          |  lr, lightred
-##     g,  green        |  lG, lightgreen
-##     y,  yellow       |  ly, lightyellow
-##     u,  blue         |  lu, lightblue
-##     m,  magenta      |  lm, lightmagenta
-##     c,  cyan         |  lc, lightcyan
-##     lg, lightgray    |  dg, darkgray
+##     d, default       |
+##     k, black         |  ik, intenseBlack
+##     r, red           |  ir, intenseRed
+##     g, green         |  iG, intenseGreen
+##     y, yellow        |  iy, intenseYellow
+##     b, blue          |  ib, intenseBlue
+##     m, magenta       |  im, intenseMagenta
+##     c, cyan          |  ic, intenseCyan
+##     w, white         |  iw, intenseWhite
 ##
-##     Background       |  Background (extended)
+##     Background       |  Background (intense)
 ##     _________________|________________________________
 ##                      |
-##     od,  ondefault   |
-##     ob,  onblack     |  ow,  onwhite
-##     or,  onred       |  olr, onlightred
-##     og,  ongreen     |  olG, onlightgreen
-##     oy,  onyellow    |  oly, onlightyellow
-##     ou,  onblue      |  olu, onlightblue
-##     om,  onmagenta   |  olm, onlightmagenta
-##     oc,  oncyan      |  olc, onlightcyan
-##     olg, onlightgray |  odg, ondarkgray
+##     od, onDefault    |
+##     ok, onBlack      |  oik, onIntenseBlack
+##     or, onRed        |  oir, onIntenseRed
+##     og, onGreen      |  oiG, onIntenseGreen
+##     oy, onYellow     |  oiy, onIntenseYellow
+##     ob, onBlue       |  oib, onIntenseBlue
+##     om, onMagenta    |  oim, onIntenseMagenta
+##     oc, onCyan       |  oic, onIntenseCyan
+##     ow, onWhite      |  oiw, onIntenseWhite
 ##
 ##     Style            |  Reset style
 ##     _________________|________________________________
 ##                      |
-##                      |  R,      reset
-##     B, bold          |  rb, RB, resetbold
-##     D, dim           |  rd, RD, resetdim
-##     U, underlin      |  ru, RU, resetunderline
-##     K, blink         |  rk, RK, resetblink
-##     I, invert        |  ri, RI, resetinvert
-##     H, hidden        |  rh, RH, resethidden
+##                      |  ra, R,  reset, resetAll
+##     B, bold          |  rb, RB, resetBold
+##     F, faint         |  rf, RF, resetFaint
+##     I, italic        |  ri, RI, resetItalic
+##     U, underlin      |  ru, RU, resetUnderline
+##     K, blink         |  rk, RK, resetBlink
+##     R, reverse       |  rr, RR, resetReverse
+##     H, hidden        |  rh, RH, resetHidden
+##     S, strike        |  rs, RS, resetStrike
+##
+##     Extra            |  Explanation
+##     _________________|________________________________
+##                      |
+##     nl, newLine      |  Add a newline at the end.
+##     dr, dryRun       |  Don't interpret ansi codes.
+##     er, redirectErr  |  Print on standard error.
+##     --               |  Stop interpretation of arguments as options.
 
-## \note On linux terminals (tty), extended colors will
-## be replaced by their 8-colors equivalent (white by lightgray).
-## Also underline, dim and blink will have no effects.
+## \note On linux terminals (tty), high intensity colors will
+## be replaced by their 8-colors equivalent.
+## Also underline, faint and blink will be ignored.
+## Other available styles may or may not be interpreted by your terminal.
 
+## \fn format (args...)
+## \brief Format the output with style and color
+## \param args Letters or complete names of style/colors.
+## \stdout The formatted string.
 if [ "${TERM}" = linux ]; then # 8 colors
 
-  ## \fn format (args...)
-  ## \brief Format the output with style and color (8)
-  ## \param args Letters or complete names of style/colors.
-  ## \out The formatting string without newline.
   format() {
     local NEWLINE=0
+    local REDIRECT=0
+    local E='e'
     local ESC='\033['
     local F="${ESC}"
     while [ $# -ne 0 ]; do
@@ -115,7 +128,7 @@ if [ "${TERM}" = linux ]; then # 8 colors
         S|strike) F=$F\;9 ;;
 
         # Reset style
-        ra|R|reset|resetAll) F=$F\;0 ;;
+        ra|RA|reset|resetAll) F=$F\;0 ;;
         rb|RB|resetBold) F=$F\;21 ;;
         rf|RF|resetFaint) ;; #F=$F\;22 ;;
         ri|RI|resetItalic) ;; #F=$F\;23 ;;
@@ -127,32 +140,45 @@ if [ "${TERM}" = linux ]; then # 8 colors
 
         # Extra
         nl|newLine) NEWLINE=1 ;;
+        dr|dryRun) E='' ;;
+        er|redirectErr) REDIRECT=1 ;;
 
         --) shift; break ;;
+        *) break ;;
       esac
       shift
     done
 
-    [ "$F" != "${ESC}" ] && echo -en "${F}m"
+    print() {
+      if [ "$F" != "${ESC}" ]; then
+        echo -n${E} "${F}m"
+      fi
 
-    if [ $# -ne 0 ]; then
-      echo -en "$@"
-      echo -en "${ESC}0m"
+      if [ $# -ne 0 ]; then
+        echo -n${E} "$@"
+        echo -n${E} "${ESC}0m"
+      fi
+
+      if [ ${NEWLINE} -eq 1 ]; then
+        echo ''
+      fi
+    }
+
+    if [ ${REDIRECT} -eq 1 ]; then
+      print "$@" >&2
+    else
+      print "$@"
     fi
 
-    if [ ${NEWLINE} -eq 1 ]; then
-      echo ''
-    fi
+    unset -f print
   }
 
 else # 16 colors
 
-  ## \fn format (args...)
-  ## \brief Format the output with style and color (16)
-  ## \param args Letters or complete names of style/colors.
-  ## \out The formatting string without newline.
   format() {
     local NEWLINE=0
+    local REDIRECT=0
+    local E='e'
     local ESC='\033['
     local F="${ESC}"
     while [ $# -ne 0 ]; do
@@ -210,7 +236,7 @@ else # 16 colors
         S|strike) F=$F\;9 ;;
 
         # Reset style
-        ra|R|reset|resetAll) F=$F\;0 ;;
+        ra|RA|reset|resetAll) F=$F\;0 ;;
         rb|RB|resetBold) F=$F\;21 ;;
         rf|RD|resetFaint) F=$F\;22 ;;
         ri|RI|resetItalic) F=$F\;23 ;;
@@ -222,22 +248,37 @@ else # 16 colors
 
         # Extra
         nl|newLine) NEWLINE=1 ;;
+        dr|dryRun) E='' ;;
+        er|redirectErr) REDIRECT=1 ;;
 
         --) shift; break ;;
+        *) break ;;
       esac
       shift
     done
 
-    [ "$F" != "${ESC}" ] && echo -en "${F}m"
+    print() {
+      if [ "$F" != "${ESC}" ]; then
+        echo -n${E} "${F}m"
+      fi
 
-    if [ $# -ne 0 ]; then
-      echo -en "$@"
-      echo -en "${ESC}0m"
+      if [ $# -ne 0 ]; then
+        echo -n${E} "$@"
+        echo -n${E} "${ESC}0m"
+      fi
+
+      if [ ${NEWLINE} -eq 1 ]; then
+        echo ''
+      fi
+    }
+
+    if [ ${REDIRECT} -eq 1 ]; then
+      print "$@" >&2
+    else
+      print "$@"
     fi
 
-    if [ ${NEWLINE} -eq 1 ]; then
-      echo ''
-    fi
+    unset -f print
   }
 
 fi
@@ -257,7 +298,7 @@ complete -W "
 
   B bold F faint I italic U underline K blink R reverse H hidden S strike
 
-  nl newLine
+  nl newLine dr dryRun er redirectErr
 
   ra R reset resetAll
   rb RB resetBold rf RF resetFaint ri RI resetItalic ru RU resetUnderline

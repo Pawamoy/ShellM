@@ -22,6 +22,8 @@ shellman_get() {
     *)
       re="${shellman_re}$1"'[[:space:]]'
       grep "$re" "$2" | expand | sed 's/'"$re"'*//'
+      # shellcheck disable=SC2086
+      return ${PIPESTATUS[0]}
     ;;
   esac
 }

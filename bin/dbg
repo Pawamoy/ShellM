@@ -34,7 +34,7 @@ main() {
   shift
 
   /bin/bash "${FLAGS}" "${SCRIPT}" "$@"
-  format R d
+  format RA d
 }
 
 ## \usage dbg [-tvn] SCRIPT | -h

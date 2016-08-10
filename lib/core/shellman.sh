@@ -5,6 +5,8 @@ define __CORE_SHELLMAN_SH "
   shellm_get
   shellman"
 
+## \brief Wrapper for shellman.
+
 shellman_re='^[[:space:]]*##[[:space:]]*[@\]'
 
 usage() {

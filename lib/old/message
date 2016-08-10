@@ -13,11 +13,11 @@ include core/format.sh
 ## @return Echo: Color code [and message]
 color() { [ -z "$2" ] && echo -e -n "$1" || echo -e "$1$2\033[00m"; }
 
-## @fn int end (exit_code)
+## @fn int final (exit_code)
 ## @brief Exit if subshell, return if interactive shell
 ## @param [$1] Exit code
 ## @return Code: exit_code (default 1)
-end() {
+final() {
   case "${0#-}" in
     bash|zsh|csh|ksh|sh|dash)
       kill -INT $$ ;;
@@ -48,7 +48,7 @@ err() {
 ## @param $1 Message to display
 ## @return Code: exit_code (default 1)
 ## @return Echo: message on stderr
-die() { err "$1"; end "${2:-1}"; }
+die() { err "$1"; final "${2:-1}"; }
 
 ## @fn void pause (message)
 ## @brief Output message on stderr (&2), then wait for Enter
@@ -66,10 +66,10 @@ line() {
   if [ "$l" -gt 1 ]; then
     local n=$((c/l)); local r=$((c-(n*l)))
     # shellcheck disable=SC2031,SC2030
-    err "$(for ((i=0; i<n; i++)); do echo -n "$1"; done; echo -n "${1:0:$r}")"
+    err "$(for i in {0..$n}; do echo -n "$1"; done; echo -n "${1:0:$r}")"
   else
     # shellcheck disable=SC2031,SC2030
-    err "$(for ((i=0; i<c; i++)); do echo -n "$1"; done)"
+    err "$(for i in {0..$c}; do echo -n "$1"; done)"
   fi
 }
 

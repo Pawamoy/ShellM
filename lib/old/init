@@ -37,7 +37,7 @@ check() {
 	done
 	if [ -z "$1" ] && ! $ret; then
 		err; err "Some required packages and/or executables were not found..."
-		question "Would you like to continue anyway ? (unpredictable behavior) [yN]" || end 0
+		question "Would you like to continue anyway ? (unpredictable behavior) [yN]" || final 0
 		line "-"
 	fi
 }

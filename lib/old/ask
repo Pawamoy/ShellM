@@ -1,6 +1,8 @@
 if ndef __IO_ASK_SH; then
 define __IO_ASK_SH
 
+## \brief Provide useful function to get stdin content.
+
 include ui/auto.sh
 include message.sh
 

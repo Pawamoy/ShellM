@@ -137,7 +137,7 @@ documentation() {
   check_tag() {
     local script status=${success}
     for script in "$@"; do
-      if ! shellman_get 'usage' "${script}" >/dev/null; then
+      if ! shellman_get "${checked_tag}" "${script}" >/dev/null; then
         echo "$(format ib -- "${script}"): missing tag $(format B "${checked_tag}")"
         status=${failure}
       fi

@@ -29,15 +29,15 @@ REPO_OPTIONS=(
 
 REPO_URL_QUESION="Please enter the full URL of the repository: "
 
-LOGO="\e[7m
-
-            _|                  _|  _|
-    _|_|_|  _|_|_|      _|_|    _|  _|  _|_|_|  _|_|
-  _|_|      _|    _|  _|_|_|_|  _|  _|  _|    _|    _|
-      _|_|  _|    _|  _|        _|  _|  _|    _|    _|
-  _|_|_|    _|    _|    _|_|_|  _|  _|  _|    _|    _|
-
-\e[0m"
+LOGO="\033[7m
+                                                       
+            _|                  _|  _|                 
+    _|_|_|  _|_|_|      _|_|    _|  _|  _|_|_|  _|_|   
+  _|_|      _|    _|  _|_|_|_|  _|  _|  _|    _|    _| 
+      _|_|  _|    _|  _|        _|  _|  _|    _|    _| 
+  _|_|_|    _|    _|    _|_|_|  _|  _|  _|    _|    _| 
+                                                       
+\033[0m"
 
 install_shellman() {
   git clone https://github.com/Pawamoy/shellman.git bin/shellman

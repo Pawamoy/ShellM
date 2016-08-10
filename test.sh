@@ -3,6 +3,7 @@
 ## \brief Test suite for shellm
 ## \desc Options are cumulative, you can disable all tests then reactivate one.
 ## By default, all tests are run.
+## \require shellcheck checkbashisms zsh
 
 include core/format.sh
 include core/shellman.sh
@@ -23,7 +24,7 @@ check_files_suite() {
     format nl -- "-------------------- Ignore test script ---------------------"
   else
     format y nl -- "-------------------- Checking test script -------------------"
-    ${check_script_command} "$0" || status=${failure}
+    ${check_script_command} "${test_script}" || status=${failure}
   fi
   if [ "${check_bin_command}" = "true" ]; then
     format nl -- "-------------------- Ignore scripts -------------------------"
@@ -293,10 +294,13 @@ main() {
     shift
   done
 
+  test_script="$0"
+
   if ${USR}; then
     # shellcheck disable=SC2154
     cd "${shellm}/usr"
     echo "(running tests in user directory: $(pwd))"
+    test_script="../$0"
   fi
 
   # shellcheck disable=SC2154

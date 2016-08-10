@@ -57,79 +57,91 @@ if [ "${TERM}" = linux ]; then # 8 colors
   ## \param args Letters or complete names of style/colors.
   ## \out The formatting string without newline.
   format() {
-    local esc='\e['
-    local f="$esc"
+    local NEWLINE=0
+    local ESC='\033['
+    local F="${ESC}"
     while [ $# -ne 0 ]; do
       case "$1" in
         # Foreground
-        d|default) f=${f}\;39 ;;
-        b|black) f=${f}\;30 ;;
-        r|red) f=${f}\;31 ;;
-        g|green) f=${f}\;32 ;;
-        y|yellow) f=${f}\;33 ;;
-        u|blue) f=${f}\;34 ;;
-        m|magenta) f=${f}\;35 ;;
-        c|cyan) f=${f}\;36 ;;
-        lg|lightgray) f=${f}\;37 ;;
+        d|default) F=$F\;39 ;;
+        h|black) F=$F\;30 ;;
+        r|red) F=$F\;31 ;;
+        g|green) F=$F\;32 ;;
+        y|yellow) F=$F\;33 ;;
+        b|blue) F=$F\;34 ;;
+        m|magenta) F=$F\;35 ;;
+        c|cyan) F=$F\;36 ;;
+        w|white) F=$F\;37 ;;
 
         # Foreground extended
-        dg|darkgray) f=${f}\;30 ;;  # black
-        lr|lightred) f=${f}\;31 ;;  # red
-        lG|lightgreen) f=${f}\;32 ;;  # green
-        ly|lightyellow) f=${f}\;33 ;;  # yellow
-        lu|lightblue) f=${f}\;34 ;;  # blue
-        lm|lightmagenta) f=${f}\;35 ;;  # magenta
-        lc|lightcyan) f=${f}\;36 ;;  # cyan
-        w|white) f=${f}\;37 ;;  # lightgray
+        ik|intenseBlack) F=$F\;30 ;;  # black
+        ir|intenseRed) F=$F\;31 ;;  # red
+        iG|intenseGreen) F=$F\;32 ;;  # green
+        iy|intenseYellow) F=$F\;33 ;;  # yellow
+        ib|intenseBlue) F=$F\;34 ;;  # blue
+        im|intenseMagenta) F=$F\;35 ;;  # magenta
+        ic|intenseCyan) F=$F\;36 ;;  # cyan
+        iw|intenseWhite) F=$F\;37 ;;  # white
 
         # Background
-        od|ondefault) f=${f}\;49 ;;
-        ob|onblack) f=${f}\;40 ;;
-        or|onred) f=${f}\;41 ;;
-        og|ongreen) f=${f}\;42 ;;
-        oy|onyellow) f=${f}\;43 ;;
-        ou|onblue) f=${f}\;44 ;;
-        om|onmagenta) f=${f}\;45 ;;
-        oc|oncyan) f=${f}\;46 ;;
-        olg|onlightgray) f=${f}\;47 ;;
+        od|onDefault) F=$F\;49 ;;
+        ok|onBlack) F=$F\;40 ;;
+        or|onRed) F=$F\;41 ;;
+        og|onGreen) F=$F\;42 ;;
+        oy|onYellow) F=$F\;43 ;;
+        ob|onBlue) F=$F\;44 ;;
+        om|onMagenta) F=$F\;45 ;;
+        oc|onCyan) F=$F\;46 ;;
+        ow|onWhite) F=$F\;47 ;;
 
         # Background extended
-        odg|ondarkgray) f=${f}\;40 ;;  # black
-        olr|onlightred) f=${f}\;41 ;;  # red
-        olG|onlightgreen) f=${f}\;42 ;;  # green
-        oly|onlightyellow) f=${f}\;43 ;;  # yellow
-        olu|onlightblue) f=${f}\;44 ;;  # blue
-        olm|onlightmagenta) f=${f}\;45 ;;  # magenta
-        olc|onlightcyan) f=${f}\;46 ;;  # cyan
-        ow|onwhite) f=${f}\;47 ;;  # lightgray
+        oik|onIntenseBlack) F=$F\;40 ;;  # black
+        oir|onIntenseRed) F=$F\;41 ;;  # red
+        oiG|onIntenseGreen) F=$F\;42 ;;  # green
+        oiy|onIntenseYellow) F=$F\;43 ;;  # yellow
+        oib|onIntenseBlue) F=$F\;44 ;;  # blue
+        oim|onIntenseMagenta) F=$F\;45 ;;  # magenta
+        oic|onIntenseCyan) F=$F\;46 ;;  # cyan
+        oiw|onIntenseWhite) F=$F\;47 ;;  # white
 
         # Style
-        B|bold) f=${f}\;1 ;;
-        D|dim) ;; #f=${f}\;2 ;;
-        U|underline) ;; #f=${f}\;4 ;;
-        K|blink) ;; #f=${f}\;5 ;;
-        I|invert) f=${f}\;7 ;;
-        H|hidden) f=${f}\;8 ;;
+        B|bold) F=$F\;1 ;;
+        F|faint) ;; #F=$F\;2 ;;
+        I|italic) ;; #F=$F\;3 ;;
+        U|underline) ;; #F=$F\;4 ;;
+        K|blink) ;; #F=$F\;5 ;;
+        R|reverse) F=$F\;7 ;;
+        H|hidden) F=$F\;8 ;;
+        S|strike) F=$F\;9 ;;
 
         # Reset style
-        R|reset) f=${f}\;0 ;;
-        rb|RB|resetbold) f=${f}\;21 ;;
-        rd|RD|resetdim) ;; #f=${f}\;22 ;;
-        ru|RU|resetunderline) ;; #f=${f}\;24 ;;
-        rk|RK|resetblink) ;; #f=${f}\;25 ;;
-        ri|RI|resetinvert) f=${f}\;27 ;;
-        rh|RH|resethidden) f=${f}\;28 ;;
+        ra|R|reset|resetAll) F=$F\;0 ;;
+        rb|RB|resetBold) F=$F\;21 ;;
+        rf|RF|resetFaint) ;; #F=$F\;22 ;;
+        ri|RI|resetItalic) ;; #F=$F\;23 ;;
+        ru|RU|resetUnderline) ;; #F=$F\;24 ;;
+        rk|RK|resetBlink) ;; #F=$F\;25 ;;
+        rr|RR|resetReverse) F=$F\;27 ;;
+        rh|RH|resetHidden) F=$F\;28 ;;
+        rs|RS|resetStrike) F=$F\;20 ;;
+
+        # Extra
+        nl|newLine) NEWLINE=1 ;;
 
         --) shift; break ;;
       esac
       shift
     done
 
-    [ "$f" != "$esc" ] && echo -en "${f}m"
+    [ "$F" != "${ESC}" ] && echo -en "${F}m"
 
     if [ $# -ne 0 ]; then
       echo -en "$@"
-      echo -en '\e[0m'
+      echo -en "${ESC}0m"
+    fi
+
+    if [ ${NEWLINE} -eq 1 ]; then
+      echo ''
     fi
   }
 
@@ -140,81 +152,115 @@ else # 16 colors
   ## \param args Letters or complete names of style/colors.
   ## \out The formatting string without newline.
   format() {
-    local f='\e['
+    local NEWLINE=0
+    local ESC='\033['
+    local F="${ESC}"
     while [ $# -ne 0 ]; do
       case "$1" in
         # Foreground
-        d|default) f=${f}\;39 ;;
-        b|black) f=${f}\;30 ;;
-        r|red) f=${f}\;31 ;;
-        g|green) f=${f}\;32 ;;
-        y|yellow) f=${f}\;33 ;;
-        u|blue) f=${f}\;34 ;;
-        m|magenta) f=${f}\;35 ;;
-        c|cyan) f=${f}\;36 ;;
-        lg|lightgray) f=${f}\;37 ;;
+        d|default) F=$F\;39 ;;
+        k|black) F=$F\;30 ;;
+        r|red) F=$F\;31 ;;
+        g|green) F=$F\;32 ;;
+        y|yellow) F=$F\;33 ;;
+        b|blue) F=$F\;34 ;;
+        m|magenta) F=$F\;35 ;;
+        c|cyan) F=$F\;36 ;;
+        w|white) F=$F\;37 ;;
 
         # Foreground extended
-        dg|darkgray) f=${f}\;90 ;;
-        lr|lightred) f=${f}\;91 ;;
-        lG|lightgreen) f=${f}\;92 ;;
-        ly|lightyellow) f=${f}\;93 ;;
-        lu|lightblue) f=${f}\;94 ;;
-        lm|lightmagenta) f=${f}\;95 ;;
-        lc|lightcyan) f=${f}\;96 ;;
-        w|white) f=${f}\;97 ;;
+        ik|intenseBlack) F=$F\;90 ;;
+        ir|intenseRed) F=$F\;91 ;;
+        ig|intenseGreen) F=$F\;92 ;;
+        iy|intenseYellow) F=$F\;93 ;;
+        ib|intenseBlue) F=$F\;94 ;;
+        im|intenseMagenta) F=$F\;95 ;;
+        ic|intenseCyan) F=$F\;96 ;;
+        iw|intenseWhite) F=$F\;97 ;;
 
         # Background
-        od|ondefault) f=${f}\;49 ;;
-        ob|onblack) f=${f}\;40 ;;
-        or|onred) f=${f}\;41 ;;
-        og|ongreen) f=${f}\;42 ;;
-        oy|onyellow) f=${f}\;43 ;;
-        ou|onblue) f=${f}\;44 ;;
-        om|onmagenta) f=${f}\;45 ;;
-        oc|oncyan) f=${f}\;46 ;;
-        olg|onlightgray) f=${f}\;47 ;;
+        od|onDefault) F=$F\;49 ;;
+        ok|onBlack) F=$F\;40 ;;
+        or|onRed) F=$F\;41 ;;
+        og|onGreen) F=$F\;42 ;;
+        oy|onYellow) F=$F\;43 ;;
+        ob|onBlue) F=$F\;44 ;;
+        om|onMagenta) F=$F\;45 ;;
+        oc|onCyan) F=$F\;46 ;;
+        ow|onWhite) F=$F\;47 ;;
 
         # Background extended
-        odg|ondarkgray) f=${f}\;100 ;;
-        olr|onlightred) f=${f}\;101 ;;
-        olG|onlightgreen) f=${f}\;102 ;;
-        oly|onlightyellow) f=${f}\;103 ;;
-        olu|onlightblue) f=${f}\;104 ;;
-        olm|onlightmagenta) f=${f}\;105 ;;
-        olc|onlightcyan) f=${f}\;106 ;;
-        ow|onwhite) f=${f}\;107 ;;
+        oik|onIntenseBlack) F=$F\;100 ;;
+        oir|onIntenseRed) F=$F\;101 ;;
+        oig|onIntenseGreen) F=$F\;102 ;;
+        oiy|onIntenseYellow) F=$F\;103 ;;
+        oib|onIntenseBlue) F=$F\;104 ;;
+        oim|onIntenseMagenta) F=$F\;105 ;;
+        oic|onIntenseCyan) F=$F\;106 ;;
+        oiw|onIntenseWhite) F=$F\;107 ;;
 
         # Style
-        B|bold) f=${f}\;1 ;;
-        D|dim) f=${f}\;2 ;;
-        U|underline) f=${f}\;4 ;;
-        K|blink) f=${f}\;5 ;;
-        I|invert) f=${f}\;7 ;;
-        H|hidden) f=${f}\;8 ;;
+        B|bold) F=$F\;1 ;;
+        F|faint) F=$F\;2 ;;
+        I|italic) F=$F\;3 ;;
+        U|underline) F=$F\;4 ;;
+        K|blink) F=$F\;5 ;;
+        R|reverse) F=$F\;7 ;;
+        H|hidden) F=$F\;8 ;;
+        S|strike) F=$F\;9 ;;
 
         # Reset style
-        R|reset) f=${f}\;0 ;;
-        rb|RB|resetbold) f=${f}\;21 ;;
-        rd|RD|resetdim) f=${f}\;22 ;;
-        ru|RU|resetunderline) f=${f}\;24 ;;
-        rk|RK|resetblink) f=${f}\;25 ;;
-        ri|RI|resetinvert) f=${f}\;27 ;;
-        rh|RH|resethidden) f=${f}\;28 ;;
+        ra|R|reset|resetAll) F=$F\;0 ;;
+        rb|RB|resetBold) F=$F\;21 ;;
+        rf|RD|resetFaint) F=$F\;22 ;;
+        ri|RI|resetItalic) F=$F\;23 ;;
+        ru|RU|resetUnderline) F=$F\;24 ;;
+        rk|RK|resetBlink) F=$F\;25 ;;
+        rr|RR|resetReverse) F=$F\;27 ;;
+        rh|RH|resetHidden) F=$F\;28 ;;
+        rs|RS|resetStrike) F=$F\;20 ;;
+
+        # Extra
+        nl|newLine) NEWLINE=1 ;;
 
         --) shift; break ;;
       esac
       shift
     done
 
-    [ "$f" != "$esc" ] && echo -en "${f}m"
+    [ "$F" != "${ESC}" ] && echo -en "${F}m"
 
     if [ $# -ne 0 ]; then
       echo -en "$@"
-      echo -en '\e[0m'
+      echo -en "${ESC}0m"
+    fi
+
+    if [ ${NEWLINE} -eq 1 ]; then
+      echo ''
     fi
   }
 
 fi
+
+complete -W "
+  d default
+  k black r red g green y yellow b blue m magenta c cyan w white
+
+  ik intenseBlack ir intenseRed ig intenseGreen iy intenseYellow
+  ib intenseBlue im intenseMagenta ic intenseCyan iw intenseWhite
+
+  od onDefault
+  ok onBlack or onRed og onGreen oy onYellow ob onBlue om onMagenta oc onCyan ow onWhite
+
+  oik onIntenseBlack oir onIntenseRed oig onIntenseGreen oiy onIntenseYellow
+  oib onIntenseBlue oim onIntenseMagenta oic onIntenseCyan oiw onIntenseWhite
+
+  B bold F faint I italic U underline K blink R reverse H hidden S strike
+
+  nl newLine
+
+  ra R reset resetAll
+  rb RB resetBold rf RF resetFaint ri RI resetItalic ru RU resetUnderline
+  rk RK resetBlink rr RR resetReverse rh RH resetHidden rs RS resetStrike" format
 
 fi # __CORE_FORMAT_SH

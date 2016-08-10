@@ -1,4 +1,6 @@
-install: printf "3\n2\n" | ./install.sh
+install:
+  - printf "3\n2\n" | ./install.sh
+  - . usr/shellmrc
 script:
   - ./test.sh -C
   - ./test.sh -C -u

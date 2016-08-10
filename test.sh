@@ -56,7 +56,7 @@ check_files_suite() {
 
 linting() {
   # font stop on http://patorjk.com/software/taag/#p=display&f=Stop&t=linting
-  format B c nl -- "
+  format ic nl -- "
    _ _            _
   | (_)      _   (_)
   | |_ ____ | |_  _ ____   ____
@@ -79,7 +79,7 @@ linting() {
 # shellcheck disable=SC2120
 compatibility() {
   # http://patorjk.com/software/taag/#p=display&f=Stop&t=compatibility
-  format B c nl -- "
+  format ic nl -- "
                                      _ _     _ _ _
                                 _   (_) |   (_) (_)_
     ____ ___  ____  ____   ____| |_  _| | _  _| |_| |_ _   _
@@ -130,7 +130,7 @@ compatibility() {
 # shellcheck disable=SC2120
 documentation() {
   # font stop on http://patorjk.com/software/taag/#p=display&f=Stop&t=documentation
-  format B c nl -- "
+  format ic nl -- "
        _                                                    _
       | |                                    _         _   (_)
     _ | | ___   ____ _   _ ____   ____ ____ | |_  ____| |_  _  ___  ____
@@ -190,7 +190,7 @@ documentation() {
 # shellcheck disable=SC2120
 libraries() {
   # font stop on http://patorjk.com/software/taag/#p=display&f=Stop&t=libraries
-  format B c nl -- "
+  format ic nl -- "
    _ _ _                      _
   | (_) |                    (_)
   | |_| | _   ____ ____  ____ _  ____  ___
@@ -267,24 +267,24 @@ main() {
       ## \option -l, --linting
       ## Run the linting tests.
       -l|--linting) LINTING=true ;;
-      ## \option -c, --compatibility
-      ## Run the compatibility tests.
-      -c|--compatibility) COMPATIBILITY=true ;;
-      ## \option -d, --documentation
-      ## Run the documentation tests.
-      -d|--documentation) DOCUMENTATION=true ;;
-      ## \option -b, --library
-      ## Run the library tests.
-      -b|--library) LIBRARY=true ;;
       ## \option -L, --no-linting
       ## Don't run the linting tests.
       -L|--no-linting) LINTING=false ;;
       ## \option -c, --compatibility
+      ## Run the compatibility tests.
+      -c|--compatibility) COMPATIBILITY=true ;;
+      ## \option -c, --no-compatibility
       ## Don't run the compatibility tests.
       -C|--no-compatibility) COMPATIBILITY=false ;;
       ## \option -d, --documentation
+      ## Run the documentation tests.
+      -d|--documentation) DOCUMENTATION=true ;;
+      ## \option -d, --no-documentation
       ## Don't run the documentation tests.
       -D|--no-documentation) DOCUMENTATION=false ;;
+      ## \option -b, --library
+      ## Run the library tests.
+      -b|--library) LIBRARY=true ;;
       ## \option -B, --no-library
       ## Don't run the library tests.
       -B|--no-library) LIBRARY=false ;;
@@ -335,5 +335,5 @@ main() {
   return ${status}
 }
 
-## \usage ./test.sh [-h] | [-anlcdLCDu]
+## \usage ./test.sh [-h] | [-anlLcCdDu]
 main "$@"

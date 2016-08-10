@@ -10,6 +10,9 @@ include core/shellman.sh
 success=0
 failure=1
 
+# all_shells=(ash bash bosh bsh csh dash fish ksh mksh posh scsh sh tcsh xonsh yash zsh)
+shells="bash sh zsh"
+
 check_files_suite() {
   local status=${success}
   format B nl -- "============================================================="
@@ -87,16 +90,16 @@ compatibility() {
     return ${PIPESTATUS[0]}
   }
 
-  shells=(zsh ksh bash dash sh)
   check_shells() {
     local output script status=${success}
     for script in "$@"; do
-     for shell in "${shells[@]}"; do
+     for shell in ${shells}; do
        if command -v "${shell}" >/dev/null; then
-         output=$(${shell} -n "${script}" 2>&1) || status=${failure}
-         if [ -n "${output}" ]; then
+         output=$(${shell} -nv "${script}" 2>&1)
+         if [ $? -ne 0 ]; then
+           status=${failure}
            echo "$(format ib -- "${script}"):$(format m -- "${shell}")"
-           echo "${output}"
+           echo "${output}" | tail -n2
          fi
        fi
      done
@@ -114,7 +117,7 @@ compatibility() {
   check_script_command=check_shells
   check_bin_command=check_shells
   check_lib_command=check_shells
-  check_files_suite "OTHER SHELLS" || status=${failure}
+  check_files_suite "OTHER SHELLS (${shells[*]})" || status=${failure}
 
   return ${status}
 }
@@ -254,6 +257,7 @@ main() {
         LINTING=false
         COMPATIBILITY=false
         DOCUMENTATION=false
+        LIBRARY=false
       ;;
       ## \option -l, --linting
       ## Run the linting tests.

@@ -11,17 +11,22 @@ include core/shellman.sh
 success=0
 failure=1
 
-# all_shells=(ash bash bosh bsh csh dash fish ksh mksh posh scsh sh tcsh xonsh yash zsh)
-shells="bash sh zsh"
+shells="ash bash bosh bsh csh dash fish ksh mksh posh scsh sh tcsh xonsh yash zsh"
 
 check_files_suite() {
   local status=${success}
-  format B nl -- "============================================================="
-  format B nl -- "=                       $1"
-  format B nl -- "============================================================="
-  echo
+  if ${VERBOSE}; then
+    format B nl -- "============================================================="
+    format B nl -- "=                       $1"
+    format B nl -- "============================================================="
+    echo
+  else
+    format B nl -- "======================= $1"
+  fi
   if [ "${check_script_command}" = "true" ]; then
     format nl -- "-------------------- Ignore test script ---------------------"
+  elif [ ! -f "${test_script}" ]; then
+    format nl -- "-------------------- No user test script --------------------"
   else
     format y nl -- "-------------------- Checking test script -------------------"
     ${check_script_command} "${test_script}" || status=${failure}
@@ -55,8 +60,12 @@ check_files_suite() {
 }
 
 linting() {
+  if ! command -v shellcheck >/dev/null; then
+    echo "shellcheck not found: don't test linting" >&2
+    return 0
+  fi
   # font stop on http://patorjk.com/software/taag/#p=display&f=Stop&t=linting
-  format ic nl -- "
+  ${VERBOSE} && format ic nl -- "
    _ _            _
   | (_)      _   (_)
   | |_ ____ | |_  _ ____   ____
@@ -68,9 +77,9 @@ linting() {
 
   local status=${success}
 
-  check_script_command="shellcheck -x"
-  check_bin_command="shellcheck -x"
-  check_lib_command="shellcheck -xe SC2148"
+  check_script_command="shellcheck -x -C${SHELLCHECK_COLOR}"
+  check_bin_command="shellcheck -x -C${SHELLCHECK_COLOR}"
+  check_lib_command="shellcheck -xe SC2148 -C${SHELLCHECK_COLOR}"
   check_files_suite "SHELLCHECK" || status=${failure}
 
   return ${status}
@@ -78,8 +87,12 @@ linting() {
 
 # shellcheck disable=SC2120
 compatibility() {
+  if ! command -v checkbashisms >/dev/null; then
+    echo "checkbashisms not found: don't test compatibility" >&2
+    return 0
+  fi
   # http://patorjk.com/software/taag/#p=display&f=Stop&t=compatibility
-  format ic nl -- "
+  ${VERBOSE} && format ic nl -- "
                                      _ _     _ _ _
                                 _   (_) |   (_) (_)_
     ____ ___  ____  ____   ____| |_  _| | _  _| |_| |_ _   _
@@ -130,7 +143,7 @@ compatibility() {
 # shellcheck disable=SC2120
 documentation() {
   # font stop on http://patorjk.com/software/taag/#p=display&f=Stop&t=documentation
-  format ic nl -- "
+  ${VERBOSE} && format ic nl -- "
        _                                                    _
       | |                                    _         _   (_)
     _ | | ___   ____ _   _ ____   ____ ____ | |_  ____| |_  _  ___  ____
@@ -188,9 +201,9 @@ documentation() {
 }
 
 # shellcheck disable=SC2120
-libraries() {
+library() {
   # font stop on http://patorjk.com/software/taag/#p=display&f=Stop&t=libraries
-  format ic nl -- "
+  ${VERBOSE} && format ic nl -- "
    _ _ _                      _
   | (_) |                    (_)
   | |_| | _   ____ ____  ____ _  ____  ___
@@ -247,6 +260,9 @@ main() {
   local DOCUMENTATION=true
   local LIBRARY=true
   local USR=false
+  local VERBOSE=true
+
+  SHELLCHECK_COLOR="auto"
   while [ $# -ne 0 ]; do
     case "$1" in
       ## \option -a, --all
@@ -256,20 +272,12 @@ main() {
         COMPATIBILITY=true
         DOCUMENTATION=true
       ;;
-      ## \option -n, --none
-      ## Disable all the tests.
-      -n|--none)
-        LINTING=false
-        COMPATIBILITY=false
-        DOCUMENTATION=false
-        LIBRARY=false
-      ;;
-      ## \option -l, --linting
-      ## Run the linting tests.
-      -l|--linting) LINTING=true ;;
-      ## \option -L, --no-linting
-      ## Don't run the linting tests.
-      -L|--no-linting) LINTING=false ;;
+      ## \option -b, --library
+      ## Run the library tests.
+      -b|--library) LIBRARY=true ;;
+      ## \option -B, --no-library
+      ## Don't run the library tests.
+      -B|--no-library) LIBRARY=false ;;
       ## \option -c, --compatibility
       ## Run the compatibility tests.
       -c|--compatibility) COMPATIBILITY=true ;;
@@ -282,18 +290,39 @@ main() {
       ## \option -d, --no-documentation
       ## Don't run the documentation tests.
       -D|--no-documentation) DOCUMENTATION=false ;;
-      ## \option -b, --library
-      ## Run the library tests.
-      -b|--library) LIBRARY=true ;;
-      ## \option -B, --no-library
-      ## Don't run the library tests.
-      -B|--no-library) LIBRARY=false ;;
-      ## \option -u, --user
-      ## Run the tests in the usr directory.
-      -u|--user) USR=true ;;
       ## \option -h, --help
       ## Print this help and exit.
       -h|--help) shellman -t "$0"; exit 0 ;;
+      ## \option -l, --linting
+      ## Run the linting tests.
+      -l|--linting) LINTING=true ;;
+      ## \option -L, --no-linting
+      ## Don't run the linting tests.
+      -L|--no-linting) LINTING=false ;;
+      ## \option -n, --none
+      ## Disable all the tests.
+      -n|--none)
+        LINTING=false
+        COMPATIBILITY=false
+        DOCUMENTATION=false
+        LIBRARY=false
+      ;;
+      ## \option -p, --plain-text, --no-color
+      ## Don't use colors.
+      -p|--plain-text|--no-color)
+        # shellcheck disable=SC2034
+        SHELLM_NO_FORMAT=true
+        SHELLCHECK_COLOR="never"
+      ;;
+      ## \option -q, --quiet
+      ## Reduce output.
+      -q|--quiet) VERBOSE=false ;;
+      ## \option -u, --user
+      ## Run the tests in the usr directory.
+      -u|--user) USR=true ;;
+      ## \option -v, --verbose
+      ## Be more verbose.
+      -v|--verbose) VERBOSE=true ;;
     esac
     shift
   done
@@ -307,7 +336,6 @@ main() {
       exit 1
     fi
     echo "(running tests in user directory: $(pwd))"
-    test_script="../$0"
   fi
 
   # shellcheck disable=SC2154
@@ -329,7 +357,12 @@ main() {
   fi
   # shellcheck disable=SC2119
   if ${LIBRARY}; then
-    libraries || status=${failure}
+    library || status=${failure}
+  fi
+
+  if ${USR} && [ -f "${test_script}" ]; then
+    # shellcheck disable=SC2086
+    ./"${test_script}" ${USR_OPTS} || status=${failure}
   fi
 
   return ${status}

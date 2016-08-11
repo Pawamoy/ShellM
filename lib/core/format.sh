@@ -151,12 +151,13 @@ if [ "${TERM}" = linux ]; then # 8 colors
 
     print() {
       if [ "$F" != "${ESC}" ]; then
-        echo -n${E} "${F}m"
+        [ ! -n "${SHELLM_NO_FORMAT}" ] && echo -n${E} "${F}m"
       fi
 
       if [ $# -ne 0 ]; then
         echo -n${E} "$@"
-        echo -n${E} "${ESC}0m"
+        echo -n${E}
+        [ ! -n "${SHELLM_NO_FORMAT}" ] && echo -n${E} "${ESC}0m"
       fi
 
       if [ ${NEWLINE} -eq 1 ]; then
@@ -259,12 +260,13 @@ else # 16 colors
 
     print() {
       if [ "$F" != "${ESC}" ]; then
-        echo -n${E} "${F}m"
+        [ ! -n "${SHELLM_NO_FORMAT}" ] && echo -n${E} "${F}m"
       fi
 
       if [ $# -ne 0 ]; then
         echo -n${E} "$@"
-        echo -n${E} "${ESC}0m"
+        echo -n${E}
+        [ ! -n "${SHELLM_NO_FORMAT}" ] && echo -n${E} "${ESC}0m"
       fi
 
       if [ ${NEWLINE} -eq 1 ]; then

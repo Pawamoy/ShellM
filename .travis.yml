@@ -11,6 +11,4 @@ install:
   - . "${shellm}/usr/shellmrc"
 script:
   - ./test.sh -C
-  - ./test.sh -C -u
   - ./test.sh -n -c || true
-  - ./test.sh -n -c -u || true

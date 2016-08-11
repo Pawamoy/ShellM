@@ -365,6 +365,8 @@ main() {
     ./"${test_script}" ${USR_OPTS} || status=${failure}
   fi
 
+  # FIXME: also test shellmrc !!!
+
   return ${status}
 }
 

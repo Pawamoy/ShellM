@@ -1,5 +1,7 @@
 # shellm
 
+[![Build Status](https://travis-ci.org/Pawamoy/shellm.svg?branch=master)](https://travis-ci.org/Pawamoy/shellm)
+
 Manage your scripts and libraries, write documentation directly in files and
 auto-generate help options (-h, --help) and man pages, sync your working
 environment on any remote or physical machine.

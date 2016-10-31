@@ -9,6 +9,8 @@ include core/init/data.sh
 [ $# -eq 0 ] && usage
 
 main() {
+  purge=false
+  
   case $1 in
     ## \option -p, --purge
     ## Also delete the data directory in shellm data

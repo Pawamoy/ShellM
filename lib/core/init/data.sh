@@ -1,4 +1,3 @@
-
 if ndef __CORE_INIT_DATA_SH; then
 define __CORE_INIT_DATA_SH "init_data"
 

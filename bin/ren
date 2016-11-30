@@ -30,5 +30,5 @@ main() {
   fi
 }
 
-## \usage FILENAME NEW_NAME
+## \usage ren FILENAME NEW_NAME
 main "$@"

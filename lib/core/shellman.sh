@@ -38,6 +38,9 @@ shellman() {
       ## \option -m, --man
       ## Output MAN documentation on stdout.
       '-m'|'--man') FORMAT='man' ;;
+      ## \option -d, --md, --markdown
+      ## Output Markdown documentation on stdout.
+      '-d'|'--md'|'--markdown') FORMAT='markdown' ;;
       ## \option -s, --shellm
       ## Write MAN documentation in shellm/usr/man/man1/FILE.
       '-s'|'--shellm') FORMAT='man'; REDIRECT=true ;;

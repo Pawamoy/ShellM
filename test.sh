@@ -163,6 +163,22 @@ documentation() {
     return ${status}
   }
 
+  check_usage_matches_script_name() {
+    local script usage usages status=${success}
+    for script in "$@"; do
+      usages=$(shellman_get "usage" "${script}" | cut -d' ' -f1)
+      if [ $? -eq 0 ]; then
+        for usage in ${usages}; do
+          if [ "${usage}" != "$(basename "${script}")" ]; then
+            echo "$(format ib -- "${script}"): usage '$(format B "${usage}")' does not match script name"
+            status=${failure}
+          fi
+        done
+      fi
+    done
+    return ${status}
+  }
+
   check_help() {
     local script status=${success}
     for script in "$@"; do
@@ -184,9 +200,15 @@ documentation() {
   checked_tag='usage'
   check_files_suite "USAGE" || status=${failure}
 
+  check_script_command=check_usage_matches_script_name
+  check_bin_command=check_usage_matches_script_name
+  check_files_suite "USAGE MATCHES SCRIPT" || status=${failure}
+
   check_lib_command=check_tag
 
   # FIXME: should not succeed if only fn-brief is found...
+  check_script_command=check_tag
+  check_bin_command=check_tag
   checked_tag='brief'
   check_files_suite "BRIEF" || status=${failure}
 
@@ -370,5 +392,5 @@ main() {
   return ${status}
 }
 
-## \usage ./test.sh [-h] | [-anlLcCdDu]
+## \usage test.sh [-h] | [-anlLcCdDu]
 main "$@"

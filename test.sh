@@ -113,8 +113,7 @@ compatibility() {
     for script in "$@"; do
      for shell in ${shells}; do
        if command -v "${shell}" >/dev/null; then
-         output=$(${shell} -nv "${script}" 2>&1)
-         if [ $? -ne 0 ]; then
+         if ! output=$(${shell} -nv "${script}" 2>&1); then
            status=${failure}
            echo "$(format ib -- "${script}"):$(format m -- "${shell}")"
            echo "${output}" | tail -n2
@@ -166,8 +165,7 @@ documentation() {
   check_usage_matches_script_name() {
     local script usage usages status=${success}
     for script in "$@"; do
-      usages=$(shellman_get "usage" "${script}" | cut -d' ' -f1)
-      if [ $? -eq 0 ]; then
+      if usages=$(shellman_get "usage" "${script}" | cut -d' ' -f1); then
         for usage in ${usages}; do
           if [ "${usage}" != "$(basename "${script}")" ]; then
             echo "$(format ib -- "${script}"): usage '$(format B "${usage}")' does not match script name"

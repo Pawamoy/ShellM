@@ -135,7 +135,7 @@ compatibility() {
   check_script_command=check_shells
   check_bin_command=check_shells
   check_lib_command=check_shells
-  check_files_suite "SHELLS (${shells[*]})" || status=${failure}
+  check_files_suite "RUNS ON SHELLS (${shells[*]})" || status=${failure}
 
   return ${status}
 }
@@ -198,7 +198,7 @@ documentation() {
   check_lib_command=true # ignore usage for libs
 
   checked_tag='usage'
-  check_files_suite "USAGE" || status=${failure}
+  check_files_suite "HAS USAGE" || status=${failure}
 
   check_script_command=check_usage_matches_script_name
   check_bin_command=check_usage_matches_script_name
@@ -210,7 +210,7 @@ documentation() {
   check_script_command=check_tag
   check_bin_command=check_tag
   checked_tag='brief'
-  check_files_suite "BRIEF" || status=${failure}
+  check_files_suite "HAS BRIEF" || status=${failure}
 
   # This could be harmful!
   # check_script_command=check_help

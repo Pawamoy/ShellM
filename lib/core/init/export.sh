@@ -1,8 +1,7 @@
 if ndef __CORE_INIT_EXPORT_SH; then
 define __CORE_INIT_EXPORT_SH "init_export"
 
-## \brief Improve scripts performance by [recursively] exporting libraries
-## of sub-scripts from the current top-script.
+## \brief Improve scripts performance by [recursively] exporting used libraries
 
 include core/shellman.sh
 

@@ -189,6 +189,17 @@ documentation() {
     return ${status}
   }
 
+  check_shellman_documentation() {
+    local script status=${success}
+    for script in "$@"; do
+      if ! shellman -cwi "require,export" "${script}"; then
+        # echo "$(format ib -- "${script}"): no help option"
+        status=${failure}
+      fi
+    done
+    return ${status}
+  }
+
   local status=${success}
 
   check_script_command=check_tag
@@ -209,6 +220,11 @@ documentation() {
   check_bin_command=check_tag
   checked_tag='brief'
   check_files_suite "HAS BRIEF" || status=${failure}
+
+  check_script_command=check_shellman_documentation
+  check_bin_command=check_shellman_documentation
+  check_lib_command=check_shellman_documentation
+  check_files_suite "SHELLMAN DOCUMENTATION" || status=${failure}
 
   # This could be harmful!
   # check_script_command=check_help

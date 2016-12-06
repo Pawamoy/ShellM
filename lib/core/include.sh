@@ -12,7 +12,7 @@ define() {
 ## \fn filter_host (file, [host])
 ## \param file Path to file to filter
 ## \param host Optional, name of the host to filter, default to $HOSTNAME
-## \echo Filtered file
+## \stdout Filtered file
 filter_host() {
   { grep -nE '##.*[\@]host.*[ ,  ]'"${2:-$HOSTNAME}"'[ ,  ]?' "$1"
     grep -nv '##.*[\@]host' "$1"
@@ -22,7 +22,7 @@ filter_host() {
 ## \fn include (filename)
 ## \brief Includes content of a library file in the current shell
 ## \param filename Name of library file to include
-## \echo Message on stderr if return code 1
+## \stderr Message if return code 1
 ## \return false (and exits if subshell) if no args or error while including contents, true otherwise
 include() {
   local libdir array

@@ -3,7 +3,7 @@ define __CORE_INIT_DATA_SH "init_data"
 
 ## \fn init_data [script]
 ## \brief Initialize DATADIR variable and create directory
-## \out Path to data directory
+## \stdout Path to data directory
 init_data() {
   local script="${1:-$0}"
   # shellcheck disable=SC2154
@@ -14,7 +14,7 @@ init_data() {
 
 ## \fn get_data_dir [script]
 ## \brief Echo the path to data directory
-## \out Path to data directory
+## \stdout Path to data directory
 get_data_dir() {
   local script="${1:-$0}"
   echo "${shellm}/usr/data/${script##*/}"

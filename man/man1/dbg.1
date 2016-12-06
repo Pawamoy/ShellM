@@ -1,0 +1,26 @@
+.if n.ad l
+.nh
+.TH dbg 1 "" "Shellman 0.2.1" "User Commands"
+.SH "NAME"
+dbg \- shell script debugger
+.SH "SYNOPSIS"
+.br
+\fBdbg\fR dbg [\fB\-tvn\fR] \fISCRIPT\fR | \fB\-h\fR
+.SH "DESCRIPTION"
+Run a script in path with the \-x bash option (and more).
+You should set the PS4 variable for better output.
+
+.SH "OPTIONS"
+.IP "\fB-t\fR,\fB --test\fR" 4
+Read the script and warn for encountered syntax errors.
+Do not actually run the script.
+.IP "\fB-v\fR,\fB --verbose\fR" 4
+Run the script with verbose option.
+.IP "\fB-n\fR,\fB --dry-run\fR" 4
+Options test and verbose combined. Validate the syntax
+and print the script to stdout.
+.IP "\fB-h\fR,\fB --help\fR" 4
+Prints this help and exit.
+.SH "ENVIRONMENT VARIABLES"
+.IP "\fBPS4\fR" 4
+Debugger prompt

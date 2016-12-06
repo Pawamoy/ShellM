@@ -1,0 +1,57 @@
+.if n.ad l
+.nh
+.TH include.sh 1 "" "Shellman 0.2.1" "User Commands"
+.SH "NAME"
+include.sh \- Include functions for scripts (ndef, define, include)
+.SH "FUNCTIONS"
+define (name, [value])
+.br
+filter_host (file, [host])
+.br
+include (filename)
+.br
+ndef (varname)
+.br
+.IP "\fBdefine (name, [value])\fR" 4
+Defines an environment variable in the current shell
+
+.ul
+Parameters:
+  \fBname        \fR Variable name
+  \fBvalue       \fR Optional, variable content (default: \(cqdef\(cq)
+
+.ul
+Return code:
+  false if no args or error while affectation, true otherwise
+
+
+.IP "\fBfilter_host (file, [host])\fR" 4
+.ul
+Parameters:
+  \fBfile        \fR Path to file to filter
+  \fBhost        \fR Optional, name of the host to filter, default to $HOSTNAME
+
+.IP "\fBinclude (filename)\fR" 4
+Includes content of a library file in the current shell
+
+.ul
+Parameters:
+  \fBfilename    \fR Name of library file to include
+
+.ul
+Return code:
+  false (and exits if subshell) if no args or error while including contents, true otherwise
+
+
+.IP "\fBndef (varname)\fR" 4
+Tests if a variable is set (non\-empty)
+
+.ul
+Parameters:
+  \fBvarname     \fR Variable name
+
+.ul
+Return code:
+  true if empty (unset), false otherwise
+
+

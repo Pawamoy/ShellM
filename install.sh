@@ -40,7 +40,8 @@ LOGO="\033[7m
 \033[0m"
 
 install_shellman() {
-  git clone https://github.com/Pawamoy/shellman.git bin/shellman
+  command -v pip >/dev/null || { echo "install_shellman: you need to install pip"; exit 1; }
+  pip install --user shellman
 }
 
 install_always() {

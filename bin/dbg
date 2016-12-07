@@ -2,7 +2,9 @@
 
 ## \brief shell script debugger
 ## \require coreutils
-## \env PS4 Debugger prompt
+## \env PS4
+## Debugger prompt. This is the prefix that bash prepends to
+## the current instruction when using -x option.
 
 ## \desc Run a script in path with the -x bash option (and more).
 ## You should set the PS4 variable for better output.

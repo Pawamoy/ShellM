@@ -12,7 +12,7 @@ define  __DAEMON_CONSUMER_SH "
 
 include core/init/data.sh
 
-## \brief Provide functions to ease creation of daemon scripts
+## \brief Provide functions to ease creation of daemon scripts.
 ## \desc Simple consumers:
 ##
 ## Multiple consumers can consume the same directory.
@@ -72,7 +72,7 @@ consumer_unlock() {
 ## \fn consumer_locked NAME [DIR]
 ## \brief Test if NAME is locked
 ## \param NAME Name of the item to test
-## \param DIR Directory in which to check the lock (default to data) (default to data)
+## \param DIR Directory in which to check the lock (default to data)
 consumer_locked() {
   [ -d "${2:-$get_lock_dir}/$(sha "$1")" ]
 }
@@ -100,8 +100,8 @@ consumer_get() {
   done
 }
 
-## \fn consumer_get DAEMON FILE...
-## \brief Lock then move each given file in consumed directory of DAEMON
+## \fn consumer_send DAEMON FILE...
+## \brief Lock then move each given file to consumed directory of DAEMON
 ## \param DAEMON The daemon to send the files to (into its consumed directory)
 ## \param FILE Single or multiple files to move into consumed directory
 consumer_send() {

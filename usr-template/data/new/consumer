@@ -17,8 +17,8 @@ main() {
     ## \option -h, --help
     ## Prints this help and exit.
     -h|--help)
-      shellman -t "$0"
-      shellman -t "${shellm}/lib/daemon/consumer.sh"
+      shellman "$0"
+      shellman "${shellm}/lib/daemon/consumer.sh"
       exit 0
     ;;
   esac

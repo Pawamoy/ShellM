@@ -9,7 +9,12 @@ define __CORE_SHELLMAN_SH "
 shellman_re='^[[:space:]]*##[[:space:]]*[@\]'
 
 usage() {
-  echo "usage: $(shellman_get usage "${1:-$0}")"
+  local usages
+  usages="$(shellman_get usage "${1:-$0}")"
+  echo "usage: $(echo "${usages}" | head -n1)"
+  echo "${usages}" | tail -n+2 | while read -r line; do
+    echo "       ${line}"
+  done
   exit 0
 }
 

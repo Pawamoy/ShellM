@@ -280,12 +280,75 @@ library() {
     return ${status}
   }
 
+  check_declare_contents() {
+    local lib status=${success}
+    for lib in "$@"; do
+      [ "${lib}" = "lib/core/include.sh" ] && continue
+      if ! grep -Eq 'define[[:space:]]+[^"]+"' "$lib"; then
+        status=${failure}
+        echo "$(format ir -- "${lib}"): define should declare contents between double-quotes"
+      fi
+    done
+
+    return ${status}
+  }
+
+  check_namespace_clashes() {
+    local lib contents declarations status=${success}
+    declarations=$(
+      for lib in "$@"; do
+        contents=$(pcregrep -M 'define\s+[^"]*"(\n|[^"])*"' "$lib")
+        contents=${contents#*\"}
+        contents=${contents%\"*}
+
+        for content in ${contents}; do
+          echo "('${content}','${lib}'),"
+        done
+      done
+    )
+
+    python_code="
+m = {}
+for d, f in [${declarations}]:
+    if m.get(d, None) is None:
+        m[d] = [f]
+    else:
+        m[d].append(f)
+
+for d, f in m.items():
+    if len(f) > 1:
+        print('%s:%s' % (d, ','.join(f)))
+    "
+
+    local clash clashes declaration files
+    clashes="$(python -c "${python_code}")"
+    if [ -n "${clashes}" ]; then
+      status=${failure}
+      for clash in ${clashes}; do
+        declaration=${clash%%:*}
+        files=${clash#*:}
+        echo "$(format ir -- "${declaration}"): declaration clashes between files $(format B -- "${files}")"
+      done
+    fi
+
+    return ${status}
+  }
+
   local status=${success}
 
   check_script_command=true
   check_bin_command=true
+
   check_lib_command=check_if_ndef_define_fi
   check_files_suite "IFNDEF / DEFINE" || status=${failure}
+
+  check_lib_command=check_declare_contents
+  check_files_suite "DECLARED CONTENTS" || status=${failure}
+
+  if [ ${status} -eq 0 ]; then
+    check_lib_command=check_namespace_clashes
+    check_files_suite "NAMESPACE CLASHES" || status=${failure}
+  fi
 
   return ${status}
 }
@@ -328,7 +391,7 @@ main() {
       -D|--no-documentation) DOCUMENTATION=false ;;
       ## \option -h, --help
       ## Print this help and exit.
-      -h|--help) shellman -t "$0"; exit 0 ;;
+      -h|--help) shellman "$0"; exit 0 ;;
       ## \option -l, --linting
       ## Run the linting tests.
       -l|--linting) LINTING=true ;;

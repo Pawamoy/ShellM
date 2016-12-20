@@ -1,5 +1,5 @@
 if ndef __CORE_FORMAT_SH; then
-define __CORE_FORMAT_SH "format VAR"
+define __CORE_FORMAT_SH "format"
 
 ## \usage format [OPTIONS...] [--] [STRING...]
 ## \example format onBlack intenseGreen faint bold newLine; echo SUCCESS!

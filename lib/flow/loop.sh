@@ -10,7 +10,8 @@ define  __FLOW_LOOP_SH "
   loop_paused
   loop_resume
   loop_stop
-  loop_wait"
+  loop_wait
+  "
 
 include core/init/data.sh
 

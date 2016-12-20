@@ -1,0 +1,19 @@
+#!/bin/bash
+
+## \brief main shellm command providing subcommands
+## \require coreutils
+
+## \desc Later.
+
+
+# pas de commande load
+# commande run RC COMMAND
+
+# when calling shellm
+# if not already loaded
+# use RC if provided
+# else use SHELLM_PROFILE if set
+# else use ~/.shellmrc if exist
+# else use basic settings
+
+## \usage shellm Later.

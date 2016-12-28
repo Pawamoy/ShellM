@@ -19,13 +19,13 @@ main() {
     if [ -n "$2" ]; then
       $2 "${shellm}/usr/bin/$1"
     else
-      xdg-open "${shellm}/usr/bin/$1"
+      vim "${shellm}/usr/bin/$1"
     fi
   elif [ -f "${shellm}/usr/lib/${1%.sh}.sh" ]; then
     if [ -n "$2" ]; then
       $2 "${shellm}/usr/lib/${1%.sh}.sh"
     else
-      xdg-open "${shellm}/usr/lib/${1%.sh}.sh"
+      vim "${shellm}/usr/lib/${1%.sh}.sh"
     fi
   else
     echo "mod: $1: no such file in shellm bin or lib" >&2

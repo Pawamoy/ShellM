@@ -96,15 +96,16 @@ loop() {
 
   ## \param COMMAND
   ## COMMAND can be the following:
-  ## - `alive`: return True if the loop is alive, False otherwise.
-  ## - `control`: shortcut for loop paused? wait. loop dead? break.
-  ## - `dead`: return True if the loop is dead, False otherwise.
-  ## - `exists`: return True if loop has been initialized, False otherwise.
-  ## - `init`: init a new loop control and start it.
-  ## - `pause`: pause the loop. It will wait until resumed or stopped.
-  ## - `resume`: resume the loop.
-  ## - `stop`: definitely stop the loop.
-  ## - `wait`: wait as long as loop is paused.
+  ##
+  ##     - `alive`: return True if the loop is alive, False otherwise.
+  ##     - `control`: shortcut for loop paused? wait. loop dead? break.
+  ##     - `dead`: return True if the loop is dead, False otherwise.
+  ##     - `exists`: return True if loop has been initialized, False otherwise.
+  ##     - `init`: init a new loop control and start it.
+  ##     - `pause`: pause the loop. It will wait until resumed or stopped.
+  ##     - `resume`: resume the loop.
+  ##     - `stop`: definitely stop the loop.
+  ##     - `wait`: wait as long as loop is paused.
   case "${loop_command}" in
     alive) loop_alive "${arg0}" "${var}" ;;
     control) loop_control "${arg0}" "${var}" ;;

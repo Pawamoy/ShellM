@@ -2,7 +2,7 @@
 .nh
 .TH consumer.sh 1 "" "Shellman 0.2.1" "User Commands"
 .SH "NAME"
-consumer.sh \- Provide functions to ease creation of daemon scripts
+consumer.sh \- Provide functions to ease creation of daemon scripts.
 .SH "DESCRIPTION"
 Simple consumers:
 
@@ -57,7 +57,7 @@ consumer_unlocked NAME [DIR]
 .br
 consumer_get FILE...
 .br
-consumer_get DAEMON FILE...
+consumer_send DAEMON FILE...
 .br
 consumer_location
 .br
@@ -96,7 +96,7 @@ Test if NAME is locked
 .ul
 Parameters:
   \fBNAME        \fR Name of the item to test
-  \fBDIR         \fR Directory in which to check the lock (default to data) (default to data)
+  \fBDIR         \fR Directory in which to check the lock (default to data)
 
 .IP "\fBconsumer_unlocked NAME [DIR]\fR" 4
 Test if NAME is unlocked
@@ -113,8 +113,8 @@ Lock then move each given file into consumed directory
 Parameters:
   \fBFILE        \fR Single or multiple files to move into consumed directory
 
-.IP "\fBconsumer_get DAEMON FILE...\fR" 4
-Lock then move each given file in consumed directory of DAEMON
+.IP "\fBconsumer_send DAEMON FILE...\fR" 4
+Lock then move each given file to consumed directory of DAEMON
 
 .ul
 Parameters:

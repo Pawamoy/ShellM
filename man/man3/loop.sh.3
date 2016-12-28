@@ -1,0 +1,27 @@
+.if n.ad l
+.nh
+.TH loop.sh 1 "" "Shellman 0.2.1" "User Commands"
+.SH "NAME"
+loop.sh \- Control the loops within your scripts (pause/stop them).
+.SH "FUNCTIONS"
+loop
+.br
+.IP "\fBloop\fR" 4
+Pause (resume), stop or check that a loop is alive or dead.
+
+.ul
+Parameters:
+  \fBCOMMAND\fR
+    COMMAND can be the following:
+
+    \- `alive`: return True if the loop is alive, False otherwise.
+    \- `control`: shortcut for loop paused? wait. loop dead? break.
+    \- `dead`: return True if the loop is dead, False otherwise.
+    \- `exists`: return True if loop has been initialized, False otherwise.
+    \- `init`: init a new loop control and start it.
+    \- `pause`: pause the loop. It will wait until resumed or stopped.
+    \- `resume`: resume the loop.
+    \- `stop`: definitely stop the loop.
+    \- `wait`: wait as long as loop is paused.
+
+

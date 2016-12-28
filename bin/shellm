@@ -7,7 +7,10 @@
 
 
 # pas de commande load
-# commande run RC COMMAND
+# commande run COMMAND
+# option to specify profile
+# default to ~/.shellmrc
+# can be a link or contain '. your/profile'
 
 # when calling shellm
 # if not already loaded

@@ -1,9 +1,6 @@
 .if n.ad l
 .nh
 .TH format.sh 1 "" "Shellman 0.2.1" "User Commands"
-.SH "SYNOPSIS"
-.br
-\fBformat.sh\fR format [\fIOPTIONS\fR...] [\fB\-\-\fR] [\fISTRING\fR...]
 .SH "DESCRIPTION"
 Available arguments to the \(cqformat\(cq function:
 
@@ -36,7 +33,7 @@ Available arguments to the \(cqformat\(cq function:
     Style            |  Reset style
     _________________|________________________________
                      |
-                     |  ra, R,  reset, resetAll
+                     |  ra, RA, reset, resetAll
     B, bold          |  rb, RB, resetBold
     F, faint         |  rf, RF, resetFaint
     I, italic        |  ri, RI, resetItalic
@@ -55,19 +52,20 @@ Available arguments to the \(cqformat\(cq function:
     \-\-               |  Stop interpretation of arguments as options.
 
 .SH "EXAMPLES"
-.IP "\fBformat onBlack intenseGreen faint bold newLine; echo SUCCESS!\fR" 4
-Black background, intense\-green foreground, fainted, bold and new line.
+.IP "\fBformat onBlack intenseGreen faint bold; echo 'SUCCESS!'; format reset\fR" 4
+Black background, intense\-green foreground, fainted and bold.
 .IP "\fBformat B k U oib nl INFO\fR" 4
 Bold, black foreground, underline, intense\-blue background and new line.
 .SH "FUNCTIONS"
-format (args...)
+format [OPTIONS] [ARGS]
 .br
-.IP "\fBformat (args...)\fR" 4
+.IP "\fBformat [OPTIONS] [ARGS]\fR" 4
 Format the output with style and color
 
 .ul
 Parameters:
-  \fBargs        \fR Letters or complete names of style/colors.
+  \fBOPTIONS     \fR Letters or complete names of style/colors.
+  \fBARGS        \fR Text to print.
 
 .ul
 Standard output:

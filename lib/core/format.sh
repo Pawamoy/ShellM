@@ -1,9 +1,8 @@
 if ndef __CORE_FORMAT_SH; then
 define __CORE_FORMAT_SH "format"
 
-## \usage format [OPTIONS...] [--] [STRING...]
-## \example format onBlack intenseGreen faint bold newLine; echo SUCCESS!
-## Black background, intense-green foreground, fainted, bold and new line.
+## \example format onBlack intenseGreen faint bold; echo 'SUCCESS!'; format reset
+## Black background, intense-green foreground, fainted and bold.
 ## \example format B k U oib nl INFO
 ## Bold, black foreground, underline, intense-blue background and new line.
 
@@ -38,7 +37,7 @@ define __CORE_FORMAT_SH "format"
 ##     Style            |  Reset style
 ##     _________________|________________________________
 ##                      |
-##                      |  ra, R,  reset, resetAll
+##                      |  ra, RA, reset, resetAll
 ##     B, bold          |  rb, RB, resetBold
 ##     F, faint         |  rf, RF, resetFaint
 ##     I, italic        |  ri, RI, resetItalic
@@ -61,9 +60,10 @@ define __CORE_FORMAT_SH "format"
 ## Also underline, faint and blink will be ignored.
 ## Other available styles may or may not be interpreted by your terminal.
 
-## \fn format (args...)
+## \fn format [OPTIONS] [ARGS]
 ## \brief Format the output with style and color
-## \param args Letters or complete names of style/colors.
+## \param OPTIONS Letters or complete names of style/colors.
+## \param ARGS Text to print.
 ## \stdout The formatted string.
 if [ "${TERM}" = linux ]; then # 8 colors
 
@@ -302,7 +302,7 @@ complete -W "
 
   nl newLine dr dryRun er redirectErr
 
-  ra R reset resetAll
+  ra RA reset resetAll
   rb RB resetBold rf RF resetFaint ri RI resetItalic ru RU resetUnderline
   rk RK resetBlink rr RR resetReverse rh RH resetHidden rs RS resetStrike" format
 

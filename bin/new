@@ -44,7 +44,7 @@ main() {
   chmod +x "${shellm}/usr/bin/$1"
 
   # Open the file
-  xdg-open "${shellm}/usr/bin/$1"
+  vim "${shellm}/usr/bin/$1"
 }
 
 ## \usage new FILENAME [TEMPLATE] | -h

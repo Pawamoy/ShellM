@@ -2,7 +2,7 @@ if ndef __CORE_SHELLMAN_SH; then
 define __CORE_SHELLMAN_SH "
   shellman_re
   usage
-  shellm_get"
+  shellman_get"
 
 ## \brief Wrapper for shellman.
 

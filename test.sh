@@ -50,11 +50,6 @@ check_files_suite() {
     ${check_lib_command} ${libs} || status=${failure}
   fi
 
-  # shellcheck disable=SC2015
-  [ ${status} -eq 0 ] &&
-    format B g -- "Success! All tests passed.\n" ||
-    format B r -- "Failure... Some tests failed.\n"
-
   echo
   return ${status}
 }
@@ -465,6 +460,11 @@ main() {
   fi
 
   # FIXME: also test shellmrc !!!
+
+  # shellcheck disable=SC2015
+  [ ${status} -eq 0 ] &&
+    format B g -- "Success! All tests passed.\n" ||
+    format B r -- "Failure... Some tests failed.\n"
 
   return ${status}
 }

@@ -5,6 +5,7 @@ dir="$(dirname "$0")"
 # shellcheck disable=SC2164
 dir="$(cd "$dir"/..; pwd)"
 export shellm="$dir"
+export XRUN=1
 # shellcheck source=usr/shellmrc
 . "${shellm}/usr/shellmrc"
 

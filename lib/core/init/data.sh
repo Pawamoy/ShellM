@@ -7,7 +7,7 @@ define __CORE_INIT_DATA_SH "init_data"
 init_data() {
   local script="${1:-$0}"
   # shellcheck disable=SC2154
-  local data_dir="${shellm}/usr/data/${script##*/}"
+  local data_dir="${SHELLM_USR}/data/${script##*/}"
   mkdir -p "${data_dir}" 2>/dev/null
   echo "${data_dir}"
 }
@@ -17,7 +17,7 @@ init_data() {
 ## \stdout Path to data directory
 get_data_dir() {
   local script="${1:-$0}"
-  echo "${shellm}/usr/data/${script##*/}"
+  echo "${SHELLM_USR}/data/${script##*/}"
 }
 
 fi # __CORE_INIT_DATA_SH

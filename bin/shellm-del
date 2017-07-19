@@ -10,7 +10,7 @@ include core/init/data.sh
 
 main() {
   purge=false
-  
+
   case $1 in
     ## \option -p, --purge
     ## Also delete the data directory in shellm data
@@ -27,15 +27,15 @@ main() {
 
   ${purge} && rm -rf "${data_dir:?}/$1" 2>/dev/null
   # shellcheck disable=SC2154
-  if [ -e "${shellm}/usr/bin/$1" ]; then
-    rm -rf "${shellm}/usr/bin/$1"
-  elif [ -e "${shellm}/usr/lib/$1" ]; then
-    rm -rf "${shellm}/usr/lib/$1"
+  if [ -e "${SHELLM_USR:?}/bin/$1" ]; then
+    rm -rf "${SHELLM_USR:?}/bin/$1"
+  elif [ -e "${SHELLM_USR:?}/lib/$1" ]; then
+    rm -rf "${SHELLM_USR:?}/lib/$1"
   else
-    echo "del: $1: no such file or directory in shellm bin or lib" >&2
+    echo "shellm: del: $1: no such file or directory in shellm bin or lib" >&2
     exit 1
   fi
 }
 
-## \usage del [-p] FILE|DIR
+## \usage shellm-del [-p] FILE|DIR
 main "$@"

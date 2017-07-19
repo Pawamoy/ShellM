@@ -39,5 +39,5 @@ main() {
   format RA d
 }
 
-## \usage dbg [-tvn] SCRIPT | -h
+## \usage shellm-dbg [-tvn] SCRIPT | -h
 main "$@"

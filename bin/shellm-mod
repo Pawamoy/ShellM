@@ -1,4 +1,4 @@
-#!/bin/bash
+SHELLM_USR}/#!/bin/bash
 
 ## \brief open a file in shellm/bin or shellm/lib
 ## \require coreutils
@@ -15,23 +15,23 @@ main() {
   esac
 
   # shellcheck disable=SC2154
-  if [ -f "${shellm}/usr/bin/$1" ]; then
+  if [ -f "${SHELLM_USR}/bin/$1" ]; then
     if [ -n "$2" ]; then
-      $2 "${shellm}/usr/bin/$1"
+      $2 "${SHELLM_USR}/bin/$1"
     else
-      vim "${shellm}/usr/bin/$1"
+      vim "${SHELLM_USR}/bin/$1"
     fi
-  elif [ -f "${shellm}/usr/lib/${1%.sh}.sh" ]; then
+  elif [ -f "${SHELLM_USR}/lib/${1%.sh}.sh" ]; then
     if [ -n "$2" ]; then
-      $2 "${shellm}/usr/lib/${1%.sh}.sh"
+      $2 "${SHELLM_USR}/lib/${1%.sh}.sh"
     else
-      vim "${shellm}/usr/lib/${1%.sh}.sh"
+      vim "${SHELLM_USR}/lib/${1%.sh}.sh"
     fi
   else
-    echo "mod: $1: no such file in shellm bin or lib" >&2
+    echo "shell: mod: $1: no such file in shellm bin or lib" >&2
     exit 1
   fi
 }
 
-## \usage mod FILENAME [EDITOR] | -h
+## \usage shellm-mod FILENAME [EDITOR] | -h
 main "$@"

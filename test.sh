@@ -412,7 +412,7 @@ main() {
       ## Reduce output.
       -q|--quiet) VERBOSE=false ;;
       ## \option -u, --user
-      ## Run the tests in the usr directory.
+      ## Run the tests in the user directory.
       -u|--user) USR=true ;;
       ## \option -v, --verbose
       ## Be more verbose.
@@ -423,10 +423,10 @@ main() {
 
   test_script="$0"
 
-  if ${USR}; then
+  if ${USR} && [ -d "${SHELLM_USR}" ]; then
     # shellcheck disable=SC2154
-    if ! cd "${shellm}/usr"; then
-      echo "test.sh: can't cd into usr directory, abort" >&2
+    if ! cd "${SHELLM_USR}"; then
+      echo "test.sh: can't cd into user directory, abort" >&2
       exit 1
     fi
     echo "(running tests in user directory: $(pwd))"

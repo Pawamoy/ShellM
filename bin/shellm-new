@@ -23,29 +23,29 @@ main() {
 
   # Test if the script already exists
   # shellcheck disable=SC2154
-  if [ -f "${shellm}/usr/bin/$1" ]; then
-    echo "new: $1 already exists in ${shellm}/usr/bin" >&2
+  if [ -f "${SHELLM_USR}/bin/$1" ]; then
+    echo "shellm: new: $1 already exists in ${SHELLM_USR}/bin" >&2
     exit 1
   fi
 
   # Copy the template
   if [ -z "$2" ]; then
-    cp "${data_dir}/default" "${shellm}/usr/bin/$1"
+    cp "${data_dir}/default" "${SHELLM_USR}/bin/$1"
   else
     if [ -f "${data_dir}/$2" ]; then
-      cp "${data_dir}/$2" "${shellm}/usr/bin/$1"
+      cp "${data_dir}/$2" "${SHELLM_USR}/bin/$1"
     else
-      echo "new: template $2 does not exist in ${data_dir}" >&2
+      echo "shellm: new: template $2 does not exist in ${data_dir}" >&2
       exit 2
     fi
   fi
 
   # Make it executable
-  chmod +x "${shellm}/usr/bin/$1"
+  chmod +x "${SHELLM_USR}/bin/$1"
 
   # Open the file
-  vim "${shellm}/usr/bin/$1"
+  vim "${SHELLM_USR}/bin/$1"
 }
 
-## \usage new FILENAME [TEMPLATE] | -h
+## \usage shellm-new FILENAME [TEMPLATE] | -h
 main "$@"

@@ -150,9 +150,9 @@ main() {
   esac
 }
 
-## \usage dae start|stop|kill DAEMONS
-## \usage dae [un]register DAEMONS
-## \usage dae startall|stopall|killall
-## \usage dae alias NAME [COMMANDS...]
-## \usage dae runalias NAME
+## \usage shellm-dae start|stop|kill DAEMONS
+## \usage shellm-dae [un]register DAEMONS
+## \usage shellm-dae startall|stopall|killall
+## \usage shellm-dae alias NAME [COMMANDS...]
+## \usage shellm-dae runalias NAME
 main "$@"

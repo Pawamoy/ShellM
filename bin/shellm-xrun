@@ -1,13 +1,15 @@
 #!/bin/bash
-## \usage xrun script args
+## \usage shellm-xrun script args
 ## \brief Load shellm then run a script.
+# FIXME: get real path, not symlink
 dir="$(dirname "$0")"
 # shellcheck disable=SC2164
 dir="$(cd "$dir"/..; pwd)"
-export shellm="$dir"
+export SHELLM_ROOT="$dir"
 export XRUN=1
 # shellcheck source=usr/shellmrc
-. "${shellm}/usr/shellmrc"
+. "${SHELLM_ROOT}/init"
+shellm load
 
 script=$1; shift
 # shellcheck disable=SC1090

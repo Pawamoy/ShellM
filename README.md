@@ -1,4 +1,4 @@
-# shellm
+![logo](logo.png)
 
 [![Build Status](https://travis-ci.org/Pawamoy/shellm.svg?branch=master)](https://travis-ci.org/Pawamoy/shellm)
 
@@ -12,19 +12,20 @@ For now shellm is only on GitHub:
 
 `git clone https://github.com/Pawamoy/shellm.git`
 
+## Dependencies
+
+- shellman: `[sudo -H] pip install shellman`
+
 ## Installation
 
-An installation script is available in the root folder:
+Installation is inspired from **pyenv** and others:
 
 ```bash
-cd shellm
-./install.sh
+git clone https://github.com/Pawamoy/shellm.git ~/.shellm
+# in your .bashrc
+export SHELLM_ROOT="${HOME}/.shellm"
+. "${SHELLM_ROOT}/init.sh"
 ```
-It will simply install its dependencies
-(like [shellman](https://github.com/Pawamoy/shellman)),
-and let you choose how you want to use it (at startup/invocation).
-It will also offer to clone your shellm user repository (see the documentation
-for more details), or create an empty one.
 
 ## Documentation
 

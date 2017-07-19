@@ -12,15 +12,15 @@ init_export() {
   local include includes include_header defined
 
   sub_scripts=$(shellman_get export "${1:-$0}")
-  for sub_script in $sub_scripts; do
+  for sub_script in ${sub_scripts}; do
     # shellcheck disable=SC2154
-    includes=$(grep -o 'include [a-zA-Z_/]*\.sh' "${shellm}/usr/bin/${sub_script}" | cut -d' ' -f2)
-    for include in $includes; do
+    includes=$(grep -o 'include [a-zA-Z_/]*\.sh' "${SHELLM_USR}/bin/${sub_script}" | cut -d' ' -f2)
+    for include in ${includes}; do
       include "${include}"
       include_header=${include//[\/.]/_}
       include_header=__${include_header^^}
       include_header=${!include_header}
-      for defined in $include_header; do
+      for defined in ${include_header}; do
         if [ "$(type -t "${defined}")" = "function" ]; then
           # shellcheck disable=SC2163
           export -f ${defined}
@@ -30,7 +30,7 @@ init_export() {
         fi
       done
     done
-    init_export "$shellm/usr/bin/$sub_script"
+    init_export "${SHELLM_USR}/bin/${sub_script}"
   done
 }
 

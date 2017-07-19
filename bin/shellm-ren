@@ -16,19 +16,19 @@ main() {
   esac
 
   # shellcheck disable=SC2154
-  if [ -e "${shellm}/usr/bin/$1" ]; then
-    mv "${shellm}/usr/bin/$1" "${shellm}/usr/bin/$2"
+  if [ -e "${SHELLM_USR}/bin/$1" ]; then
+    mv "${SHELLM_USR}/bin/$1" "${SHELLM_USR}/bin/$2"
     data_dir=$(get_data_dir)
     if [ -e "${data_dir}" ]; then
       mv "${data_dir}" "${data_dir%/*}/$2"
     fi
-  elif [ -e "${shellm}/usr/lib/$1" ]; then
-    mv "${shellm}/usr/lib/$1" "${shellm}/usr/lib/$2"
+  elif [ -e "${SHELLM_USR}/lib/$1" ]; then
+    mv "${SHELLM_USR}/lib/$1" "${SHELLM_USR}/lib/$2"
   else
-    echo "ren: $1: no such file in shellm bin or lib" >&2
+    echo "shellm: ren: $1: no such file in shellm bin or lib" >&2
     exit 1
   fi
 }
 
-## \usage ren FILENAME NEW_NAME
+## \usage shellm-ren FILENAME NEW_NAME
 main "$@"

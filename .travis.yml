@@ -6,9 +6,9 @@ before_install:
   - sudo apt-get install -y devscripts zsh pcregrep
 
 install:
-  - printf "3\n2\n" | ./install.sh
-  - export shellm="$(pwd)"
-  - . "${shellm}/usr/shellmrc"
+  - export SHELLM_ROOT="$(pwd)"
+  - . "${SHELLM_ROOT}/init.sh"
+
 script:
   - ./test.sh -C
   - ./test.sh -n -c || true

@@ -7,17 +7,14 @@ auto-generate help options (-h, --help) and man pages, sync your working
 environment on any remote or physical machine.
 
 ## Download
-
 For now shellm is only on GitHub:
 
 `git clone https://github.com/Pawamoy/shellm.git`
 
 ## Dependencies
-
-- shellman: `[sudo -H] pip install shellman`
+- [shellman](https://github.com/Pawamoy/shellman): `[sudo -H] pip install shellman`
 
 ## Installation
-
 Installation is inspired from **pyenv** and others:
 
 ```bash
@@ -28,27 +25,26 @@ export SHELLM_ROOT="${HOME}/.shellm"
 ```
 
 ## Documentation
-
 It is all on the [wiki](https://github.com/Pawamoy/shellm/wiki).
 You can already jump to the
 [Quick concept section](https://github.com/Pawamoy/shellm/wiki#quick-concept).
 
 ## Tests
+To run the tests you will need to install some dependencies:
 
-To run all the tests, just use `./test.sh`. Append a `-h` option to print
-some help.
-
-- For the linting tests you will need the latest version of
-  [ShellCheck](https://github.com/koalaman/shellcheck):
-
+- [bats](https://github.com/sstephenson/bats):
+  ```bash
+  curl -Lo- "https://raw.githubusercontent.com/bpkg/bpkg/master/setup.sh" | sudo bash
+  sudo bpkg install -g sstephenson/bats
+  ```
+- [shellcheck](https://github.com/koalaman/shellcheck):
   ```bash
   sudo curl -Lso /usr/bin/shellcheck https://github.com/caarlos0/shellcheck-docker/releases/download/v0.4.5/shellcheck
   sudo chmod +x /usr/bin/shellcheck
   ```
-
-- For the compatibility tests you will need
-  [checkbashisms](https://sourceforge.net/projects/checkbaskisms/):
-
+- [checkbashisms](https://sourceforge.net/projects/checkbaskisms/) (optional) and pcregrep:
   ```bash
-  sudo apt-get install devscripts
+  sudo apt-get install devscripts pcregrep
   ```
+
+Now simply run `bats tests`!

@@ -1,3 +1,5 @@
+# shellcheck disable=SC2148
+
 _shellm_init() {
   local SHELLM_ROOT="${SHELLM_ROOT:-$1}"
 
@@ -12,7 +14,7 @@ _shellm_init() {
     export PATH="${SHELLM_ROOT}/bin:${PATH}"
   fi
 
-  MANPATH="${SHELLM_ROOT}/man:"
+  export MANPATH="${SHELLM_ROOT}/man:"
   export LIBPATH="${SHELLM_ROOT}/lib"
 
   shellm() {
@@ -24,11 +26,7 @@ _shellm_init() {
       return 1
     fi
 
-    # Not needed since we always call the command the same way
-    # case $(type -t "shellm-${cmd}") in
-    #   alias|function|file) shellm-${cmd} "$@" ;;
-    #   builtin|keyword) echo "shellm: this should never have happened O_o" >&2; return 1 ;;
-    # esac
+    # shellcheck disable=SC2086
     shellm-${cmd} "$@"
   }
 
@@ -37,12 +35,15 @@ _shellm_init() {
     if [ $# -gt 0 ]; then
       for profile in "$@"; do
         if [ -f "${profile}" ]; then
+          # shellcheck disable=SC1090
           . "${profile}"
         fi
       done
     elif [ -n "${SHELLM_PROFILE}" ]; then
+      # shellcheck disable=SC1090
       . "${SHELLM_PROFILE}"
     elif [ -f "${HOME}/.shellmrc" ]; then
+      # shellcheck disable=SC1090
       . "${HOME}/.shellmrc"
     else
       echo "shellm: load: no profile loaded, try 'shellm help load' to see how profiles are loaded" >&2
@@ -51,6 +52,7 @@ _shellm_init() {
   }
 
   # Inclusion system
+  # shellcheck source=lib/core/include.sh
   . "${SHELLM_ROOT}/lib/core/include.sh"
 
   # Load time measuring library

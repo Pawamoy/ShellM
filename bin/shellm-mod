@@ -1,4 +1,4 @@
-SHELLM_USR}/#!/bin/bash
+#!/bin/bash
 
 ## \brief open a file in shellm/bin or shellm/lib
 ## \require coreutils

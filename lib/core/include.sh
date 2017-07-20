@@ -6,7 +6,7 @@
 ## \param value Optional, variable content (default: 'def')
 ## \return false if no args or error while affectation, true otherwise
 define() {
-  [ $# -ge 1 ] && eval "$1=\"${2:-DEF}\"" || return 1;
+  [ $# -ge 1 ] && eval "$1=\"${2:-DEF}\"" || return 1
 }
 
 ## \fn filter_host (file, [host])
@@ -31,9 +31,8 @@ include() {
     if [ -f "${libdir}/$1" ]; then
       # shellcheck disable=SC1090
       . <(filter_host "${libdir}/$1") && break
-      [ $# -ge 1 ] && echo "shellm: include: error while including $1 from $0" >&2;
-      # FIXME: zsh, sh, dash, csh, tcsh, ksh, xonsh...
-      [ "${SHLVL}" -gt 1 ] && exit 1 || return 1;
+      [ $# -ge 1 ] && echo "shellm: include: error while including $1 from $0" >&2
+      [ "${SHLVL}" -gt 1 ] && exit 1 || return 1
     fi
   done
 }
@@ -44,7 +43,7 @@ include() {
 ## \return true if empty (unset), false otherwise
 ndef() {
   # shellcheck disable=SC2086
-  [[ $# -ge 1 && -z "$(eval echo \$$1)" ]] || return 1;
+  [[ $# -ge 1 && -z "${!1}" ]] || return 1
 }
 
 export -f define

@@ -6,7 +6,7 @@ before_install:
   - sudo apt-get install -y devscripts zsh pcregrep
   - sudo -H pip install shellman
   - curl -Lo- "https://raw.githubusercontent.com/bpkg/bpkg/master/setup.sh" | sudo bash
-  - sudo bpkg -g sstephenson/bats
+  - sudo bpkg install -g sstephenson/bats
 
 install:
   - export SHELLM_ROOT="$(pwd)"

@@ -7,8 +7,8 @@ dir="$(dirname "$0")"
 dir="$(cd "$dir"/..; pwd)"
 export SHELLM_ROOT="$dir"
 export XRUN=1
-# shellcheck source=usr/shellmrc
-. "${SHELLM_ROOT}/init"
+# shellcheck source=init.sh
+. "${SHELLM_ROOT}/init.sh"
 shellm load
 
 script=$1; shift

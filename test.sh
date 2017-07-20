@@ -72,9 +72,9 @@ linting() {
 
   local status=${success}
 
-  check_script_command="shellcheck -x -C${SHELLCHECK_COLOR}"
-  check_bin_command="shellcheck -x -C${SHELLCHECK_COLOR}"
-  check_lib_command="shellcheck -xe SC2148 -C${SHELLCHECK_COLOR}"
+  check_script_command="shellcheck -f ${SHELLCHECK_FORMAT:-tty} -x -C${SHELLCHECK_COLOR}"
+  check_bin_command="shellcheck -f ${SHELLCHECK_FORMAT:-tty} -x -C${SHELLCHECK_COLOR}"
+  check_lib_command="shellcheck -f ${SHELLCHECK_FORMAT:-tty} -xe SC2148 -C${SHELLCHECK_COLOR}"
   check_files_suite "SHELLCHECK" || status=${failure}
 
   return ${status}
@@ -407,6 +407,7 @@ main() {
         # shellcheck disable=SC2034
         SHELLM_NO_FORMAT=true
         SHELLCHECK_COLOR="never"
+        SHELLCHECK_FORMAT="gcc"
       ;;
       ## \option -q, --quiet
       ## Reduce output.

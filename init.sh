@@ -1,12 +1,24 @@
 # shellcheck disable=SC2148
 
 _shellm_init() {
-  local SHELLM_ROOT="${SHELLM_ROOT:-$1}"
+  local LOCAL_SHELLM_ROOT="${SHELLM_ROOT:-$1}"
 
-  if [ ! -n "${SHELLM_ROOT}" ]; then
-    echo "shellm: did you forget to specify shellm's location with SHELLM_ROOT variable?" >&2
-    unset -f _shellm_init
-    return 1
+  if [ ! -n "${LOCAL_SHELLM_ROOT}" ]; then
+    if [ -d "${HOME}/.shellm" ]; then
+      export SHELLM_ROOT="${HOME}/.shellm"
+    else
+      echo "shellm: did you forget to specify shellm's location with SHELLM_ROOT variable?" >&2
+      unset -f _shellm_init
+      return 1
+    fi
+  else
+    if [ -d "${LOCAL_SHELLM_ROOT}" ]; then
+      export SHELLM_ROOT="${LOCAL_SHELLM_ROOT}"
+    else
+      echo "shellm: no such directory: ${LOCAL_SHELLM_ROOT}" >&2
+      unset -f _shellm_init
+      return 1
+    fi
   fi
 
   # Path variables
@@ -42,13 +54,28 @@ _shellm_init() {
     elif [ -n "${SHELLM_PROFILE}" ]; then
       # shellcheck disable=SC1090
       . "${SHELLM_PROFILE}"
-    elif [ -f "${HOME}/.shellmrc" ]; then
+    elif [ -f "${HOME}/.shellm-profile" ]; then
       # shellcheck disable=SC1090
-      . "${HOME}/.shellmrc"
+      . "${HOME}/.shellm-profile"
     else
       echo "shellm: load: no profile loaded, try 'shellm help load' to see how profiles are loaded" >&2
       return 1
     fi
+  }
+
+  shellm-init() {
+    local dir item
+    if [ $# -eq 0 ]; then
+      dir="${PWD}"
+    else
+      dir="$1"
+      if [ ! -d "${dir}" ]; then
+        mkdir -p "${dir}" || return 1
+      fi
+    fi
+    cp -irv "${SHELLM_ROOT}/usr-template"/* "${dir}"
+    export SHELLM_PROFILE="${dir}/shellmrc"
+    shellm load "${SHELLM_PROFILE}"
   }
 
   # Inclusion system

@@ -13,6 +13,6 @@ _has_help_option() {
 }
 
 @test "scripts have a help option" {
-  skip "Running scripts can have unintended effects"
+  skip "Running scripts can have unintended, dangerous side effects"
   _has_help_option ${scripts}
 }

@@ -1,13 +1,13 @@
 load data
 
-@test "shellcheck_init" {
+@test "shellcheck on init.sh" {
   shellcheck -x "${SHELLM_ROOT}/init.sh"
 }
 
-@test "shellcheck_scripts" {
+@test "shellcheck on scripts" {
   shellcheck -x ${scripts}
 }
 
-@test "shellcheck_libs" {
+@test "shellcheck on libraries" {
   shellcheck -xe SC2148 ${libs}
 }

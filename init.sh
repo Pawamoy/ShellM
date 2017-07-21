@@ -43,7 +43,7 @@ _shellm_init() {
   }
 
   _shellm_resolve_link() {
-    local SCRIPT_LOCATION
+    local SCRIPT_LOCATION="$1"
     while [ -L "${SCRIPT_LOCATION}" ]; do
       SCRIPT_LOCATION="$(readlink -e "${SCRIPT_LOCATION}")"
     done
@@ -93,7 +93,7 @@ _shellm_init() {
     for d in bin lib/env man/man1 man/man3; do
       mkdir -p "${dir}/$d"
     done
-    shellm load "${dir}/shellmrc"
+    shellm-load "${dir}/shellmrc"
   }
 
   # Inclusion system

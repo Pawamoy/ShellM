@@ -56,24 +56,26 @@ _shellm_init() {
       return 1
     elif [ $# -eq 1 ]; then
       if [ -f "$1" ]; then
-        export SHELLM_PROFILE="$(_shellm_resolve_link "$1")"
+        SHELLM_PROFILE="$(_shellm_resolve_link "$1")"
       else
         echo "error"
       fi
     elif [ -n "${SHELLM_PROFILE}" ]; then
       if [ -f "${SHELLM_PROFILE}" ]; then
-        export SHELLM_PROFILE="$(_shellm_resolve_link "${SHELLM_PROFILE}")"
+        SHELLM_PROFILE="$(_shellm_resolve_link "${SHELLM_PROFILE}")"
       else
         echo "error"
       fi
     elif [ -f "${HOME}/.shellm-profile" ]; then
-      export SHELLM_PROFILE="$(_shellm_resolve_link "${HOME}/.shellm-profile")"
+      SHELLM_PROFILE="$(_shellm_resolve_link "${HOME}/.shellm-profile")"
     else
       echo "shellm: load: no profile loaded, try 'shellm help load' to see how profiles are loaded" >&2
       return 1
     fi
 
-    export SHELLM_USR="$(dirname "${SHELLM_PROFILE}")"
+    SHELLM_USR="$(dirname "${SHELLM_PROFILE}")"
+    export SHELLM_PROFILE SHELLM_USR
+    # shellcheck disable=SC1090
     . "${SHELLM_PROFILE}"
   }
 

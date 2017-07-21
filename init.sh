@@ -43,7 +43,8 @@ _shellm_init() {
   }
 
   _shellm_resolve_link() {
-    local SCRIPT_LOCATION="$1"
+    local SCRIPT_LOCATION
+    SCRIPT_LOCATION="$(readlink -e "$1")"
     while [ -L "${SCRIPT_LOCATION}" ]; do
       SCRIPT_LOCATION="$(readlink -e "${SCRIPT_LOCATION}")"
     done

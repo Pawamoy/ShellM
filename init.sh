@@ -64,7 +64,7 @@ _shellm_init() {
   }
 
   shellm-init() {
-    local dir item
+    local dir
     if [ $# -eq 0 ]; then
       dir="${PWD}"
     else

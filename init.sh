@@ -42,25 +42,39 @@ _shellm_init() {
     shellm-${cmd} "$@"
   }
 
+  _shellm_resolve_link() {
+    local SCRIPT_LOCATION
+    while [ -L "${SCRIPT_LOCATION}" ]; do
+      SCRIPT_LOCATION="$(readlink -e "${SCRIPT_LOCATION}")"
+    done
+    echo "${SCRIPT_LOCATION}"
+  }
+
   shellm-load() {
-    local profile
-    if [ $# -gt 0 ]; then
-      for profile in "$@"; do
-        if [ -f "${profile}" ]; then
-          # shellcheck disable=SC1090
-          . "${profile}"
-        fi
-      done
+    if [ $# -gt 1 ]; then
+      echo "shellm: load: too many arguments" >&2
+      return 1
+    elif [ $# -eq 1 ]; then
+      if [ -f "$1" ]; then
+        export SHELLM_PROFILE="$(_shellm_resolve_link "$1")"
+      else
+        echo "error"
+      fi
     elif [ -n "${SHELLM_PROFILE}" ]; then
-      # shellcheck disable=SC1090
-      . "${SHELLM_PROFILE}"
+      if [ -f "${SHELLM_PROFILE}" ]; then
+        export SHELLM_PROFILE="$(_shellm_resolve_link "${SHELLM_PROFILE}")"
+      else
+        echo "error"
+      fi
     elif [ -f "${HOME}/.shellm-profile" ]; then
-      # shellcheck disable=SC1090
-      . "${HOME}/.shellm-profile"
+      export SHELLM_PROFILE="$(_shellm_resolve_link "${HOME}/.shellm-profile")"
     else
       echo "shellm: load: no profile loaded, try 'shellm help load' to see how profiles are loaded" >&2
       return 1
     fi
+
+    export SHELLM_USR="$(dirname "${SHELLM_PROFILE}")"
+    . "${SHELLM_PROFILE}"
   }
 
   shellm-init() {
@@ -73,12 +87,11 @@ _shellm_init() {
         mkdir -p "${dir}" || return 1
       fi
     fi
-    cp -irv "${SHELLM_ROOT}/initbase"/* "${dir}"
+    cp -ir "${SHELLM_ROOT}/initbase"/* "${dir}"
     for d in bin lib/env man/man1 man/man3; do
       mkdir -p "${dir}/$d"
     done
-    export SHELLM_PROFILE="${dir}/shellmrc"
-    shellm load "${SHELLM_PROFILE}"
+    shellm load "${dir}/shellmrc"
   }
 
   # Inclusion system

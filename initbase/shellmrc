@@ -13,7 +13,7 @@ export LIBPATH="${SHELLM_USR}/lib:${LIBPATH}"
 loadtime_init
 
 # User environment -------------------------------------------------------------
-include "env/something.sh"
+include "env/hello.sh"
 
 loadtime_finish
 #loadtime_print

@@ -64,7 +64,7 @@ _shellm_init() {
   }
 
   shellm-init() {
-    local dir
+    local d dir
     if [ $# -eq 0 ]; then
       dir="${PWD}"
     else
@@ -73,7 +73,10 @@ _shellm_init() {
         mkdir -p "${dir}" || return 1
       fi
     fi
-    cp -irv "${SHELLM_ROOT}/usr-template"/* "${dir}"
+    cp -irv "${SHELLM_ROOT}/initbase"/* "${dir}"
+    for d in bin lib/env man/man1 man/man3; do
+      mkdir -p "${dir}/$d"
+    done
     export SHELLM_PROFILE="${dir}/shellmrc"
     shellm load "${SHELLM_PROFILE}"
   }

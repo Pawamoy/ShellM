@@ -1,0 +1,19 @@
+# Path variables ---------------------------------------------------------------
+if [ ! -n "${SHELLM_USR}" ]; then
+  export SHELLM_USR="${SHELLM_PROFILE%/*}"
+fi
+
+if ! echo "${PATH}" | grep -q "${SHELLM_USR}"; then
+  export PATH="${SHELLM_USR}/bin:${PATH}"
+fi
+
+export MANPATH="${SHELLM_USR}/man:${MANPATH}"
+export LIBPATH="${SHELLM_USR}/lib:${LIBPATH}"
+
+loadtime_init
+
+# User environment -------------------------------------------------------------
+include "env/something.sh"
+
+loadtime_finish
+#loadtime_print

@@ -2,32 +2,33 @@
 
 [![Build Status](https://travis-ci.org/Pawamoy/shellm.svg?branch=master)](https://travis-ci.org/Pawamoy/shellm)
 
-Manage your scripts and libraries, write documentation directly in files and
-auto-generate help options (-h, --help) and man pages, sync your working
-environment on any remote or physical machine.
-
-## Download
-For now shellm is only on GitHub:
-
-`git clone https://github.com/Pawamoy/shellm.git`
-
-## Dependencies
-- [shellman](https://github.com/Pawamoy/shellman): `[sudo -H] pip install shellman`
+Shellm is some kind of Bash framework. It provides useful commands to help you
+write and manage your shell scripts. See the Quickstart section below to get an
+idea of what Shellm can do for you!
 
 ## Installation
-Installation is inspired from **pyenv** and others:
+Installation is done by cloning the repo and sourcing the code
+from `.bashrc` (or another file sourced at terminal startup):
 
 ```bash
 git clone https://github.com/Pawamoy/shellm.git ~/.shellm
-# in your .bashrc
-export SHELLM_ROOT="${HOME}/.shellm"
-. "${SHELLM_ROOT}/init.sh"
+echo -e '\n. ~/.shellm/init.sh' >> .bashrc
 ```
 
+### Dependencies
+- [shellman](https://github.com/Pawamoy/shellman): `[sudo -H] pip install shellman`
+
 ## Documentation
-It is all on the [wiki](https://github.com/Pawamoy/shellm/wiki).
-You can already jump to the
-[Quick concept section](https://github.com/Pawamoy/shellm/wiki#quick-concept).
+Documentation can be found on the [GitHub wiki](https://github.com/Pawamoy/shellm/wiki).
+
+## Quickstart
+Shellm is basically a set of functions and command-line tools.
+It lets you manage all your shell scripts and shell libraries within a single
+directory, allowing you to easily synchronize your favorite shell environment
+across your different machines or servers.
+
+The main benefits from using Shellm are:
+- no more appending shell config in 
 
 ## Tests
 To run the tests you will need to install some dependencies:

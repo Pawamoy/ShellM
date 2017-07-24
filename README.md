@@ -24,11 +24,18 @@ Documentation can be found on the [GitHub wiki](https://github.com/Pawamoy/shell
 ## Quickstart
 Shellm is basically a set of functions and command-line tools.
 It lets you manage all your shell scripts and shell libraries within a single
-directory, allowing you to easily synchronize your favorite shell environment
-across your different machines or servers.
+directory, allowing you to easily synchronize your shell environment and
+configuration across your different machines or servers (i.e. with CVS).
 
 The main benefits from using Shellm are:
-- no more appending shell config in 
+- just two lines appended in `.bashrc`, and you can put all the rest into
+  your shellm user configuration
+- fast creation and edition of scripts
+- a C-like library inclusion system
+- automatic help options and automatic man pages generation thanks to Shellman
+  documentation
+- already some shell libraries available (need your feedback!)
+- already working test suite
 
 ## Tests
 To run the tests you will need to install some dependencies:

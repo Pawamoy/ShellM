@@ -29,7 +29,7 @@ main() {
     -n|--dry-run) FLAGS=-xvn; shift ;;
     ## \option -h, --help
     ## Prints this help and exit.
-    -h|--help) shellman -t "$0"; exit 0 ;;
+    -h|--help) shellman "$0"; exit 0 ;;
     *) FLAGS=-x ;;
   esac
   SCRIPT=$1

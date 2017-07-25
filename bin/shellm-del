@@ -22,7 +22,7 @@ main() {
     ;;
     ## \option -h, --help
     ## Prints this help and exit
-    -h|--help) shellman -t "$0"; exit 0 ;;
+    -h|--help) shellman "$0"; exit 0 ;;
   esac
 
   ${purge} && rm -rf "${data_dir:?}/$1" 2>/dev/null

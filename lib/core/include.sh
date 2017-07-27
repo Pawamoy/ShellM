@@ -32,7 +32,10 @@ include() {
       # shellcheck disable=SC1090
       . <(filter_host "${libdir}/$1") && break
       [ $# -ge 1 ] && echo "shellm: include: error while including $1 from $0" >&2
-      [ "${SHLVL}" -gt 1 ] && exit 1 || return 1
+      case "${WINDOWID}" in
+        [0-9]*) [ ${SHLVL} -gt 2 ] && exit 1 || return 1 ;;
+        "") [ ${SHLVL} -gt 1 ] && exit 1 || return 1 ;;
+      esac
     fi
   done
 }

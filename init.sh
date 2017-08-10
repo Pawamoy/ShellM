@@ -111,6 +111,8 @@ _shellm_init() {
 
   loadtime_finish
   unset -f _shellm_init
+
+  export -f shellm shellm-init shellm-load
 }
 
 _shellm_init "$@"

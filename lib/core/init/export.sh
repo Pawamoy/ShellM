@@ -8,10 +8,18 @@ include core/shellman.sh
 ## \fn init_export ()
 ## \brief Parse all sub-scripts (recursively) and export their includes
 init_export() {
+  local current_script
   local sub_script sub_scripts
   local include includes include_header defined
 
-  sub_scripts=$(shellman_get export "${1:-$0}")
+  if [ $# -eq 1 ]; then
+    current_script="$1"
+  elif [ -f "$0" ]; then
+    current_script="$0"
+  else
+    current_script="${SHELLM_USR}/bin/$0"
+  fi
+  sub_scripts=$(shellman_get export "${current_script}")
   for sub_script in ${sub_scripts}; do
     # shellcheck disable=SC2154
     includes=$(grep -o 'include [a-zA-Z_/]*\.sh' "${SHELLM_USR}/bin/${sub_script}" | cut -d' ' -f2)

@@ -81,7 +81,7 @@ main() {
   _install_x pip "${pips[@]}"
 
   INSTALL_COMMAND="sudo -H pip3 install"
-  _install_x piP3 "${pip3s[@]}"
+  _install_x pip3 "${pip3s[@]}"
 
   INSTALL_COMMAND="sudo npm install -g"
   _install_x npm "${npms[@]}"

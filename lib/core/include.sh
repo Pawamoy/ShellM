@@ -40,6 +40,5 @@ ndef() {
 }
 
 export -f define
-export -f filter_host
 export -f include
 export -f ndef

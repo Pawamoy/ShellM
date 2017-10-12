@@ -5,86 +5,52 @@
 
 include core/shellman.sh
 include core/init/data.sh
+include core/init/require.sh
 include core/format.sh
 
 [ $# -eq 0 ] && usage
 
 data_dir=$(init_data)
 
-list_requirements() {
-  local current_script
-  local sub_script sub_scripts
-
-  if [ $# -eq 1 ]; then
-    if [ -f "$1" ]; then
-      current_script="$1"
-    elif [ -f "${SHELLM_USR}/bin/$1" ]; then
-      current_script="${SHELLM_USR}/bin/$1"
-    else
-      echo "shellm-install-requirements: can't find $1"
-      return 1
-    fi
-  elif [ -f "$0" ]; then
-    current_script="$0"
+_install_requirement() {
+  local log_file
+  log_file="${data_dir}/${1/:/_}.log"
+  echo -n "Installing $1... "
+  if install_requirement "$1" >"${log_file}" 2>&1; then
+    format B g nl -- "ok"
+    return 0
   else
-    current_script="${SHELLM_USR}/bin/$0"
+    format B r nl -- "fail"
+    echo "  Log file: ${log_file}"
+    return 1
   fi
-
-  shellman_get require "${current_script}"
-
-  sub_scripts=$(shellman_get export "${current_script}")
-  for sub_script in ${sub_scripts}; do
-    list_requirements "${SHELLM_USR}/bin/${sub_script}"
-  done
-}
-
-_install_x() {
-  local x log_file
-  local cmd=$1
-  shift
-  for x in "$@"; do
-    log_file="${data_dir}/${cmd}_$x.log"
-    echo -n "Installing ${cmd} $x... "
-    if ${INSTALL_COMMAND} "$x" >"${log_file}" 2>&1; then
-      format B g nl -- ok
-    else
-      format B r nl -- fail
-      echo "  Log file: ${log_file}"
-    fi
-  done
 }
 
 main() {
+  local MISSING=false
+
   case $1 in
     ## \option -h, --help
     ## Prints this help and exit
     -h|--help) shellman "$0"; exit 0 ;;
+    ## \option -m, --missing
+    ## Try to install missing requirements only
+    -m|--missing) MISSING=true; shift ;;
   esac
 
-  local require
-  local apt=0 apts pip=0 pips pip3=0 pip3s npm=0 npms
-  for require in $(list_requirements "$@"); do
-    case "${require}" in
-      apt:*) apts[${apt}]="${require#apt:}"; (( apt++ )) ;;
-      pip:*) pips[${pip}]="${require#pip:}"; (( pip++ )) ;;
-      pip3:*) pip3s[${pip3}]="${require#pip3:}"; (( pip3++ )) ;;
-      npm:*) npms[${npm}]="${require#npm:}"; (( npm++ )) ;;
-      *) apts[${apt}]="${require}"; (( apt++ )) ;;
-    esac
-  done
+  local require status=0
 
+  if ! ${MISSING}; then
+    for require in $(list_requirements "$1"); do
+      _install_requirement "${require}" || status=1
+    done
+  else
+    for require in $(list_missing_requirements "$1"); do
+      _install_requirement "${require}" || status=1
+    done
+  fi
 
-  INSTALL_COMMAND="sudo apt-get install -y"
-  _install_x apt "${apts[@]}"
-
-  INSTALL_COMMAND="sudo -H pip install"
-  _install_x pip "${pips[@]}"
-
-  INSTALL_COMMAND="sudo -H pip3 install"
-  _install_x pip3 "${pip3s[@]}"
-
-  INSTALL_COMMAND="sudo npm install -g"
-  _install_x npm "${npms[@]}"
+  return ${status}
 }
 
 ## \usage shellm-install-requirements FILENAME

@@ -92,6 +92,7 @@ check_requirements() {
   missing=$(list_missing_requirements "${current_script}")
 
   if [ -n "${missing}" ]; then
+    # shellcheck disable=SC2086
     echo "Some requirements are missing:" ${missing}
     read -rp "Would you like to install them? [Yn] " answer
 

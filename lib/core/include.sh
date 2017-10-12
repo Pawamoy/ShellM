@@ -9,16 +9,6 @@ define() {
   [ $# -ge 1 ] && eval "$1=\"${2:-DEF}\"" || return 1
 }
 
-## \fn filter_host (file, [host])
-## \param file Path to file to filter
-## \param host Optional, name of the host to filter, default to $HOSTNAME
-## \stdout Filtered file
-filter_host() {
-  { grep -nE '##.*[\@]host.*[ ,  ]'"${2:-$HOSTNAME}"'[ ,  ]?' "$1"
-    grep -nv '##.*[\@]host' "$1"
-  } | sort -g | cut -d':' -f2-
-}
-
 ## \fn include (filename)
 ## \brief Includes content of a library file in the current shell
 ## \param filename Name of library file to include
@@ -30,7 +20,7 @@ include() {
   for libdir in "${array[@]}"; do
     if [ -f "${libdir}/$1" ]; then
       # shellcheck disable=SC1090
-      . <(filter_host "${libdir}/$1") && break
+      . "${libdir}/$1" && break
       [ $# -ge 1 ] && echo "shellm: include: error while including $1 from $0" >&2
       case "${WINDOWID}" in
         [0-9]*) [ ${SHLVL} -gt 2 ] && exit 1 || return 1 ;;

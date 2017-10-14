@@ -4,6 +4,7 @@ _shellm_init() {
   local LOCAL_SHELLM_ROOT="${SHELLM_ROOT:-$1}"
 
   if [ ! -n "${LOCAL_SHELLM_ROOT}" ]; then
+    # TODO: add symlink case? if [ -L ]
     if [ -d "${HOME}/.shellm" ]; then
       export SHELLM_ROOT="${HOME}/.shellm"
     else

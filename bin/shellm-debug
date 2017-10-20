@@ -1,0 +1,43 @@
+#!/bin/bash
+
+## \brief shell script debugger
+## \require coreutils
+## \env PS4
+## Debugger prompt. This is the prefix that bash prepends to
+## the current instruction when using -x option.
+
+## \desc Run a script in path with the -x bash option (and more).
+## You should set the PS4 variable for better output.
+
+include core/shellman.sh
+include core/format.sh
+
+[ $# -eq 0 ] && usage
+
+main() {
+  case "$1" in
+    ## \option -t, --test
+    ## Read the script and warn for encountered syntax errors.
+    ## Do not actually run the script.
+    -t|--test) FLAGS=-n; shift ;;
+    ## \option -v, --verbose
+    ## Run the script with verbose option.
+    -v|--verbose) FLAGS=-xv; shift ;;
+    ## \option -n, --dry-run
+    ## Options test and verbose combined. Validate the syntax
+    ## and print the script to stdout.
+    -n|--dry-run) FLAGS=-xvn; shift ;;
+    ## \option -h, --help
+    ## Prints this help and exit.
+    -h|--help) shellman "$0"; exit 0 ;;
+    *) FLAGS=-x ;;
+  esac
+  SCRIPT=$1
+  shift
+
+  /bin/bash "${FLAGS}" "${SCRIPT}" "$@"
+  format RA d
+}
+
+## \usage shellm-dbg [-tvn] SCRIPT | -h
+main "$@"

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+## \brief rename a file
+## \require coreutils
+
+include core/shellman.sh
+include core/init/data.sh
+
+[ $# -eq 0 ] && usage
+
+main() {
+  case $1 in
+    ## \option -h, --help
+    ## Prints this help and exit
+    -h|--help) shellman "$0"; exit 0 ;;
+  esac
+
+  # shellcheck disable=SC2154
+  if [ -e "${SHELLM_USR}/bin/$1" ]; then
+    mv "${SHELLM_USR}/bin/$1" "${SHELLM_USR}/bin/$2"
+    data_dir=$(get_data_dir)
+    if [ -e "${data_dir}" ]; then
+      mv "${data_dir}" "${data_dir%/*}/$2"
+    fi
+  elif [ -e "${SHELLM_USR}/lib/$1" ]; then
+    mv "${SHELLM_USR}/lib/$1" "${SHELLM_USR}/lib/$2"
+  else
+    echo "shellm: ren: $1: no such file in shellm bin or lib" >&2
+    exit 1
+  fi
+}
+
+## \usage shellm-ren FILENAME NEW_NAME
+main "$@"

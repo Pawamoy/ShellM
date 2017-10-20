@@ -1,0 +1,41 @@
+#!/bin/bash
+
+## \brief delete a file or a directory in your shellm bin/lib directory
+## \require coreutils
+
+include core/shellman.sh
+include core/init/data.sh
+
+[ $# -eq 0 ] && usage
+
+main() {
+  purge=false
+
+  case $1 in
+    ## \option -p, --purge
+    ## Also delete the data directory in shellm data
+    -p|--purge)
+      purge=true
+      shift
+      [ $# -eq 0 ] && usage
+      data_dir=$(init_data)
+    ;;
+    ## \option -h, --help
+    ## Prints this help and exit
+    -h|--help) shellman "$0"; exit 0 ;;
+  esac
+
+  ${purge} && rm -rf "${data_dir:?}/$1" 2>/dev/null
+  # shellcheck disable=SC2154
+  if [ -e "${SHELLM_USR:?}/bin/$1" ]; then
+    rm -rf "${SHELLM_USR:?}/bin/$1"
+  elif [ -e "${SHELLM_USR:?}/lib/$1" ]; then
+    rm -rf "${SHELLM_USR:?}/lib/$1"
+  else
+    echo "shellm: del: $1: no such file or directory in shellm bin or lib" >&2
+    exit 1
+  fi
+}
+
+## \usage shellm-del [-p] FILE|DIR
+main "$@"

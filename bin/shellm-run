@@ -1,0 +1,11 @@
+#!/bin/bash
+## \usage shellm-run script args
+## \brief Load shellm then run a script.
+export XRUN=1
+
+. ~/.shellm/init.sh
+shellm load
+
+script=$1; shift
+# shellcheck disable=SC1090
+. "${script}" "$@"

@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.org/Pawamoy/shellm.svg?branch=master)](https://travis-ci.org/Pawamoy/shellm)
 
-Shellm is some kind of Bash framework. It provides useful commands to help you
-write and manage your shell scripts. See the Quickstart section below to get an
-idea of what Shellm can do for you!
+Shellm is some kind of Bash framework for a personal use. It provides useful
+commands to help you write and manage your shell scripts. See the Quickstart
+section below to get an idea of what Shellm can do for you!
 
 ## Installation
 Installation is done by cloning the repo and sourcing the code
@@ -12,7 +12,7 @@ from `.bashrc` (or another file sourced at terminal startup):
 
 ```bash
 git clone https://github.com/Pawamoy/shellm.git ~/.shellm
-echo -e '\n. ~/.shellm/init.sh' >> .bashrc
+echo '. ~/.shellm/init.sh' >> .bashrc
 ```
 
 ### Dependencies
@@ -36,6 +36,39 @@ The main benefits from using Shellm are:
   documentation
 - already some shell libraries available (need your feedback!)
 - already working test suite
+
+Here are some instructions to get started:
+
+```bash
+# load shellm
+. ~/.shellm/init.sh
+
+# create a new empty project
+shellm init my_project
+
+# load the project configuration
+shellm load my_project/profile
+
+# create and open a new script in my_project/bin
+shellm new my-script
+
+# ... write the script
+
+# execute it!
+my-script --with=some arguments
+
+# run it in debug
+shellm debug my-script --with=other args
+
+# run the test suite on this script
+shellm test my-script
+
+# rename it
+shellm mv my-script not-working-script
+
+# delete it
+shellm rm not-working-script
+```
 
 ## Tests
 To run the tests you will need to install some dependencies:

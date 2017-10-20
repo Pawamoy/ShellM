@@ -1,0 +1,37 @@
+#!/bin/bash
+
+## \brief open a file in shellm/bin or shellm/lib
+## \require coreutils
+
+include core/shellman.sh
+
+[ $# -eq 0 ] && usage
+
+main() {
+  case $1 in
+    ## \option -h, --help
+    ## Prints this help and exit
+    -h|--help) shellman "$0"; exit 0 ;;
+  esac
+
+  # shellcheck disable=SC2154
+  if [ -f "${SHELLM_USR}/bin/$1" ]; then
+    if [ -n "$2" ]; then
+      $2 "${SHELLM_USR}/bin/$1"
+    else
+      vim "${SHELLM_USR}/bin/$1"
+    fi
+  elif [ -f "${SHELLM_USR}/lib/${1%.sh}.sh" ]; then
+    if [ -n "$2" ]; then
+      $2 "${SHELLM_USR}/lib/${1%.sh}.sh"
+    else
+      vim "${SHELLM_USR}/lib/${1%.sh}.sh"
+    fi
+  else
+    echo "shell: mod: $1: no such file in shellm bin or lib" >&2
+    exit 1
+  fi
+}
+
+## \usage shellm-mod FILENAME [EDITOR] | -h
+main "$@"

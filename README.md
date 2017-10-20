@@ -22,7 +22,7 @@ echo -e '\n. ~/.shellm/init.sh' >> .bashrc
 Documentation can be found on the [GitHub wiki](https://github.com/Pawamoy/shellm/wiki).
 
 ## Quickstart
-Shellm is basically a set of functions and command-line tools.
+Shellm is basically a set of functions and command-line scripts.
 It lets you manage all your shell scripts and shell libraries within a single
 directory, allowing you to easily synchronize your shell environment and
 configuration across your different machines or servers (i.e. with CVS).

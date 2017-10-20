@@ -33,5 +33,5 @@ main() {
   fi
 }
 
-## \usage shellm-mod FILENAME [EDITOR] | -h
+## \usage shellm-open FILENAME [EDITOR] | -h
 main "$@"

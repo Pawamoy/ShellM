@@ -37,5 +37,5 @@ main() {
   fi
 }
 
-## \usage shellm-del [-p] FILE|DIR
+## \usage shellm-delete [-p] FILE|DIR
 main "$@"

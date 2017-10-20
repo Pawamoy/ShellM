@@ -30,5 +30,5 @@ main() {
   fi
 }
 
-## \usage shellm-ren FILENAME NEW_NAME
+## \usage shellm-rename FILENAME NEW_NAME
 main "$@"

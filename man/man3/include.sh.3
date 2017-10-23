@@ -6,8 +6,6 @@ include.sh \- Include functions for scripts (ndef, define, include)
 .SH "FUNCTIONS"
 define (name, [value])
 .br
-filter_host (file, [host])
-.br
 include (filename)
 .br
 ndef (varname)
@@ -23,17 +21,6 @@ Parameters:
 .ul
 Return code:
   false if no args or error while affectation, true otherwise
-
-
-.IP "\fBfilter_host (file, [host])\fR" 4
-.ul
-Parameters:
-  \fBfile        \fR Path to file to filter
-  \fBhost        \fR Optional, name of the host to filter, default to $HOSTNAME
-
-.ul
-Standard output:
-  Filtered file
 
 
 .IP "\fBinclude (filename)\fR" 4

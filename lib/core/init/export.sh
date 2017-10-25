@@ -12,6 +12,7 @@ init_export() {
   local sub_script sub_scripts
   local include includes include_header defined
 
+  # TODO: use find lib instead
   if [ $# -eq 1 ]; then
     current_script="$1"
   elif [ -f "$0" ]; then
@@ -21,8 +22,9 @@ init_export() {
   fi
   sub_scripts=$(shellman_get export "${current_script}")
   for sub_script in ${sub_scripts}; do
+    # FIXME: #8 fix incomplete regex
     # shellcheck disable=SC2154
-    includes=$(grep -o 'include [a-zA-Z_/]*\.sh' "${SHELLM_USR}/bin/${sub_script}" | cut -d' ' -f2)
+    includes=$(grep -Eo "include [\"']?[a-zA-Z_/]*\.sh[\"']?" "${SHELLM_USR}/bin/${sub_script}" | cut -d' ' -f2)
     for include in ${includes}; do
       include "${include}"
       include_header=${include//[\/.]/_}

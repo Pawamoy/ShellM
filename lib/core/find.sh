@@ -1,6 +1,8 @@
 if ndef __CORE_FIND_SH; then
 define __CORE_FIND_SH "find find_script find_lib"
 
+# TODO: why not searching in SHELLM_ROOT?
+
 ## \fn find_script [NAME]
 ## \brief Find a script.
 find_script() {

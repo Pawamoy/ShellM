@@ -5,8 +5,7 @@ define __CORE_INIT_REQUIRE_SH "
   install_requirement
   install_requirements
   install_missing_requirements
-  check_requirements
-  "
+  check_requirements"
 
 include core/find.sh
 

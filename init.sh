@@ -52,6 +52,7 @@ shellm-load() {
 }
 
 shellm-cd() {
+  # shellcheck disable=SC2164
   cd "${SHELLM_USR}/$1"
 }
 

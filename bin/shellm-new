@@ -58,5 +58,5 @@ main() {
   vim "${SHELLM_USR}/bin/$1"
 }
 
-## \usage shellm-new FILENAME [TEMPLATE] | -h
+## \usage shellm-new FILENAME | -h
 main "$@"

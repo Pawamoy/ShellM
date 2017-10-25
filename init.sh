@@ -51,7 +51,9 @@ shellm-load() {
   . "${SHELLM_PROFILE}"
 }
 
-# TODO: write a shellm-cd command?
+shellm-cd() {
+  cd "${SHELLM_USR}/$1"
+}
 
 export -f shellm shellm-load
 

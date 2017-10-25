@@ -4,15 +4,14 @@
 
 shellm() {
   local cmd="$1"
-  shift
 
-  if ! command -v "shellm-${cmd}" >/dev/null; then
-    echo "shellm: command ${cmd} does not exist; try 'shellm help' to list shellm commands" >&2
-    return 1
+  if command -v "shellm-${cmd}" >/dev/null; then
+    shift
+    # shellcheck disable=SC2086
+    shellm-${cmd} "$@"
+  else
+    ( cd "${SHELLM_USR}" && "$@" )
   fi
-
-  # shellcheck disable=SC2086
-  shellm-${cmd} "$@"
 }
 
 shellm-load() {
@@ -52,6 +51,7 @@ shellm-load() {
   . "${SHELLM_PROFILE}"
 }
 
+# TODO: can be rewritten as a script, removing last shellm load instruction
 shellm-init() {
   local d dir
   if [ $# -eq 0 ]; then
@@ -68,6 +68,8 @@ shellm-init() {
   done
   shellm-load "${dir}/profile"
 }
+
+# TODO: write a shellm-cd command?
 
 export -f shellm shellm-init shellm-load
 

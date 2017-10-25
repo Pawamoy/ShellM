@@ -51,27 +51,9 @@ shellm-load() {
   . "${SHELLM_PROFILE}"
 }
 
-# TODO: can be rewritten as a script, removing last shellm load instruction
-shellm-init() {
-  local d dir
-  if [ $# -eq 0 ]; then
-    dir="${PWD}"
-  else
-    dir="$1"
-    if [ ! -d "${dir}" ]; then
-      mkdir -p "${dir}" || return 1
-    fi
-  fi
-  cp -ir "${SHELLM_ROOT}/initbase"/* "${dir}"
-  for d in bin lib/env man/man1 man/man3; do
-    mkdir -p "${dir}/$d"
-  done
-  shellm-load "${dir}/profile"
-}
-
 # TODO: write a shellm-cd command?
 
-export -f shellm shellm-init shellm-load
+export -f shellm shellm-load
 
 # Setup variables --------------------------------------------------------------
 

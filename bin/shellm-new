@@ -9,10 +9,8 @@
 ## opens it for you to write the rest of the code.
 
 include core/shellman.sh
-include core/init/data.sh
 
 [ $# -eq 0 ] && usage
-data_dir=$(init_data)
 
 main() {
   case $1 in
@@ -28,17 +26,30 @@ main() {
     exit 1
   fi
 
-  # Copy the template
-  if [ -z "$2" ]; then
-    cp "${data_dir}/default" "${SHELLM_USR}/bin/$1"
-  else
-    if [ -f "${data_dir}/$2" ]; then
-      cp "${data_dir}/$2" "${SHELLM_USR}/bin/$1"
-    else
-      echo "shellm: new: template $2 does not exist in ${data_dir}" >&2
-      exit 2
-    fi
-  fi
+  {
+    echo '#!/bin/bash'
+    echo
+    echo '## \brief '"$1"
+    # shellcheck disable=SC2028
+    echo '## \require coreutils'
+    echo
+    echo "include core/shellman.sh"
+    echo
+    echo '[ $# -eq 0 ] && usage'
+    echo
+    echo 'main() {'
+    # shellcheck disable=SC2016
+    echo '  case $1 in'
+    echo '    ## \option -h, --help'
+    echo '    ## Print this help and exit.'
+    # shellcheck disable=SC2016
+    echo '    -h|--help) shellman "$0"; exit 0 ;;'
+    echo "  esac"
+    echo "}"
+    echo
+    echo '## \usage '"$1"
+    echo 'main "$@"'
+	} >"${SHELLM_USR}/bin/$1"
 
   # Make it executable
   chmod +x "${SHELLM_USR}/bin/$1"

@@ -31,7 +31,7 @@ exclude() {
       ;;
     esac
   done
-  unset ${lib_header}
+  unset "${lib_header}"
 
   # recurse on other included libraries
   includes=$(grep -o 'include [a-zA-Z_/]*\.sh' "${current_lib}" | cut -d' ' -f2)

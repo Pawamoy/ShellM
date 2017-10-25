@@ -12,14 +12,28 @@ from `.bashrc` (or another file sourced at terminal startup):
 
 ```bash
 git clone https://github.com/Pawamoy/shellm.git ~/.shellm
-echo '. ~/.shellm/init.sh' >> .bashrc
+echo '. ~/.shellm/init.sh' >> ~/.bashrc
 ```
 
 ### Dependencies
 - [shellman](https://github.com/Pawamoy/shellman): `[sudo -H] pip install shellman`
 
-## Documentation
-Documentation can be found on the [GitHub wiki](https://github.com/Pawamoy/shellm/wiki).
+To run the test suite, also install these:
+
+- [bats](https://github.com/sstephenson/bats):
+  ```bash
+  curl -Lo- "https://raw.githubusercontent.com/bpkg/bpkg/master/setup.sh" | sudo bash
+  sudo bpkg install -g sstephenson/bats
+  ```
+- [shellcheck](https://github.com/koalaman/shellcheck):
+  ```bash
+  sudo curl -Lso /usr/bin/shellcheck https://github.com/caarlos0/shellcheck-docker/releases/download/v0.4.6/shellcheck
+  sudo chmod +x /usr/bin/shellcheck
+  ```
+- [checkbashisms](https://sourceforge.net/projects/checkbaskisms/) (optional) and pcregrep:
+  ```bash
+  sudo apt-get install devscripts pcregrep
+  ```
 
 ## Quickstart
 Shellm is basically a set of functions and command-line scripts.
@@ -60,32 +74,15 @@ my-script --with=some arguments
 # run it in debug
 shellm debug my-script --with=other args
 
-# run the test suite on this script
-shellm test my-script
+# run the test suite on your scripts
+shellm test
 
-# rename it
-shellm mv my-script not-working-script
+# rename your script
+shellm mv bin/my-script bin/not-working-script
 
 # delete it
-shellm rm not-working-script
+shellm rm bin/not-working-script
 ```
 
-## Tests
-To run the tests you will need to install some dependencies:
-
-- [bats](https://github.com/sstephenson/bats):
-  ```bash
-  curl -Lo- "https://raw.githubusercontent.com/bpkg/bpkg/master/setup.sh" | sudo bash
-  sudo bpkg install -g sstephenson/bats
-  ```
-- [shellcheck](https://github.com/koalaman/shellcheck):
-  ```bash
-  sudo curl -Lso /usr/bin/shellcheck https://github.com/caarlos0/shellcheck-docker/releases/download/v0.4.5/shellcheck
-  sudo chmod +x /usr/bin/shellcheck
-  ```
-- [checkbashisms](https://sourceforge.net/projects/checkbaskisms/) (optional) and pcregrep:
-  ```bash
-  sudo apt-get install devscripts pcregrep
-  ```
-
-Now simply run `bats tests`!
+## Documentation
+Documentation can be found on the [GitHub wiki](https://github.com/Pawamoy/shellm/wiki)!

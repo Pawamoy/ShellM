@@ -12,6 +12,10 @@ _has_help_option() {
 }
 
 @test "scripts have a help option" {
+  # Remove or comment this line when you are ready to run this test.
   skip "Running scripts can have unintended, dangerous side effects"
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _has_help_option ${scripts}
 }

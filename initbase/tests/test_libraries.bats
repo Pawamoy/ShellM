@@ -34,9 +34,9 @@ _use_if_ndef_define() {
 _declare_contents() {
   local lib status=${success}
   for lib in "$@"; do
-    if ! grep -Eq 'define[[:space:]]+[^"]+"' "$lib"; then
+    if ! grep -Eq "define[[:space:]]+[^'\"]+['\"]" "$lib"; then
       status=${failure}
-      echo "${lib}: define should declare contents between double-quotes"
+      echo "${lib}: define should declare contents between single/double quotes"
     fi
   done
   return ${status}
@@ -46,9 +46,9 @@ _names_dont_clash() {
   local lib contents declarations status=${success}
   declarations=$(
     for lib in "$@"; do
-      contents=$(pcregrep -M 'define\s+[^"]*"(\n|[^"])*"' "$lib")
-      contents=${contents#*\"}
-      contents=${contents%\"*}
+      contents=$(pcregrep -M "define\s+[^'\"]*['\"](\n|[^'\"])*['\"]" "${lib}")
+      contents=${contents#*[\"\']}
+      contents=${contents%[\"\']*}
 
       for content in ${contents}; do
         echo "('${content}','${lib}'),"
@@ -83,13 +83,22 @@ for d, f in m.items():
 }
 
 @test "libraries use if ndef define" {
+  if [ ! -n "${libs}" ]; then
+    skip "No libraries found"
+  fi
   _use_if_ndef_define ${libs}
 }
 
 @test "libraries declare their contents" {
+  if [ ! -n "${libs}" ]; then
+    skip "No libraries found"
+  fi
   _declare_contents ${libs}
 }
 
 @test "libraries contents names don't clash" {
+  if [ ! -n "${libs}" ]; then
+    skip "No libraries found"
+  fi
   _names_dont_clash ${libs}
 }

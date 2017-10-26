@@ -26,21 +26,37 @@ _shell_compatibility() {
 }
 
 @test "compatibility scripts (checkbashisms)" {
+  # Remove or comment this line when you are ready to run this test.
   skip "Compatibility is not yet enforced"
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _checkbashisms ${scripts}
 }
 
 @test "compatibility libraries (checkbashisms)" {
+  # Remove or comment this line when you are ready to run this test.
   skip "Compatibility is not yet enforced"
+  if [ ! -n "${libs}" ]; then
+    skip "No libraries found"
+  fi
   _checkbashisms ${libs}
 }
 
 @test "compatibility scripts (shells dry run)" {
+  # Remove or comment this line when you are ready to run this test.
   # skip "Compatibility is not yet enforced"
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _shell_compatibility ${scripts}
 }
 
 @test "compatibility libraries (shells dry run)" {
+  # Remove or comment this line when you are ready to run this test.
   # skip "Compatibility is not yet enforced"
+  if [ ! -n "${libs}" ]; then
+    skip "No libraries found"
+  fi
   _shell_compatibility ${libs}
 }

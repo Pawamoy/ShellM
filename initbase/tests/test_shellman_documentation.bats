@@ -40,25 +40,36 @@ _usage_matches_script_name() {
 }
 
 @test "scripts have usage tag" {
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _has_tag "usage" ${scripts}
 }
 
 @test "scripts have brief tag" {
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _has_tag "brief" ${scripts}
 }
 
-@test "shellman on init.sh" {
-  _shellman "${SHELLM_ROOT}/init.sh"
-}
-
 @test "shellman on scripts" {
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _shellman ${scripts}
 }
 
 @test "shellman on libraries" {
+  if [ ! -n "${libs}" ]; then
+    skip "No libraries found"
+  fi
   _shellman ${libs}
 }
 
 @test "scripts usages match names" {
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _usage_matches_script_name ${scripts}
 }

@@ -86,7 +86,7 @@ if ! echo "${PATH}" | grep -q "${SHELLM_ROOT}/bin"; then
 fi
 
 export MANPATH="${SHELLM_ROOT}/man:"
-export LIBPATH="${SHELLM_ROOT}/lib"
+export LIBPATH="/usr/local/lib/shellm:${SHELLM_ROOT}/lib"
 
 unset LOCAL_SHELLM_ROOT
 

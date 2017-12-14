@@ -4,9 +4,15 @@
 export XRUN=1
 
 # shellcheck disable=SC1090
-. ~/.shellm/init.sh
+. "${HOME}/.shellm/init.sh" ""
 shellm load
 
 script=$1; shift
-# shellcheck disable=SC1090
-. "${script}" "$@"
+
+if [ -f "${script}" ]; then
+  # shellcheck disable=SC1090
+  . "${script}" "$@"
+elif [ -f "${SHELLM_USR}/bin/${script}" ]; then
+  # shellcheck disable=SC1090
+  . "${SHELLM_USR}/bin/${script}" "$@"
+fi

@@ -20,18 +20,18 @@ shellm-load() {
     return 1
   elif [ $# -eq 1 ]; then
     if [ -f "$1" ]; then
-      SHELLM_PROFILE="$(realpath "$1")"
+      SHELLM_PROFILE="$(readlink -f "$1")"
     else
       echo "shellm: load: no such file: $1 (from argument 1)"
     fi
   elif [ -n "${SHELLM_PROFILE}" ]; then
     if [ -f "${SHELLM_PROFILE}" ]; then
-      SHELLM_PROFILE="$(realpath "${SHELLM_PROFILE}")"
+      SHELLM_PROFILE="$(readlink -f "${SHELLM_PROFILE}")"
     else
       echo "shellm: load: no such file: ${SHELLM_PROFILE} (from SHELLM_PROFILE variable)"
     fi
   elif [ -f "${HOME}/.shellm-profile" ]; then
-    SHELLM_PROFILE="$(realpath "${HOME}/.shellm-profile")"
+    SHELLM_PROFILE="$(readlink -f "${HOME}/.shellm-profile")"
   else
     echo "shellm: load: no profile loaded, try 'shellm help load' to see how profiles are loaded" >&2
     return 1

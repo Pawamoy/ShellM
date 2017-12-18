@@ -1,6 +1,6 @@
 load data
 
-shells="ash bash bosh bsh csh dash fish ksh mksh posh scsh sh tcsh xonsh yash zsh"
+shells="${SHELLS:-ash bash bosh bsh csh dash fish ksh mksh posh scsh sh tcsh xonsh yash zsh}"
 
 _checkbashisms() {
   checkbashisms -fpx "$@" 2>&1 | sed 's/possible bashism in //g'
@@ -9,17 +9,19 @@ _checkbashisms() {
 }
 
 _shell_compatibility() {
-  local output script status=${success}
+  local output script shell status=${success}
   for script in "$@"; do
-   for shell in ${shells}; do
-     if command -v "${shell}" >/dev/null; then
-       if ! output=$(${shell} -nv "${script}" 2>&1); then
-         status=${failure}
-         echo "${script}:${shell}"
-         echo "${output}" | tail -n2
-       fi
-     fi
-   done
+    for shell in ${shells}; do
+      if shenv shell "${shell}"; then
+        if ! output=$(shenv exec ${shell//-*} -n "${script}" 2>&1); then
+          status=${failure}
+          echo "${script}:${shell} ------------------------------"
+          echo "${output}"
+          echo
+        fi
+        shenv shell --unset
+      fi
+    done
   done
   return ${status}
 }
@@ -31,25 +33,46 @@ _shell_compatibility() {
 
 @test "compatibility scripts (checkbashisms)" {
   skip "Compatibility is not yet enforced"
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _checkbashisms ${scripts}
 }
 
 @test "compatibility libraries (checkbashisms)" {
   skip "Compatibility is not yet enforced"
+  if [ ! -n "${libs}" ]; then
+    skip "No libraries found"
+  fi
   _checkbashisms ${libs}
 }
 
 @test "compatibility init.sh (shells dry run)" {
-  skip "Compatibility is not yet enforced"
+  # skip "Compatibility is not yet enforced"
+  if ! command -v shenv &>/dev/null; then
+    skip "shenv command not available, please install shenv"
+  fi
   _shell_compatibility "${SHELLM_ROOT}/init.sh"
 }
 
 @test "compatibility libraries (shells dry run)" {
-  skip "Compatibility is not yet enforced"
+  # skip "Compatibility is not yet enforced"
+  if ! command -v shenv &>/dev/null; then
+    skip "shenv command not available, please install shenv"
+  fi
+  if [ ! -n "${scripts}" ]; then
+    skip "No scripts found"
+  fi
   _shell_compatibility ${scripts}
 }
 
 @test "compatibility scripts (shells dry run)" {
-  skip "Compatibility is not yet enforced"
+  # skip "Compatibility is not yet enforced"
+  if ! command -v shenv &>/dev/null; then
+    skip "shenv command not available, please install shenv"
+  fi
+  if [ ! -n "${libs}" ]; then
+    skip "No libraries found"
+  fi
   _shell_compatibility ${libs}
 }

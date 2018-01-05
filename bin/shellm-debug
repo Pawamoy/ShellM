@@ -9,8 +9,8 @@
 ## \desc Run a script in path with the -x bash option (and more).
 ## You should set the PS4 variable for better output.
 
-include core/shellman.sh
-include core/format.sh
+shellm-include core/shellman.sh
+shellm-include core/format.sh
 
 [ $# -eq 0 ] && usage
 

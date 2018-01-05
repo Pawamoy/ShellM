@@ -1,5 +1,5 @@
-if ndef __UTILS_INIT_SH; then
-define  __UTILS_INIT_SH "
+if shellm-ndef __UTILS_INIT_SH; then
+shellm-define  __UTILS_INIT_SH "
   init
   check
   shellm_activate_check

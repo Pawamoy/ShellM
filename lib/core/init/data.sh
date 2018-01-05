@@ -1,5 +1,5 @@
-if ndef __CORE_INIT_DATA_SH; then
-define __CORE_INIT_DATA_SH "init_data"
+if shellm-ndef __CORE_INIT_DATA_SH; then
+shellm-define __CORE_INIT_DATA_SH "init_data"
 
 ## \fn init_data [script]
 ## \brief Initialize DATADIR variable and create directory

@@ -1,5 +1,5 @@
-if ndef __CORE_LOADTIME_SH; then
-define __CORE_LOADTIME_SH "
+if shellm ndef __CORE_LOADTIME_SH; then
+shellm define __CORE_LOADTIME_SH "
   loadtime_init
   loadtime_measure
   loadtime_finish
@@ -7,16 +7,18 @@ define __CORE_LOADTIME_SH "
 
 ## \brief Functions to measure time to load libraries with include system.
 
+# TODO: deprecated, rewrite the whole system (don't mess with shellm-include)
+
 loadtime_init() {
   MEASURE_LOAD_TIME_FILE="/tmp/shellm-measured-load-time.$$"
-  alias include='loadtime_measure'
+  alias shellm-include='loadtime_measure'
 }
 
 loadtime_measure() {
-  unalias include
+  unalias shellm-include
   local start end diff
   start=$(date +%s.%N)
-  include "$1"
+  shellm include "$1"
   end=$(date +%s.%N)
   diff=$(echo "${end} - ${start}" | bc -l)
   case ${diff} in

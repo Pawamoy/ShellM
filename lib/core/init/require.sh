@@ -1,5 +1,5 @@
-if ndef __CORE_INIT_REQUIRE_SH; then
-define __CORE_INIT_REQUIRE_SH "
+if shellm-ndef __CORE_INIT_REQUIRE_SH; then
+shellm-define __CORE_INIT_REQUIRE_SH "
   list_requirements
   list_missing_requirements
   install_requirement
@@ -7,7 +7,7 @@ define __CORE_INIT_REQUIRE_SH "
   install_missing_requirements
   check_requirements"
 
-include core/find.sh
+shellm-include core/find.sh
 
 ## \fn list_requirements [script]
 ## \brief Recursively list the requirements of a script.

@@ -1,5 +1,5 @@
-if ndef __DAEMON_CONSUMER_SH; then
-define  __DAEMON_CONSUMER_SH "
+if shellm-ndef __DAEMON_CONSUMER_SH; then
+shellm-define  __DAEMON_CONSUMER_SH "
   consumer_lock
   consumer_unlock
   consumer_locked
@@ -10,7 +10,7 @@ define  __DAEMON_CONSUMER_SH "
   consumer_consume
   consumer"
 
-include core/init/data.sh
+shellm-include core/init/data.sh
 
 ## \brief Provide functions to ease creation of daemon scripts.
 ## \desc Simple consumers:

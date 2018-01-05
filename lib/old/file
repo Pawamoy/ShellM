@@ -1,11 +1,11 @@
-if ndef __FILE_FILE_SH; then
-define  __FILE_FILE_SH
+if shellm-ndef __FILE_FILE_SH; then
+shellm-define  __FILE_FILE_SH
 
 ## @file file.sh
 ## @brief Provide functions to manage text files (read, write)
 
-include message.sh
-include string.sh
+shellm-include message.sh
+shellm-include string.sh
 
 cgLinePrefix=no
 

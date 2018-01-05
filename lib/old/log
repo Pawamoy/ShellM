@@ -1,5 +1,5 @@
-if ndef __LOG_LOG_SH; then
-define __LOG_LOG_SH
+if shellm-ndef __LOG_LOG_SH; then
+shellm-define __LOG_LOG_SH
 
 ## @file log.sh
 ## @brief Provide message logging functions

@@ -14,10 +14,10 @@
 ## \example dae runalias D1
 ## Call the D1 alias and run its commands.
 
-include core/shellman.sh
-include core/format.sh
-include core/init/data.sh
-include flow/loop.sh
+shellm-include core/shellman.sh
+shellm-include core/format.sh
+shellm-include core/init/data.sh
+shellm-include flow/loop.sh
 
 [ $# -eq 0 ] && usage
 

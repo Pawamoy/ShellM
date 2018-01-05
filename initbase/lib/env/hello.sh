@@ -1,5 +1,5 @@
-if ndef __ENV_HELLO_SH; then
-define __ENV_HELLO_SH ''
+if shellm-ndef __ENV_HELLO_SH; then
+shellm-define __ENV_HELLO_SH ''
 
 echo "shellm: ${SHELLM_USR} successfully initialized!"
 echo "  This message is printed from your first library file, located in ${SHELLM_USR}/lib/env."

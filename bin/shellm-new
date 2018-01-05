@@ -8,7 +8,7 @@
 ## #!/bin/bash, documentation lines and others, then
 ## opens it for you to write the rest of the code.
 
-include core/shellman.sh
+shellm-include core/shellman.sh
 
 [ $# -eq 0 ] && usage
 

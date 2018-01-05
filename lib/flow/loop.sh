@@ -1,5 +1,5 @@
-if ndef __FLOW_LOOP_SH; then
-define  __FLOW_LOOP_SH "
+if shellm-ndef __FLOW_LOOP_SH; then
+shellm-define  __FLOW_LOOP_SH "
   loop
   loop_alive
   loop_control
@@ -13,7 +13,7 @@ define  __FLOW_LOOP_SH "
   loop_wait
   "
 
-include core/init/data.sh
+shellm-include core/init/data.sh
 
 ## \brief Control the loops within your scripts (pause/stop them).
 ## \desc The loop.sh library provides functions to control loops within shells scripts.

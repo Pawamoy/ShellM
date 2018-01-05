@@ -2,8 +2,8 @@
 
 ## \brief Initialize a shellm directory.
 
-include core/shellman.sh
-include core/init/data.sh
+shellm-include core/shellman.sh
+shellm-include core/init/data.sh
 
 [ $# -eq 0 ] && usage
 

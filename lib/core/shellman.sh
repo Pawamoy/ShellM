@@ -1,5 +1,5 @@
-if ndef __CORE_SHELLMAN_SH; then
-define __CORE_SHELLMAN_SH "
+if shellm-ndef __CORE_SHELLMAN_SH; then
+shellm-define __CORE_SHELLMAN_SH "
   shellman_re
   usage
   shellman_get"

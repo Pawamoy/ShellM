@@ -1,5 +1,7 @@
-if ndef __CORE_EXCLUDE_SH; then
-define __CORE_EXCLUDE_SH "exclude"
+# TODO: move in init.sh
+
+if shellm-ndef __CORE_EXCLUDE_SH; then
+shellm-define __CORE_EXCLUDE_SH "exclude"
 
 exclude() {
   local current_lib

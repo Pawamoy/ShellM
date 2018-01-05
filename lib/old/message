@@ -1,10 +1,10 @@
-if ndef __IO_MESSAGE_SH; then
-define __IO_MESSAGE_SH
+if shellm-ndef __IO_MESSAGE_SH; then
+shellm-define __IO_MESSAGE_SH
 
 ## @file message.sh
 ## @brief Provide useful message functions
 
-include core/format.sh
+shellm-include core/format.sh
 
 ## @fn void color (color, message)
 ## @brief Set the color to color, and output message if given

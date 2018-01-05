@@ -1,7 +1,7 @@
 loadtime_init
 
 # User environment -------------------------------------------------------------
-include "env/hello.sh"
+shellm-include "env/hello.sh"
 
 loadtime_finish
 #loadtime_print

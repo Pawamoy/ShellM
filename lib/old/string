@@ -1,5 +1,5 @@
-if ndef __STRING_STRING_SH; then
-define  __STRING_STRING_SH
+if shellm-ndef __STRING_STRING_SH; then
+shellm-define  __STRING_STRING_SH
 
 ## @file string.sh
 ## @brief Functions for string manipulations.

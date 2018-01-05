@@ -1,5 +1,7 @@
-if ndef __CORE_FIND_SH; then
-define __CORE_FIND_SH "find find_script find_lib"
+# TODO: move in init.sh
+
+if shellm-ndef __CORE_FIND_SH; then
+shellm-define __CORE_FIND_SH "find find_script find_lib"
 
 # TODO: why not searching in SHELLM_ROOT?
 

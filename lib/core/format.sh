@@ -1,5 +1,7 @@
-if ndef __CORE_FORMAT_SH; then
-define __CORE_FORMAT_SH "format"
+# TODO: move in its own app
+
+if shellm-ndef __CORE_FORMAT_SH; then
+shellm-define __CORE_FORMAT_SH "format"
 
 ## \example format onBlack intenseGreen faint bold; echo 'SUCCESS!'; format reset
 ## Black background, intense-green foreground, fainted and bold.
@@ -149,7 +151,7 @@ if [ "${TERM}" = linux ]; then # 8 colors
       shift
     done
 
-    print() {
+    _format_print() {
       if [ "$F" != "${ESC}" ]; then
         [ ! -n "${SHELLM_NO_FORMAT}" ] && echo -n${E} "${F}m"
       fi
@@ -166,12 +168,12 @@ if [ "${TERM}" = linux ]; then # 8 colors
     }
 
     if [ ${REDIRECT} -eq 1 ]; then
-      print "$@" >&2
+      _format_print "$@" >&2
     else
-      print "$@"
+      _format_print "$@"
     fi
 
-    unset -f print
+    unset -f _format_print
   }
 
 else # 16 colors
@@ -258,7 +260,7 @@ else # 16 colors
       shift
     done
 
-    print() {
+    _format_print() {
       if [ "$F" != "${ESC}" ]; then
         [ ! -n "${SHELLM_NO_FORMAT}" ] && echo -n${E} "${F}m"
       fi
@@ -275,12 +277,12 @@ else # 16 colors
     }
 
     if [ ${REDIRECT} -eq 1 ]; then
-      print "$@" >&2
+      _format_print "$@" >&2
     else
-      print "$@"
+      _format_print "$@"
     fi
 
-    unset -f print
+    unset -f _format_print
   }
 
 fi

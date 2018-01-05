@@ -1,9 +1,9 @@
-if ndef __CORE_INIT_EXPORT_SH; then
-define __CORE_INIT_EXPORT_SH "init_export"
+if shellm-ndef __CORE_INIT_EXPORT_SH; then
+shellm-define __CORE_INIT_EXPORT_SH "init_export"
 
 ## \brief Improve scripts performance by [recursively] exporting used libraries
 
-include core/shellman.sh
+shellm-include core/shellman.sh
 
 ## \fn init_export ()
 ## \brief Parse all sub-scripts (recursively) and export their includes

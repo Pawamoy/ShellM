@@ -1,10 +1,10 @@
-if ndef __IO_ASK_SH; then
-define __IO_ASK_SH
+if shellm-ndef __IO_ASK_SH; then
+shellm-define __IO_ASK_SH
 
 ## \brief Provide useful function to get stdin content.
 
-include ui/auto.sh
-include message.sh
+shellm-include ui/auto.sh
+shellm-include message.sh
 
 shellm_ask_confirm=
 shellm_ask_timeout=-1

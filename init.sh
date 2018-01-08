@@ -73,11 +73,67 @@ shellm-define() {
   fi
 }
 
+# TODO: move elsewhere
 _shellm_die() {
   case "${WINDOWID}" in
     [0-9]*) [ ${SHLVL} -gt 2 ] && exit $1 || return $1 ;;
     "") [ ${SHLVL} -gt 1 ] && exit $1 || return $1 ;;
   esac
+}
+
+## \fn find_script [NAME]
+## \brief Find a script.
+find_script() {
+  local found
+  if [ $# -eq 1 ]; then
+    if [ -f "$1" ]; then
+      found="$1"
+    elif [ -f "${SHELLM_USR}/bin/$1" ]; then
+      found="${SHELLM_USR}/bin/$1"
+    else
+      echo "find_script: can't find $1" >&2
+      return 1
+    fi
+  elif [ -f "$0" ]; then
+    found="$0"
+  elif [ -f "${SHELLM_USR}/bin/$0" ]; then
+    found="${SHELLM_USR}/bin/$0"
+  else
+    echo "find_script: can't find $0" >&2
+    return 1
+  fi
+
+  echo "${found}"
+}
+
+## \fn find_lib <NAME>
+## \brief Find a library file.
+find_lib() {
+  local found
+  if [ -f "$1" ]; then
+    found="$1"
+  elif [ -f "${SHELLM_USR}/lib/$1" ]; then
+    found="${SHELLM_USR}/lib/$1"
+  else
+    echo "find_lib: can't find $1" >&2
+    return 1
+  fi
+
+  echo "${found}"
+}
+
+## \fn find NAME
+## \brief Find either a script or a library file.
+find() {
+  local found
+  if found=$(find_script "$@" 2>/dev/null); then
+    echo "${found}"
+  elif found=$(find_lib "$@" 2>/dev/null); then
+    echo "${found}"
+  else
+    echo "find: can't find $1" >&2
+    return 1
+  fi
 }
 
 ## \fn shellm-include (filename)
@@ -98,13 +154,58 @@ shellm-include() {
       # shellcheck disable=SC1090
       if ! . "${libdir}/$1"; then
         echo "shellm-include: error while including $1 (from $0)" >&2
-        _shellm_die 1
+        return 1
       fi
       return 0
     fi
   done
   echo "shellm-include: no such file: $1 (from $0)" >&2
   return 1
+}
+
+shellm-exclude() {
+  local current_lib
+  local include includes lib_header def defined
+
+  # TODO: use find lib instead
+  if [ -f "$1" ]; then
+    current_lib="$1"
+  elif [ -f "${SHELLM_USR}/lib/$1" ]; then
+    current_lib="${SHELLM_USR}/lib/$1"
+  elif [ -f "${SHELLM_ROOT}/lib/$1" ]; then
+    current_lib="${SHELLM_ROOT}/lib/$1"
+  else
+    echo "shellm: exclude: no such file: $1 (from $0)"
+  fi
+
+  lib_header=${current_lib#${SHELLM_USR}/lib/}
+  lib_header=${lib_header//[\/.]/_}
+  lib_header=__${lib_header^^}
+  defined=${!lib_header}
+  for def in ${defined}; do
+    case "$(type -t "${def}")" in
+      function)
+        # shellcheck disable=SC2163
+        unset -f "${def}"
+      ;;
+      alias)
+        # shellcheck disable=SC2163
+        unalias "${def}"
+      ;;
+      "")
+        # shellcheck disable=SC2163
+        unset "${def}"
+      ;;
+    esac
+  done
+  unset "${lib_header}"
+
+  # recurse on other included libraries
+  # FIXME: #8 fix incomplete regex
+  includes=$(grep -Eo "(shellm[- ])?include [\"']?[a-zA-Z_/]*\.sh[\"']?" "${current_lib}" | cut -d' ' -f2 | sed "s/[\"']//g")
+  for include in ${includes}; do
+    shellm-exclude "${include}"
+  done
 }
 
 ## \fn shellm-ndef (varname)

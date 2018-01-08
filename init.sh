@@ -4,12 +4,15 @@
 shellm() {
   local cmd="$1"
 
-  if command -v "shellm-${cmd}" >/dev/null; then
+  if command -v "shellm-${cmd}" &>/dev/null; then
     shift
     # shellcheck disable=SC2086
     shellm-${cmd} "$@"
-  else
+  elif command -v "${cmd}" &>/dev/null; then
     ( cd "${SHELLM_USR}" && "$@" )
+  else
+    echo "shellm: unknown command '${cmd}'" >&2
+    return 1
   fi
 }
 export -f shellm
@@ -42,13 +45,32 @@ shellm-find-lib() {
 }
 export -f shellm-find-lib
 
+## \fn shellm-ndef
+## \brief Tests if a variable is set (non-empty)
+## \return true if empty (unset), false otherwise
+shellm-ndef() {
+  # shellcheck disable=SC2086
+  local key
+  if ! [ -z "${_SHELLM_INCLUDED[@]+x}" ]; then
+    for key in "${!_SHELLM_INCLUDED[@]}"; do
+      if [ "${key}" = "${_SHELLM_LIBSTACK[-1]}" ]; then
+        return 1
+      fi
+    done
+  else
+    declare -gA _SHELLM_INCLUDED
+  fi
+  return 0
+}
+export -f shellm-ndef
+
 ## \fn shellm-define (name, [value])
 ## \brief Defines an environment variable in the current shell
 ## \param name Variable name
 ## \param value Optional, variable content (default: 'def')
 ## \return false if no args or error while affectation, true otherwise
 shellm-define() {
-  _SHELLM_INCLUDED+=("${_SHELLM_LIBSTACK[-1]}"="$1")
+  _SHELLM_INCLUDED+=(["${_SHELLM_LIBSTACK[-1]}"]="$1")
 }
 export -f shellm-define
 
@@ -66,7 +88,7 @@ _shellm_die() {
 ## \stderr Message if return code 1
 ## \return false (and exits if subshell) if no args or error while including contents, true otherwise
 shellm-include() {
-  local libdir array arg lib
+  local libdir array arg lib status
 
   # compatibility with basher
   if [ $# -eq 2 ]; then
@@ -79,16 +101,21 @@ shellm-include() {
     _SHELLM_LIBSTACK+=("${lib}")
 
     # shellcheck disable=SC1090
-    if ! . "${lib}"; then
-      echo "shellm-include: error while including ${lib} (from $0)" >&2
-      unset _SHELLM_LIBSTACK[-1]
-      return 1
-    fi
+    . "${lib}"
+    status=$?
 
     unset _SHELLM_LIBSTACK[-1]
-    return 0
+
+    if [ ${status} -ne 0 ]; then
+      echo "shellm-include: error while including ${lib}" >&2
+      echo "  command: $0" >&2
+      echo "  library stack: ${_SHELLM_LIBSTACK[*]}" >&2
+      return 1
+    fi
   else
-    echo "shellm-include: no such file in LIBPATH: ${arg} (from $0)" >&2
+    echo "shellm-include: no such file in LIBPATH: ${arg}" >&2
+    echo "  command: $0" >&2
+    echo "  library stack: ${_SHELLM_LIBSTACK[*]}" >&2
     return 1
   fi
 }
@@ -140,27 +167,7 @@ shellm-exclude() {
 }
 export -f shellm-exclude
 
-## \fn shellm-ndef (varname)
-## \brief Tests if a variable is set (non-empty)
-## \param varname Variable name
-## \return true if empty (unset), false otherwise
-shellm-ndef() {
-  # shellcheck disable=SC2086
-  if [ $# -eq 1 ]; then
-    declare -n _ref=$1
-    if [ -z "${_ref+x}" ]; then
-      return 0
-    fi
-    return 1
-  else
-    echo "shellm-ndef: usage: shellm-ndef <VARNAME>" >&2
-    _shellm_die 1
-  fi
-}
-export -f shellm-ndef
-
 # Setup variables --------------------------------------------------------------
-declare -A _SHELLM_INCLUDED
 declare -a _SHELLM_LIBSTACK
 
 LOCAL_SHELLM_ROOT="${SHELLM_ROOT:-$1}"

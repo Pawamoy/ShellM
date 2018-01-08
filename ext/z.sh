@@ -6,8 +6,8 @@ git clone https://github.com/rupa/z
 
 # create lib binding
 cat >"${SHELLM_USR}/lib/ext/z.sh" <<EOF
-if shellm-ndef __EXT_Z_SH; then
-shellm-define  __EXT_Z_SH "z"
+if shellm-ndef; then
+shellm-define "z"
 . "\${SHELLM_USR}/ext/z/z.sh"
 fi  # __EXT_Z_SH
 EOF

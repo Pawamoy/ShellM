@@ -3,7 +3,7 @@
 if shellm-ndef __CORE_FIND_SH; then
 shellm-define __CORE_FIND_SH "find find_script find_lib"
 
-# TODO: why not searching in SHELLM_ROOT?
+# TODO: move this in shellm-project (if really needed)
 
 ## \fn find_script [NAME]
 ## \brief Find a script.

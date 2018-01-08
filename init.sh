@@ -12,50 +12,35 @@ shellm() {
     ( cd "${SHELLM_USR}" && "$@" )
   fi
 }
+export -f shellm
 
-## TODO: add docs
-shellm-load() {
-  if [ $# -gt 1 ]; then
-    echo "shellm-load: too many arguments" >&2
-    return 1
-  elif [ $# -eq 1 ]; then
-    if [ -f "$1" ]; then
-      SHELLM_PROFILE="$(readlink -f "$1")"
-    else
-      echo "shellm-load: no such file: $1 (from argument 1)"
-    fi
-  elif [ -n "${SHELLM_PROFILE}" ]; then
-    if [ -f "${SHELLM_PROFILE}" ]; then
-      SHELLM_PROFILE="$(readlink -f "${SHELLM_PROFILE}")"
-    else
-      echo "shellm-load: no such file: ${SHELLM_PROFILE} (from SHELLM_PROFILE variable)"
-    fi
-  elif [ -f "${HOME}/.shellm-profile" ]; then
-    SHELLM_PROFILE="$(readlink -f "${HOME}/.shellm-profile")"
+## \fn find-script [NAME]
+## \brief Find a script.
+shellm-find-script() {
+  local arg
+  if [ $# -eq 1 ]; then
+    arg="$1"
   else
-    echo "shellm-load: no profile loaded, try 'shellm help load' to see how profiles are loaded" >&2
-    return 1
+    arg="$0"
   fi
-
-  SHELLM_USR="$(dirname "${SHELLM_PROFILE}")"
-  export SHELLM_PROFILE SHELLM_USR
-
-  if ! echo "${PATH}" | grep -q "${SHELLM_USR}/bin"; then
-    export PATH="${SHELLM_USR}/bin:${PATH}"
-  fi
-
-  export MANPATH="${SHELLM_USR}/man:${MANPATH}"
-  export LIBPATH="${SHELLM_USR}/lib:${LIBPATH}"
-
-  # shellcheck disable=SC1090
-  . "${SHELLM_PROFILE}"
+  type -p "${arg}"
 }
+export -f shellm-find-script
 
-## TODO: add docs
-shellm-cd() {
-  # shellcheck disable=SC2164
-  cd "${SHELLM_USR}/$1"
+## \fn find-lib <NAME>
+## \brief Find a library file.
+shellm-find-lib() {
+  local libdir
+  IFS=':' read -r -a array <<< "${LIBPATH}"
+  for libdir in "${array[@]}"; do
+    if [ -f "${libdir}/$1" ]; then
+      echo "${libdir}/$1"
+      return 0
+    fi
+  done
+  return 1
 }
+export -f shellm-find-lib
 
 ## \fn shellm-define (name, [value])
 ## \brief Defines an environment variable in the current shell
@@ -63,15 +48,9 @@ shellm-cd() {
 ## \param value Optional, variable content (default: 'def')
 ## \return false if no args or error while affectation, true otherwise
 shellm-define() {
-  if [ $# -eq 2 ]; then
-    declare -r "$1"="$2"
-  elif [ $# -eq 1 ]; then
-    declare -r "$1"
-  else
-    echo "shellm-define: usage: shellm-define <VARNAME> [VALUE]" >&2
-    return 1
-  fi
+  _SHELLM_INCLUDED+=("${_SHELLM_LIBSTACK[-1]}"="$1")
 }
+export -f shellm-define
 
 # TODO: move elsewhere
 _shellm_die() {
@@ -81,101 +60,53 @@ _shellm_die() {
   esac
 }
 
-## \fn find_script [NAME]
-## \brief Find a script.
-find_script() {
-  local found
-  if [ $# -eq 1 ]; then
-    if [ -f "$1" ]; then
-      found="$1"
-    elif [ -f "${SHELLM_USR}/bin/$1" ]; then
-      found="${SHELLM_USR}/bin/$1"
-    else
-      echo "find_script: can't find $1" >&2
-      return 1
-    fi
-  elif [ -f "$0" ]; then
-    found="$0"
-  elif [ -f "${SHELLM_USR}/bin/$0" ]; then
-    found="${SHELLM_USR}/bin/$0"
-  else
-    echo "find_script: can't find $0" >&2
-    return 1
-  fi
-
-  echo "${found}"
-}
-
-## \fn find_lib <NAME>
-## \brief Find a library file.
-find_lib() {
-  local found
-  if [ -f "$1" ]; then
-    found="$1"
-  elif [ -f "${SHELLM_USR}/lib/$1" ]; then
-    found="${SHELLM_USR}/lib/$1"
-  else
-    echo "find_lib: can't find $1" >&2
-    return 1
-  fi
-
-  echo "${found}"
-}
-
-## \fn find NAME
-## \brief Find either a script or a library file.
-find() {
-  local found
-  if found=$(find_script "$@" 2>/dev/null); then
-    echo "${found}"
-  elif found=$(find_lib "$@" 2>/dev/null); then
-    echo "${found}"
-  else
-    echo "find: can't find $1" >&2
-    return 1
-  fi
-}
-
 ## \fn shellm-include (filename)
 ## \brief Includes content of a library file in the current shell
 ## \param filename Name of library file to include
 ## \stderr Message if return code 1
 ## \return false (and exits if subshell) if no args or error while including contents, true otherwise
 shellm-include() {
-  local libdir array file
+  local libdir array arg lib
+
+  # compatibility with basher
   if [ $# -eq 2 ]; then
-    file="$1/$2"
+    arg="$1/$2"
   else
-    file="$1"
+    arg="$1"
   fi
-  IFS=':' read -r -a array <<< "${LIBPATH}"
-  for libdir in "${array[@]}"; do
-    if [ -f "${libdir}/$1" ]; then
-      # shellcheck disable=SC1090
-      if ! . "${libdir}/$1"; then
-        echo "shellm-include: error while including $1 (from $0)" >&2
-        return 1
-      fi
-      return 0
+
+  if lib="$(shellm-find-lib "${arg}")"; then
+    _SHELLM_LIBSTACK+=("${lib}")
+
+    # shellcheck disable=SC1090
+    if ! . "${lib}"; then
+      echo "shellm-include: error while including ${lib} (from $0)" >&2
+      unset _SHELLM_LIBSTACK[-1]
+      return 1
     fi
-  done
-  echo "shellm-include: no such file: $1 (from $0)" >&2
-  return 1
+
+    unset _SHELLM_LIBSTACK[-1]
+    return 0
+  else
+    echo "shellm-include: no such file in LIBPATH: ${arg} (from $0)" >&2
+    return 1
+  fi
 }
+export -f shellm-include
 
 shellm-exclude() {
-  local current_lib
-  local include includes lib_header def defined
+  local current_lib arg include includes lib_header def defined
 
-  # TODO: use find lib instead
-  if [ -f "$1" ]; then
-    current_lib="$1"
-  elif [ -f "${SHELLM_USR}/lib/$1" ]; then
-    current_lib="${SHELLM_USR}/lib/$1"
-  elif [ -f "${SHELLM_ROOT}/lib/$1" ]; then
-    current_lib="${SHELLM_ROOT}/lib/$1"
+  # compatibility with basher
+  if [ $# -eq 2 ]; then
+    arg="$1/$2"
   else
-    echo "shellm: exclude: no such file: $1 (from $0)"
+    arg="$1"
+  fi
+
+  if ! current_lib="$(shellm-find-lib "${arg}")"; then
+    echo "shellm-exclude: no such file in LIBPATH: ${arg} (from $0)" >&2
+    return 1
   fi
 
   lib_header=${current_lib#${SHELLM_USR}/lib/}
@@ -207,6 +138,7 @@ shellm-exclude() {
     shellm-exclude "${include}"
   done
 }
+export -f shellm-exclude
 
 ## \fn shellm-ndef (varname)
 ## \brief Tests if a variable is set (non-empty)
@@ -225,14 +157,12 @@ shellm-ndef() {
     _shellm_die 1
   fi
 }
-
-export -f shellm
-export -f shellm-load
-export -f shellm-define
 export -f shellm-ndef
-export -f shellm-include
 
 # Setup variables --------------------------------------------------------------
+declare -A _SHELLM_INCLUDED
+declare -a _SHELLM_LIBSTACK
+
 LOCAL_SHELLM_ROOT="${SHELLM_ROOT:-$1}"
 
 if [ ! -n "${LOCAL_SHELLM_ROOT}" ]; then
@@ -259,12 +189,11 @@ if ! echo "${PATH}" | grep -q "${SHELLM_ROOT}/bin"; then
 fi
 
 export MANPATH="${SHELLM_ROOT}/man:"
-export LIBPATH="/usr/local/lib/shellm:${SHELLM_ROOT}/lib"
+if [ -n "${LIBPATH}" ]; then
+  LIBPATH="/usr/local/packages:${LIBPATH}"
+else
+  LIBPATH="/usr/local/packages"
+fi
+export LIBPATH
 
 unset LOCAL_SHELLM_ROOT
-
-# Core libraries ---------------------------------------------------------------
-#shellm-include "core/loadtime.sh"
-#loadtime_init
-shellm-include "core/shellman.sh"
-#loadtime_finish

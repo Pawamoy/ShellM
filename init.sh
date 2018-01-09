@@ -53,7 +53,7 @@ shellm-ndef() {
   local key
   if ! [ -z "${_SHELLM_INCLUDED[@]+x}" ]; then
     for key in "${!_SHELLM_INCLUDED[@]}"; do
-      if [ "${key}" = "${_SHELLM_LIBSTACK[-1]}" ]; then
+      if [ "${key}" = "${__SHELLM_LIBSTACK[-1]}" ]; then
         return 1
       fi
     done
@@ -70,7 +70,7 @@ export -f shellm-ndef
 ## \param value Optional, variable content (default: 'def')
 ## \return false if no args or error while affectation, true otherwise
 shellm-define() {
-  _SHELLM_INCLUDED+=(["${_SHELLM_LIBSTACK[-1]}"]="$1")
+  _SHELLM_INCLUDED+=(["${__SHELLM_LIBSTACK[-1]}"]="$1")
 }
 export -f shellm-define
 
@@ -98,24 +98,24 @@ shellm-include() {
   fi
 
   if lib="$(shellm-find-lib "${arg}")"; then
-    _SHELLM_LIBSTACK+=("${lib}")
+    __SHELLM_LIBSTACK+=("${lib}")
 
     # shellcheck disable=SC1090
     . "${lib}"
     status=$?
 
-    unset _SHELLM_LIBSTACK[-1]
+    unset __SHELLM_LIBSTACK[-1]
 
     if [ ${status} -ne 0 ]; then
       echo "shellm-include: error while including ${lib}" >&2
       echo "  command: $0" >&2
-      echo "  library stack: ${_SHELLM_LIBSTACK[*]}" >&2
+      echo "  library stack: ${__SHELLM_LIBSTACK[*]}" >&2
       return 1
     fi
   else
     echo "shellm-include: no such file in LIBPATH: ${arg}" >&2
     echo "  command: $0" >&2
-    echo "  library stack: ${_SHELLM_LIBSTACK[*]}" >&2
+    echo "  library stack: ${__SHELLM_LIBSTACK[*]}" >&2
     return 1
   fi
 }
@@ -168,39 +168,14 @@ shellm-exclude() {
 export -f shellm-exclude
 
 # Setup variables --------------------------------------------------------------
-declare -a _SHELLM_LIBSTACK
+declare -a __SHELLM_LIBSTACK
 
-LOCAL_SHELLM_ROOT="${SHELLM_ROOT:-$1}"
-
-if [ ! -n "${LOCAL_SHELLM_ROOT}" ]; then
-  if [ -d "${HOME}/.shellm" ]; then
-    export SHELLM_ROOT="${HOME}/.shellm"
-  else
-    echo "shellm: can't find myself (I'm serious.)" >&2
-    echo "        Please tell me my location by either passing it as an argument to init.sh," >&2
-    echo "        or set the SHELLM_ROOT variable before sourcing me." >&2
-    echo "        You can also move me or symlink me as ${HOME}/.shellm" >&2
-    return 1
-  fi
-else
-  if [ -d "${LOCAL_SHELLM_ROOT}" ] || [ -L "${LOCAL_SHELLM_ROOT}" ]; then
-    export SHELLM_ROOT="${LOCAL_SHELLM_ROOT}"
-  else
-    echo "shellm: no such directory: ${LOCAL_SHELLM_ROOT}" >&2
-    return 1
-  fi
-fi
-
-if ! echo "${PATH}" | grep -q "${SHELLM_ROOT}/bin"; then
-  export PATH="${SHELLM_ROOT}/bin:${PATH}"
-fi
-
-export MANPATH="${SHELLM_ROOT}/man:"
-if [ -n "${LIBPATH}" ]; then
+if [ -d "/usr/local/packages" ]; then
   LIBPATH="/usr/local/packages:${LIBPATH}"
-else
-  LIBPATH="/usr/local/packages"
 fi
-export LIBPATH
 
-unset LOCAL_SHELLM_ROOT
+if [ -d "${HOME}/.basher/cellar/packages" ]; then
+  LIBPATH="${HOME}/.basher/cellar/packages:${LIBPATH}"
+fi
+
+export LIBPATH

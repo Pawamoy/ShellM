@@ -48,7 +48,7 @@ _usage_matches_script_name() {
 }
 
 @test "shellman on init.sh" {
-  _shellman "${SHELLM_ROOT}/init.sh"
+  _shellman "init.sh"
 }
 
 @test "shellman on scripts" {

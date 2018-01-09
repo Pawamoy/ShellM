@@ -9,8 +9,7 @@ before_install:
   - sudo bpkg install -g sstephenson/bats
 
 install:
-  - export SHELLM_ROOT="$(pwd)"
-  - . "${SHELLM_ROOT}/init.sh"
+  - . init.sh
 
 script:
   - bats tests

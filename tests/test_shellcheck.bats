@@ -1,7 +1,7 @@
 load data
 
 @test "shellcheck on init.sh" {
-  shellcheck -x "${SHELLM_ROOT}/init.sh"
+  shellcheck -x "init.sh"
 }
 
 @test "shellcheck on scripts" {

@@ -28,7 +28,7 @@ _shell_compatibility() {
 
 @test "compatibility init.sh (checkbashisms)" {
   skip "Compatibility is not yet enforced"
-  _checkbashisms "${SHELLM_ROOT}/init.sh"
+  _checkbashisms "init.sh"
 }
 
 @test "compatibility scripts (checkbashisms)" {
@@ -52,7 +52,7 @@ _shell_compatibility() {
   if ! command -v shenv &>/dev/null; then
     skip "shenv command not available, please install shenv"
   fi
-  _shell_compatibility "${SHELLM_ROOT}/init.sh"
+  _shell_compatibility "init.sh"
 }
 
 @test "compatibility libraries (shells dry run)" {

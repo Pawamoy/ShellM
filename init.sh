@@ -9,6 +9,7 @@ shellm() {
     # shellcheck disable=SC2086
     shellm-${cmd} "$@"
   elif command -v "${cmd}" &>/dev/null; then
+    # TODO: what about executing functions that change the environment?
     ( cd "${SHELLM_PROJECT}" && "$@" )
   else
     echo "shellm: unknown command '${cmd}'" >&2

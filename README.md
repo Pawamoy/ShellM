@@ -1,6 +1,6 @@
 ![logo](logo.png)
 
-[![Build Status](https://travis-ci.org/Pawamoy/shellm.svg?branch=master)](https://travis-ci.org/Pawamoy/shellm)
+[![Build Status](https://travis-ci.org/pawamoy/shellm.svg?branch=master)](https://travis-ci.org/pawamoy/shellm)
 
 Shellm is some kind of Bash framework for a personal use. It provides useful
 commands to help you write and manage your shell scripts. See the Quickstart
@@ -11,12 +11,12 @@ Installation is done by cloning the repo and sourcing the code
 from `.bashrc` (or another file sourced at terminal startup):
 
 ```bash
-git clone https://github.com/Pawamoy/shellm.git ~/.shellm
+git clone https://gitlab.com/shellm/shellm ~/.shellm
 echo '. ~/.shellm/init.sh' >> ~/.bashrc
 ```
 
 ### Dependencies
-- [shellman](https://github.com/Pawamoy/shellman): `[sudo -H] pip install shellman`
+- [shellman](https://github.com/pawamoy/shellman): `[sudo -H] pip install shellman`
 
 To run the test suite, also install these:
 
@@ -85,4 +85,4 @@ shellm rm bin/not-working-script
 ```
 
 ## Documentation
-Documentation can be found on the [GitHub wiki](https://github.com/Pawamoy/shellm/wiki)!
+Documentation can be found on the [GitHub wiki](https://github.com/pawamoy/shellm/wiki)!

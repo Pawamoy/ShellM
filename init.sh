@@ -128,7 +128,9 @@ if [ -d "/usr/local/packages" ]; then
   LIBPATH="/usr/local/packages:${LIBPATH}"
 fi
 
-if [ -d "${HOME}/.basher/cellar/packages" ]; then
+if [ -d "${BASHER_PREFIX}" ]; then
+  LIBPATH="${BASHER_PREFIX}/packages:${LIBPATH}"
+elif [ -d "${HOME}/.basher/cellar/packages" ]; then
   LIBPATH="${HOME}/.basher/cellar/packages:${LIBPATH}"
 fi
 

@@ -1,5 +1,5 @@
 # shellcheck disable=SC2148
-# Shellm functions -------------------------------------------------------------
+
 ## TODO: add docs
 shellm() {
   local cmd="$1"
@@ -18,22 +18,9 @@ shellm() {
 }
 export -f shellm
 
-## \fn find-script [NAME]
-## \brief Find a script.
-shellm-find-script() {
-  local arg
-  if [ $# -eq 1 ]; then
-    arg="$1"
-  else
-    arg="$0"
-  fi
-  type -p "${arg}"
-}
-export -f shellm-find-script
-
 ## \fn find-lib <NAME>
 ## \brief Find a library file.
-shellm-find-lib() {
+__shellm_locate() {
   local libdir
   IFS=':' read -r -a array <<< "${LIBPATH}"
   for libdir in "${array[@]}"; do
@@ -44,39 +31,31 @@ shellm-find-lib() {
   done
   return 1
 }
-export -f shellm-find-lib
+export -f __shellm_locate
 
-# TODO: move elsewhere
-_shellm_die() {
-  case "${WINDOWID}" in
-    [0-9]*) [ ${SHLVL} -gt 2 ] && exit $1 || return $1 ;;
-    "") [ ${SHLVL} -gt 1 ] && exit $1 || return $1 ;;
-  esac
-}
-
-_shellm_lib_not_included() {
+__shellm_has_source() {
   local i
-  for i in ${SHELLM_INCLUDES[@]}; do
-    [ "$1" = "$i" ] && return 1
+  for i in ${SHELLM_SOURCES[@]}; do
+    [ "$1" = "$i" ] && return 0
   done
-  return 0
+  return 1
 }
-export -f _shellm_lib_not_included
+export -f __shellm_has_source
 
-_shellm_include_lib() {
-  SHELLM_INCLUDES+=("$1")
+__shellm_add_source() {
+  SHELLM_SOURCES+=("$1")
 }
-export -f _shellm_include_lib
+export -f __shellm_add_source
 
-_shellm_libstack_push() {
+__shellm_libstack_push() {
   __SHELLM_LIBSTACK+=("$1")
 }
-export -f _shellm_libstack_push
+export -f __shellm_libstack_push
 
-_shellm_libstack_pop() {
+__shellm_libstack_pop() {
   unset __SHELLM_LIBSTACK[-1]
 }
-export -f _shellm_libstack_pop
+export -f __shellm_libstack_pop
 
 ## \fn shellm-include (filename)
 ## \brief Includes content of a library file in the current shell
@@ -93,15 +72,18 @@ shellm-include() {
     arg="$1"
   fi
 
-  if lib="$(shellm-find-lib "${arg}")"; then
-    if _shellm_lib_not_included "${lib}"; then
-      _shellm_include_lib "${lib}"
+  if lib="$(__shellm_locate "${arg}")"; then
 
-      _shellm_libstack_push "${lib}"
+    if ! __shellm_has_source "${lib}"; then
+
+      __shellm_add_source "${lib}"
+      __shellm_libstack_push "${lib}"
+
       # shellcheck disable=SC1090
       . "${lib}"
       status=$?
-      _shellm_libstack_pop
+
+      __shellm_libstack_pop
 
       if [ ${status} -ne 0 ]; then
         echo "shellm-include: error while including ${lib}" >&2
@@ -109,24 +91,23 @@ shellm-include() {
         echo "  library stack: ${__SHELLM_LIBSTACK[*]}" >&2
         return 1
       fi
+
     fi
+
   else
+
     echo "shellm-include: no such file in LIBPATH: ${arg}" >&2
     echo "  command: $0" >&2
     echo "  library stack: ${__SHELLM_LIBSTACK[*]}" >&2
     return 1
+
   fi
 }
 export -f shellm-include
 
 
-# Setup variables --------------------------------------------------------------
 declare -a __SHELLM_LIBSTACK
-declare -a SHELLM_INCLUDES
-
-if [ -d "/usr/local/packages" ]; then
-  LIBPATH="/usr/local/packages:${LIBPATH}"
-fi
+declare -a SHELLM_SOURCES
 
 if [ -d "${BASHER_PREFIX}" ]; then
   LIBPATH="${BASHER_PREFIX}/packages:${LIBPATH}"

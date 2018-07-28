@@ -54,12 +54,12 @@ __shellm_libstack_pop() {
 }
 export -f __shellm_libstack_pop
 
-## \fn shellm-include (filename)
+## \fn shellm-source (filename)
 ## \brief Includes content of a library file in the current shell
 ## \param filename Name of library file to include
 ## \stderr Message if return code 1
 ## \return false (and exits if subshell) if no args or error while including contents, true otherwise
-shellm-include() {
+shellm-source() {
   local arg lib status
 
   # compatibility with basher
@@ -83,7 +83,7 @@ shellm-include() {
       __shellm_libstack_pop
 
       if [ ${status} -ne 0 ]; then
-        echo "shellm-include: error while including ${lib}" >&2
+        echo "shellm-source: error while including ${lib}" >&2
         echo "  command: $0" >&2
         echo "  library stack: ${__SHELLM_LIBSTACK[*]}" >&2
         return 1
@@ -93,14 +93,14 @@ shellm-include() {
 
   else
 
-    echo "shellm-include: no such file in LIBPATH: ${arg}" >&2
+    echo "shellm-source: no such file in LIBPATH: ${arg}" >&2
     echo "  command: $0" >&2
     echo "  library stack: ${__SHELLM_LIBSTACK[*]}" >&2
     return 1
 
   fi
 }
-export -f shellm-include
+export -f shellm-source
 
 
 declare -a __SHELLM_LIBSTACK

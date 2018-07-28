@@ -3,7 +3,7 @@
 ## \brief Run the test suite.
 ## \require coreutils
 
-shellm-include core/shellman.sh
+shellm-source core/shellman.sh
 
 
 main() {

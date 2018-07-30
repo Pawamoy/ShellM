@@ -1,6 +1,6 @@
 # shellcheck disable=SC2148
 
-## TODO: add docs
+# TODO: add docs
 shellm() {
   local cmd="$1"
 

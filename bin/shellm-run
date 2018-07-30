@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
+## \brief Load shellm then run a command.
+
+## \usage shellm-run COMMAND ARGS
+
 :  # do nothing for now

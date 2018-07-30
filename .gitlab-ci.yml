@@ -2,6 +2,7 @@ shellcheck:
   image: debian:latest
   before_script:
     # install bats
+    - apt-get update && apt-get install -y git curl xz-utils file
     - git clone https://github.com/basherpm/basher ~/.basher
     - export PATH="$HOME/.basher/bin:$PATH"
     - eval "$(basher init - bash)"

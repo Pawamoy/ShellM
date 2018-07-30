@@ -1,0 +1,13 @@
+shellcheck:
+  image: debian:latest
+  before_script:
+    # install bats
+    - git clone https://github.com/basherpm/basher ~/.basher
+    - export PATH="$HOME/.basher/bin:$PATH"
+    - eval "$(basher init - bash)"
+    - basher install bats-core/bats-core
+    # install shellcheck
+    - curl -Ls https://storage.googleapis.com/shellcheck/shellcheck-stable.linux.x86_64.tar.xz | tar xvJ
+    - mv shellcheck-stable/shellcheck /usr/bin/shellcheck
+  script:
+    - bats tests/test_shellcheck.bats

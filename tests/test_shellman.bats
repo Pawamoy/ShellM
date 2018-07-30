@@ -1,5 +1,6 @@
 load data
-. "${BATS_TEST_DIRNAME}/../lib/core/shellman.sh"
+
+shellm-source shellm/shellman/lib/shellman.sh
 
 _shellman() {
   local arg status=${success}

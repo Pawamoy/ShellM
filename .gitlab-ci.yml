@@ -10,5 +10,7 @@ shellcheck:
 shellman:
   image: shellm/ci:latest
   stage: quality
+  before_script:
+    - basher install shellm/shellman
   script:
     - bats tests/test_shellman.bats

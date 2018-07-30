@@ -32,7 +32,7 @@ export -f __shellm_locate
 
 __shellm_has_source() {
   local i
-  for i in ${SHELLM_SOURCES[@]}; do
+  for i in "${SHELLM_SOURCES[@]}"; do
     [ "$1" = "$i" ] && return 0
   done
   return 1
@@ -50,7 +50,7 @@ __shellm_libstack_push() {
 export -f __shellm_libstack_push
 
 __shellm_libstack_pop() {
-  unset __SHELLM_LIBSTACK[-1]
+  unset "__SHELLM_LIBSTACK[-1]"
 }
 export -f __shellm_libstack_pop
 

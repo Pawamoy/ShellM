@@ -1,9 +1,9 @@
-FROM debian:latest
+FROM python:3.6-alpine
 
 ENV HOME=/root
 
 # install basher
-RUN apt-get update && apt-get install -y git curl xz-utils file && apt-get clean
+RUN apk add --no-cache git curl xz file bash
 RUN git clone https://github.com/basherpm/basher "${HOME}/.basher"
 ENV PATH="${HOME}/.basher/bin:${PATH}"
 ENV BASHER_SHELL=bash
@@ -18,3 +18,6 @@ RUN basher install bats-core/bats-core
 RUN curl -Ls https://storage.googleapis.com/shellcheck/shellcheck-stable.linux.x86_64.tar.xz | tar xJ; \
     mv shellcheck-stable/shellcheck /usr/bin/shellcheck; \
     rm -rf shellcheck-stable
+
+# install shellman
+RUN pip install --no-cache-dir shellman

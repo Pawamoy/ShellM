@@ -1,4 +1,14 @@
+stages:
+  - quality
+
 shellcheck:
   image: shellm/ci:latest
+  stage: quality
   script:
     - bats tests/test_shellcheck.bats
+
+shellman:
+  image: shellm/ci:latest
+  stage: quality
+  script:
+    - bats tests/test_shellman.bats

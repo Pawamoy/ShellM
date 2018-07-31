@@ -1,5 +1,7 @@
-# BINS="bin/shellm-run:bin/shellm-test"
-# LIBS="lib/project.sh"
-# DEPS=gitlab.com/shellm/shellman  #:user2/repo2
-# BASH_COMPLETIONS="cmp/shellm-project.completion.bash"
-# ZSH_COMPLETIONS="cmp/shellm-project.completion.zsh"
+BINS="bin/shellm-run"
+
+BASH_COMPLETIONS="cmp/shellm-core.completion.bash"
+ZSH_COMPLETIONS="cmp/shellm-core.completion.zsh"
+DASH_COMPLETIONS="cmp/shellm-core.completion.dash"
+SH_COMPLETIONS="cmp/shellm-core.completion.sh"
+# FISH_COMPLETIONS="cmp/shellm-core.completion.zsh"

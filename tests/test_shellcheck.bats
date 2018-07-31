@@ -1,9 +1,5 @@
 load data
 
-@test "shellcheck on init.sh" {
-  shellcheck -x "init.sh"
-}
-
 @test "shellcheck on scripts" {
   if [ ! -n "${scripts}" ]; then
     skip "- no scripts to check"

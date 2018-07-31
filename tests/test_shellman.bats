@@ -48,8 +48,8 @@ _usage_matches_script_name() {
   _has_tag "brief" ${scripts}
 }
 
-@test "shellman on init.sh" {
-  _shellman "init.sh"
+@test "scripts usages match names" {
+  _usage_matches_script_name ${scripts}
 }
 
 @test "shellman on scripts" {
@@ -58,8 +58,4 @@ _usage_matches_script_name() {
 
 @test "shellman on libraries" {
   _shellman ${libs}
-}
-
-@test "scripts usages match names" {
-  _usage_matches_script_name ${scripts}
 }

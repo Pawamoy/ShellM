@@ -79,6 +79,7 @@ __shellm_time_print() {
   sort -rt: -k2 "${mfile}" | while read -r line; do
     file="${line%:*}"
     seconds="${line##*:}"
+    # shellcheck disable=SC1117
     printf "%${longest}s: %ss\n" "${file}" "${seconds:0:-6}"
   done
   echo

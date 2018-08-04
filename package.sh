@@ -1,4 +1,4 @@
-BINS="bin/shellm-run:shellm-core-path"
+BINS="bin/shellm-run:bin/shellm-core-path"
 
 # BASH_COMPLETIONS="cmp/shellm-core.completion.bash"
 # ZSH_COMPLETIONS="cmp/shellm-core.completion.zsh"

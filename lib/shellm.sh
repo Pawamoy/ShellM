@@ -141,6 +141,7 @@ shellm-source() {
   if lib="$(__shellm_locate "${arg}")"; then
 
     if [ -d "${lib}" ]; then
+      # shellcheck disable=SC2164
       for sublib in $(cd "${lib}"; find lib -maxdepth 1 -type f 2>/dev/null); do
         __shellm_source "${arg}/${sublib}" "${lib}/${sublib}"
       done

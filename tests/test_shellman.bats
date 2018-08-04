@@ -1,7 +1,5 @@
 load data
 
-shellm-source shellm/shellman/lib/shellman.sh
-
 _shellman() {
   local arg status=${success}
   for arg in "$@"; do
@@ -17,7 +15,7 @@ _has_tag() {
   local checked_tag="$1"
   shift
   for script in "$@"; do
-    if ! shellman_get "${checked_tag}" "${script}" >/dev/null; then
+    if ! doc --get "${checked_tag}" "${script}" >/dev/null; then
       echo "${script}: missing tag ${checked_tag}"
       status=${failure}
     fi
@@ -28,7 +26,7 @@ _has_tag() {
 _usage_matches_script_name() {
   local script usage usages status=${success}
   for script in "$@"; do
-    if usages=$(shellman_get "usage" "${script}" | cut -d' ' -f1); then
+    if usages=$(doc --get "usage" "${script}" | cut -d' ' -f1); then
       for usage in ${usages}; do
         if [ "${usage}" != "$(basename "${script}")" ]; then
           echo "${script}: usage '${usage}' does not match script name"

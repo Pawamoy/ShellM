@@ -48,22 +48,46 @@ __shellm_libstack_pop() {
   unset "__SHELLM_LIBSTACK[-1]"
 }
 
-__shellm_time_now() {
-  date +%s.%N
-}
+if [ -n "${SHELLM_TIME}" ]; then
+  
+  __shellm_time_set_delta() {
+    if [ ${#__SHELLM_LIBSTACK[@]} -eq 0 ]; then
+      __SHELLM_DELTA_SUM=0
+    fi
+  }
 
-__shellm_time_start() {
-  start=$(__shellm_time_now)
-}
+  __shellm_time_unset_delta() {
+    if [ ${#__SHELLM_LIBSTACK[@]} -eq 0 ]; then
+      unset __SHELLM_DELTA_SUM
+    fi
+  }
 
-__shellm_time_end() {
-  local delta delta_sum
-  delta_sum=$(bc -l <<<"$(__shellm_time_now) - ${start}")
-  delta=$(bc -l <<<"${delta_sum} - ${__SHELLM_DELTA_SUM}")
-  __SHELLM_DELTA_SUM=${delta_sum}
-  [ "${delta:0:1}" = "." ] && delta="0${delta}"
-  echo "$1:${delta}" >> "/tmp/shellm-time.$$"
-}
+  __shellm_time_now() {
+    date +%s.%N
+  }
+
+  __shellm_time_start() {
+    start=$(__shellm_time_now)
+  }
+
+  __shellm_time_end() {
+    local delta delta_sum
+    delta_sum=$(bc -l <<<"$(__shellm_time_now) - ${start}")
+    delta=$(bc -l <<<"${delta_sum} - ${__SHELLM_DELTA_SUM}")
+    __SHELLM_DELTA_SUM=${delta_sum}
+    [ "${delta:0:1}" = "." ] && delta="0${delta}"
+    echo "$1:${delta}" >> "/tmp/shellm-time.$$"
+  }
+
+else
+
+  __shellm_time_set_delta() { :; }
+  __shellm_time_unset_delta() { :; }
+  __shellm_time_now() { :; }
+  __shellm_time_start() { :; }
+  __shellm_time_end() { :; }
+
+fi
 
 __shellm_time_print() {
   local pid line mfile file seconds total longest
@@ -91,9 +115,7 @@ __shellm_time_print() {
 __shellm_source() {
   local status
 
-  if [ ${#__SHELLM_LIBSTACK[@]} -eq 0 ]; then
-    __SHELLM_DELTA_SUM=0
-  fi
+  __shellm_time_set_delta
 
   if ! __shellm_has_source "$2"; then
 
@@ -119,9 +141,7 @@ __shellm_source() {
 
   fi
 
-  if [ ${#__SHELLM_LIBSTACK[@]} -eq 0 ]; then
-    unset __SHELLM_DELTA_SUM
-  fi
+  __shellm_time_unset_delta
 }
 
 ## \fn shellm-source (filename)

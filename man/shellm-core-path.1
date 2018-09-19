@@ -1,4 +1,20 @@
 .if n.ad l
 .nh
 
-.TH shellm-core-path 1 "2018-08-29" "Shellman 0.2.2" "User Commands"
+.TH shellm-core-path 1 "2018-09-19" "shellman 0.3.3" "User Commands"
+
+.SH "NAME"
+shellm-core-path \- Output the absolute path to the shellm core library file.
+
+.SH "SYNOPSIS"
+\fBshellm-core-path\fR 
+
+.SH "DESCRIPTION"
+This script is a simple shortcut.
+It actually runs `basher package-path shellm/core/lib/shellm.sh`.
+
+.SH "EXAMPLES"
+.IP "\fBSource shellm into your script:\fR" 4
+
+  source $(shellm-core-path)
+  # or . $(shellm-core-path)

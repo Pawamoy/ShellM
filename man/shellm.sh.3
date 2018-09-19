@@ -1,10 +1,132 @@
 .if n.ad l
 .nh
 
-.TH shellm.sh 1 "2018-08-29" "Shellman 0.2.2" "User Commands"
+.TH shellm.sh 1 "2018-09-19" "shellman 0.3.3" "User Commands"
 
-.SH "NAME"
-shellm.sh \- Find a library file.
+.SH "ENVIRONMENT VARIABLES"
+.TP
+.B __SHELLM_LIBSTACK
+The current stack of sources being loaded.
+.TP
+.B SHELLM_SOURCES
+The list of sources already loaded in the current shell process.
+.TP
+.B LIBPATH
+The colon-separated list of directories
+in which to search for library files or packages.
 
-.SH "STANDARD ERROR"
-Message if return code 1
+.SH "FILES"
+.TP
+.I /tmp/shellm-time.PID
+Data file used to store loading time per source for given process.
+
+.SH "FUNCTIONS"
+.IP "\fBshellm <COMMAND> [ARGS]\fR" 4
+Execute a shellm command, be it a function or a script.
+
+.I Arguments
+    \fBCOMMAND\fR - The name of an existing shellm command.
+
+.I Return codes
+    \fB?\fR - The return code of the invoked command.
+    \fB1\fR - Unkown command.
+
+
+.IP "\fB__shellm_locate <FILEPATH>\fR" 4
+Locate a library file in LIBPATH.
+
+.I Arguments
+    \fBFILEPATH\fR - The relative file path.
+
+.I Return codes
+    \fB0\fR - File found.
+    \fB1\fR - File not found.
+
+
+.IP "\fB__shellm_has_source <LIBFILE>\fR" 4
+Check if LIBFILE is already in shellm sources.
+
+.I Arguments
+    \fBLIBFILE\fR - The file absolute path.
+
+.I Return codes
+    \fB0\fR - Source is loaded.
+    \fB1\fR - Source is not loaded.
+
+.IP "\fB__shellm_add_source <LIBFILE>\fR" 4
+Append source LIBFILE to shellm sources.
+
+.I Arguments
+    \fBLIBFILE\fR - The file absolute path.
+
+.IP "\fB__shellm_libstack_push <LIBFILE>\fR" 4
+Append source LIBFILE to the souce stack.
+
+.I Arguments
+    \fBLIBFILE\fR - The file absolute path.
+
+.IP "\fB__shellm_libstack_pop\fR" 4
+Remove the last item of the source stack.
+
+.I Arguments
+    \fBNAME\fR - The source name, e.g. `shellm/home/lib/home.sh`.
+
+.IP "\fB__shellm_time_set_delta\fR" 4
+Set the time delta sum variable to 0.
+
+.IP "\fB__shellm_time_unset_delta\fR" 4
+Unset the time delta sum variable.
+
+.IP "\fB__shellm_time_now\fR" 4
+Return a timestamp (seconds since Epoch plus nanoseconds).
+
+
+.IP "\fB__shellm_time_start\fR" 4
+Start the timer (store `now` in parent local start variable).
+
+.IP "\fB__shellm_time_end <NAME>\fR" 4
+End the timer and update the time delta sum.
+
+Write-append the time delta for the given source
+in this process' data file.
+
+.I Arguments
+    \fBNAME\fR - The source name, e.g. `shellm/home/lib/home.sh`.
+
+.IP "\fB__shellm_time_print [PID]\fR" 4
+Pretty-print the loading time for each source for the current shell process.
+
+.I Arguments
+    \fBPID\fR - The PID of a shell process.
+
+
+.IP "\fB__shellm_source <NAME> <ABS_PATH>\fR" 4
+Load source if not loaded, measure load time, warn when errors.
+
+This function first sets the time delta sum to 0.
+Then it checks if the given source is already loaded or not.
+If not, it adds it in the sources list and stack, then start the timer.
+It sources it, end the timer, and remove it from the stack.
+If something went wrong while loading it, it echoes an error with references:
+original script, source file, current stack.
+
+.I Arguments
+    \fBNAME    \fR - The source name, e.g. `shellm/home/lib/home.sh`.
+    \fBABS_PATH\fR - The library file absolute path.
+
+.I Return codes
+    \fB0\fR - Everything OK.
+    \fB1\fR - Error when sourcing file.
+
+
+.IP "\fBshellm\-source <NAME>\fR" 4
+Locate a source or package, and source it in the current shell process.
+
+If NAME is a package, searches for every file in a `lib` directory
+and sources each one of them.
+
+.I Arguments
+    \fBNAME\fR - The source or package name, e.g. `shellm/home`.
+
+.I Return codes
+    \fB1\fR - Source or package not found.

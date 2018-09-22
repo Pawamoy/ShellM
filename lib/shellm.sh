@@ -75,6 +75,7 @@ __shellm_libstack_pop() {
 ## If set, shellm will measure the loading time for each library
 ## file sourced in the current process. You will then be able to
 ## print this information with the command `shellm-print-loadtime`.
+# shellcheck disable=SC2086
 if [ ! -z ${SHELLM_TIME+x} ]; then
 
   ## \function __shellm_time_set_delta

@@ -44,7 +44,7 @@ wiki: $(WIKIPAGES) $(WIKIDIR)/home.md $(WIKIDIR)/_sidebar.md ## Generate wiki pa
 
 doc: man wiki ## Generate man pages and wiki pages.
 
-README.md: templates/readme*
+README.md: templates/readme* .shellman.json
 	shellman -tpath:templates/readme.md -o README.md
 
 check-style: ## Run the style tests.

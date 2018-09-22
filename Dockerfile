@@ -3,7 +3,7 @@ FROM python:3.6-alpine
 ENV HOME=/root
 
 # install basher
-RUN apk add --no-cache git curl xz file bash
+RUN apk add --no-cache git curl xz file bash make
 RUN git clone https://github.com/basherpm/basher "${HOME}/.basher"
 ENV PATH="${HOME}/.basher/bin:${PATH}"
 ENV BASHER_SHELL=bash

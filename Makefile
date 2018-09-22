@@ -47,6 +47,10 @@ doc: man wiki ## Generate man pages and wiki pages.
 README.md: templates/readme* .shellman.json
 	shellman -tpath:templates/readme.md -o README.md
 
+docker-image: Dockerfile
+	docker build . -t shellm/ci:latest
+	docker push shellm/ci:latest
+
 check-style: ## Run the style tests.
 	bats tests/quality/test_shellcheck.bats
 

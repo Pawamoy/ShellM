@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://rawgit.com/shellm-org/core/master/logo.png">
+  <img src="https://gl.githack.com/shellm/core/raw/master/logo.png">
 </p>
 
 <h1 align="center">Be a Shell Master!</h1>
@@ -24,6 +24,9 @@ It lets you define a `LIBPATH` variable.
 Just like `PATH`, `LIBPATH` is a semi-colon separated list of directories.
 You will then be able to source files from these directories
 with `shellm source`.
+
+<h2 align="center">Demo</h2>
+<p align="center"><img src="https://gl.githack.com/shellm/core/raw/master/demo.svg"></p>
 
 ## Installation
 Installation is done with [basher](https://github.com/basherpm/basher):

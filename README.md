@@ -26,7 +26,7 @@ You will then be able to source files from these directories
 with `shellm source`.
 
 <h2 align="center">Demo</h2>
-<p align="center"><img src="https://gl.githack.com/shellm/core/raw/master/demo.svg"></p>
+<p align="center"><img src="https://gl.githack.com/shellm/core/raw/master/demo/demo.svg"></p>
 
 ## Installation
 Installation is done with [basher](https://github.com/basherpm/basher):

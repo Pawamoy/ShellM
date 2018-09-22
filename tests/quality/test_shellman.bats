@@ -1,15 +1,5 @@
 load data
 
-_shellman() {
-  local arg status=${success}
-  for arg in "$@"; do
-    if ! shellman -cwi "require,export" "${arg}"; then
-      status=${failure}
-    fi
-  done
-  return ${status}
-}
-
 _has_tag() {
   local script status=${success}
   local checked_tag="$1"
@@ -51,9 +41,11 @@ _usage_matches_script_name() {
 }
 
 @test "shellman on scripts" {
+  skip "- no check option in shellman"
   _shellman ${scripts}
 }
 
 @test "shellman on libraries" {
+  skip "- no check option in shellman"
   _shellman ${libs}
 }

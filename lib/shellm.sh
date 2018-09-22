@@ -71,7 +71,11 @@ __shellm_libstack_pop() {
   unset "__SHELLM_LIBSTACK[-1]"
 }
 
-if [ -n "${SHELLM_TIME}" ]; then
+## \env SHELLM_TIME
+## If set, shellm will measure the loading time for each library
+## file sourced in the current process. You will then be able to
+## print this information with the command `shellm-print-loadtime`.
+if [ ! -z ${SHELLM_TIME+x} ]; then
 
   ## \function __shellm_time_set_delta
   ## \function-brief Set the time delta sum variable to 0.
@@ -128,18 +132,29 @@ else
 
 fi
 
-## \function __shellm_time_print [PID]
-## \function-brief Pretty-print the loading time for each source for the current shell process.
-## \function-argument PID The PID of a shell process.
+## \function shellm-print-loadtime [PID]
+## \function-brief Pretty-print the loading time for each source for a given shell process.
+## \function-argument PID The PID of a shell process (default to $$).
 ## \function-stdout Loading time for each source and total time.
-__shellm_time_print() {
+## \function-seealso The SHELLM_TIME environment variable.
+## \function-return 1 Data file for the given PID does not exist.
+shellm-print-loadtime() {
   local pid line mfile file seconds total longest
+
   if [ $# -gt 0 ]; then
     pid="$1"
   else
     pid=$$
   fi
+
   mfile="/tmp/shellm-time.${pid}"
+
+  if [ ! -f "${mfile}" ]; then
+    echo "shellm-print-loadtime: no time data for process ${pid}" >&2
+    echo "Make sure SHELLM_TIME variable is set to activate loading time measurements."
+    return 1
+  fi
+
   longest=$(cut -d: -f-1 "${mfile}" | wc -L)
   echo "Measured load time for shell process ${pid}"
   echo

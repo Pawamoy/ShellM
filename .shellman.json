@@ -1,0 +1,10 @@
+{
+  "namespace": "shellm",
+  "project": "core",
+  "readme_sections": [
+    "summary",
+    "demo",
+    "installation",
+    "usage"
+  ]
+}

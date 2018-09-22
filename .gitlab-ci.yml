@@ -14,3 +14,9 @@ documentation:
     - basher install gitlab.com/shellm/doc
   script:
     - bats tests/test_shellman.bats
+
+compatibility:
+  image: shellm/ci:latest
+  stage: quality
+  script:
+    - bats tests/test_compatibility.bats

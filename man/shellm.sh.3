@@ -1,7 +1,7 @@
 .if n.ad l
 .nh
 
-.TH shellm.sh 1 "2018-09-19" "shellman 0.3.3" "User Commands"
+.TH shellm.sh 1 "2018-09-20" "shellman 0.3.3" "User Commands"
 
 .SH "ENVIRONMENT VARIABLES"
 .TP
@@ -93,11 +93,11 @@ in this process' data file.
 .I Arguments
     \fBNAME\fR - The source name, e.g. `shellm/home/lib/home.sh`.
 
-.IP "\fB__shellm_time_print [PID]\fR" 4
-Pretty-print the loading time for each source for the current shell process.
+.IP "\fBshellm\-print\-loadtime [PID]\fR" 4
+Pretty-print the loading time for each source for a given shell process.
 
 .I Arguments
-    \fBPID\fR - The PID of a shell process.
+    \fBPID\fR - The PID of a shell process (default to $$).
 
 
 .IP "\fB__shellm_source <NAME> <ABS_PATH>\fR" 4

@@ -44,7 +44,7 @@ wiki: $(WIKIPAGES) $(WIKIDIR)/home.md $(WIKIDIR)/_sidebar.md ## Generate wiki pa
 
 doc: man wiki ## Generate man pages and wiki pages.
 
-README.md: templates/readme* .shellman.json
+readme: templates/readme* .shellman.json ## Generate the README.
 	shellman -tpath:templates/readme.md -o README.md
 
 docker-image: Dockerfile

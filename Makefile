@@ -22,14 +22,12 @@ $(MANDIR)/%.sh.3: $(LIBDIR)/%.sh
 
 $(WIKIDIR)/home.md: templates/wiki_home.md $(BINDIR) $(LIBDIR)
 	shellman -tpath:$< -o $@ \
-	  --context project=core \
-	            scripts="$(SCRIPTS)" \
+	  --context scripts="$(SCRIPTS)" \
 	            libraries="$(LIBRARIES)"
 
 $(WIKIDIR)/_sidebar.md: templates/wiki_sidebar.md $(BINDIR) $(LIBDIR)
 	shellman -tpath:$< -o $@ \
-	  --context project=core \
-	            scripts="$(SCRIPTS)" \
+	  --context scripts="$(SCRIPTS)" \
 	            libraries="$(LIBRARIES)"
 
 $(WIKIDIR)/%.md: $(BINDIR)/%

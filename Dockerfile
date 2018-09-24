@@ -1,15 +1,28 @@
-FROM python:3.6-alpine
+FROM ubuntu:18.04
 
 ENV HOME=/root
 
+RUN apt-get -qy update && \
+    apt-get -qy install git curl xz-utils bash zsh file make python3-pip python-dev build-essential && \
+    apt-get -qy clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/*
+
 # install basher
-RUN apk add --no-cache git curl xz file bash make
-RUN git clone https://github.com/basherpm/basher "${HOME}/.basher"
+RUN git clone --depth=1 https://github.com/basherpm/basher "${HOME}/.basher"
 ENV PATH="${HOME}/.basher/bin:${PATH}"
 ENV BASHER_SHELL=bash
 ENV BASHER_ROOT="${HOME}/.basher"
 ENV BASHER_PREFIX="${HOME}/.basher/cellar"
 ENV PATH="${BASHER_ROOT}/cellar/bin:${PATH}"
+
+# install shenv
+RUN git clone --depth=1 https://github.com/shenv/shenv "${HOME}/.shenv"
+ENV PATH="${HOME}/.shenv/bin:${PATH}"
+RUN bash -c 'eval "$(shenv init -)" && shenv install bash-4.1'
+RUN bash -c 'eval "$(shenv init -)" && shenv install bash-4.2'
+RUN bash -c 'eval "$(shenv init -)" && shenv install bash-4.3.30'
+RUN bash -c 'eval "$(shenv init -)" && shenv install bash-4.4.12'
 
 # install bats
 RUN basher install bats-core/bats-core
@@ -20,4 +33,4 @@ RUN curl -Ls https://storage.googleapis.com/shellcheck/shellcheck-stable.linux.x
     rm -rf shellcheck-stable
 
 # install shellman
-RUN pip install --no-cache-dir shellman
+RUN pip3 install --no-cache-dir shellman

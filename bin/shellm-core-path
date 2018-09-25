@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## \brief Output the absolute path to the shellm core library file.
 

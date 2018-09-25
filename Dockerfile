@@ -19,10 +19,6 @@ ENV PATH="${BASHER_ROOT}/cellar/bin:${PATH}"
 # install shenv
 RUN git clone --depth=1 https://github.com/shenv/shenv "${HOME}/.shenv"
 ENV PATH="${HOME}/.shenv/bin:${PATH}"
-RUN bash -c 'eval "$(shenv init -)" && shenv install bash-4.1'
-RUN bash -c 'eval "$(shenv init -)" && shenv install bash-4.2'
-RUN bash -c 'eval "$(shenv init -)" && shenv install bash-4.3.30'
-RUN bash -c 'eval "$(shenv init -)" && shenv install bash-4.4.12'
 
 # install bats
 RUN basher install bats-core/bats-core

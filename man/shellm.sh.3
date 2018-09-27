@@ -1,9 +1,14 @@
 .if n.ad l
 .nh
 
-.TH shellm.sh 1 "2018-09-20" "shellman 0.3.3" "User Commands"
+.TH shellm.sh 1 "2018-09-27" "shellman 0.3.4" "User Commands"
 
 .SH "ENVIRONMENT VARIABLES"
+.TP
+.B SHELLM_TIME
+If set, shellm will measure the loading time for each library
+file sourced in the current process. You will then be able to
+print this information with the command `shellm-print-loadtime`.
 .TP
 .B __SHELLM_LIBSTACK
 The current stack of sources being loaded.
@@ -98,6 +103,12 @@ Pretty-print the loading time for each source for a given shell process.
 
 .I Arguments
     \fBPID\fR - The PID of a shell process (default to $$).
+
+.I Return codes
+    \fB1\fR - Data file for the given PID does not exist.
+
+.I See also
+    The SHELLM_TIME environment variable.
 
 
 .IP "\fB__shellm_source <NAME> <ABS_PATH>\fR" 4

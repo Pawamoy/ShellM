@@ -19,6 +19,7 @@ cache:
     - basher install ztombol/bats-support
     - mkdir "$BASHER_ROOT/cellar/packages/shellm" || true
     - ln -s "$(pwd)" "$BASHER_ROOT/cellar/packages/shellm/core"
+    - basher _link-bins shellm/core
     - basher _deps shellm/core
 
 .quality_template: &quality_definition

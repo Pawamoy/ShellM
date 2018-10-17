@@ -19,13 +19,13 @@ shellm() {
   fi
 }
 
-## \function __shellm_locate <FILEPATH>
+## \function shellm-locate <FILEPATH>
 ## \function-brief Locate a library file in LIBPATH.
 ## \function-argument FILEPATH The relative file path.
 ## \function-return 0 File found.
 ## \function-return 1 File not found.
 ## \function-stdout The absolute path to the file found.
-__shellm_locate() {
+shellm-locate() {
   local libdir
   IFS=':' read -r -a array <<< "${LIBPATH}"
   for libdir in "${array[@]}"; do
@@ -233,7 +233,7 @@ shellm-source() {
     arg="$1"
   fi
 
-  if lib="$(__shellm_locate "${arg}")"; then
+  if lib="$(shellm-locate "${arg}")"; then
 
     if [ -d "${lib}" ]; then
       # shellcheck disable=SC2164

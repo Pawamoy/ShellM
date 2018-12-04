@@ -76,7 +76,7 @@ __shellm_libstack_pop() {
 ## file sourced in the current process. You will then be able to
 ## print this information with the command `shellm-print-loadtime`.
 # shellcheck disable=SC2086
-if [ ! -z ${SHELLM_TIME+x} ]; then
+if [ -n "${SHELLM_TIME+x}" ]; then
 
   ## \function __shellm_time_set_delta
   ## \function-brief Set the time delta sum variable to 0.

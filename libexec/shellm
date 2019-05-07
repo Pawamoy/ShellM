@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
-PATH="$(basher package-path shellm/core/libexec):${PATH}"
+if [ -d "${BASHER_PACKAGES_PATH}" ]; then
+  PATH="${BASHER_PACKAGES_PATH}/shellm/core/libexec:${PATH}"
+else
+  PATH="$(basher package-path shellm/core/libexec):${PATH}"
+fi
+
 export PATH
 
 command="$1"
 
-case "${command}" in
+case ${command} in
   "") shellm-help ;;
   *)
     command_path="$(command -v "shellm-${command}" || true)"

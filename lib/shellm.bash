@@ -38,40 +38,6 @@ __shellm_locate() {
   return 1
 }
 
-## \function __shellm_has_source <LIBFILE>
-## \function-brief Check if LIBFILE is already in shellm sources.
-## \function-argument LIBFILE The file absolute path.
-## \function-return 0 Source is loaded.
-## \function-return 1 Source is not loaded.
-__shellm_has_source() {
-  local i
-  for i in "${SHELLM_SOURCES[@]}"; do
-    [ "$1" = "$i" ] && return 0
-  done
-  return 1
-}
-
-## \function __shellm_add_source <LIBFILE>
-## \function-brief Append source LIBFILE to shellm sources.
-## \function-argument LIBFILE The file absolute path.
-__shellm_add_source() {
-  SHELLM_SOURCES+=("$1")
-}
-
-## \function __shellm_libstack_push <LIBFILE>
-## \function-brief Append source LIBFILE to the souce stack.
-## \function-argument LIBFILE The file absolute path.
-__shellm_libstack_push() {
-  __SHELLM_LIBSTACK+=("$1")
-}
-
-## \function __shellm_libstack_pop
-## \function-brief Remove the last item of the source stack.
-## \function-argument NAME The source name, e.g. `shellm/home/lib/home.sh`.
-__shellm_libstack_pop() {
-  unset "__SHELLM_LIBSTACK[-1]"
-}
-
 ## \function __shellm_source <NAME> <ABS_PATH>
 ## \function-brief Load source if not loaded, measure load time, warn when errors.
 ## This function first sets the time delta sum to 0.
@@ -86,97 +52,107 @@ __shellm_libstack_pop() {
 ## \function-return 0 Everything OK.
 ## \function-return 1 Error when sourcing file.
 __shellm_psource() {
-  local status lib
+  local src
+  local has_src
+  local status
+  local lib
+  local libpath
 
-  __shellm_hook_source_start "$@"
+  libpath="$1"
+  shift
 
-  if ! __shellm_has_source "$2"; then
+  __shellm_hook_run source_start "${libpath}" "$@"
 
-    __shellm_add_source "$2"
-    __shellm_libstack_push "$2"
+  has_src=0
+  if (( force == 0 )); then
+    for src in "${SHELLM_SOURCES[@]}"; do
+      if [ "${libpath}" = "${src}" ]; then
+        has_src=1
+        break
+      fi
+    done
+  fi
 
-    __shellm_hook_source_before_source "$@"
+  if (( has_src == 0 )); then
+
+    (( force == 0 )) && SHELLM_SOURCES+=("${libpath}")
+    __SHELLM_LIBSTACK+=("${libpath}")
+
+    __shellm_hook_run source_before_source "${libpath}" "$@"
 
     # shellcheck disable=SC1090
-    . "$2"
+    . "${libpath}" "$@"
     status=$?
 
-    __shellm_hook_source_after_source "${status}" "$@"
+    __shellm_hook_run source_after_source "${status}" "${libpath}" "$@"
 
-    __shellm_libstack_pop
+    # pop last array item
+    unset __SHELLM_LIBSTACK[-1]
 
     if [ ${status} -ne 0 ]; then
-      echo "shellm-source: error while including '$2'" >&2
-      return 1
+      >&2 echo "shellm: source: error while including '${libpath}'"
     fi
 
   fi
 
-  __shellm_hook_source_end "$@"
+  __shellm_hook_run source_end "${libpath}" "$@"
+
+  return ${status}
 }
 
 __shellm_hook_run() {
   local hook
-  declare -n _hooks="$1"
+  declare -n _hooks="SHELLM_HOOKS_${1^^}"
   shift
   for hook in "${_hooks[@]}"; do
     ${hook} "$@"
   done
 }
 
-__shellm_hook_source_start() {
-  __shellm_hook_run SHELLM_HOOKS_SOURCE_START "$@"
-}
-
-__shellm_hook_source_end() {
-  __shellm_hook_run SHELLM_HOOKS_SOURCE_END "$@"
-}
-
-__shellm_hook_source_before_source() {
-  __shellm_hook_run SHELLM_HOOKS_SOURCE_BEFORE_SOURCE "$@"
-}
-
-__shellm_hook_source_after_source() {
-  __shellm_hook_run SHELLM_HOOKS_SOURCE_AFTER_SOURCE "$@"
-}
-
-## \function shellm-source <NAME>
+## \function __shellm_source <NAME>
 ## \function-brief Locate a source or package, and source it in the current shell process.
 ## If NAME is a package, searches for every file in a `lib` directory
 ## and sources each one of them.
 ## \function-argument NAME The source or package name, e.g. `shellm/home`.
 ## \function-stderr Warning when package or source is not found.
 ## \function-return 1 Source or package not found.
+# TODO: add -f option to force re-sourcing
 __shellm_source() {
-  local arg lib sublib status
+  local arg
+  local lib
+  local sublib
+  local status
+  local options
+  local force=0
+  declare -a positional
 
-  # compatibility with basher
-  if [ $# -eq 2 ]; then
-    arg="$1/$2"
-  else
-    arg="$1"
-  fi
+  options="$(getopt -n shellm-source -o "f" -l "force" -- "$@")"
+  command eval set -- "${options}"
+  while (( $# != 0 )); do
+    case $1 in
+      -f|--force) force=1 ;;
+      --) shift; break ;;
+    esac
+    shift
+  done
+
+  arg=$1
+  shift
 
   if lib="$(__shellm_locate "${arg}")"; then
-
     if [ -d "${lib}" ]; then
       # shellcheck disable=SC2164
       for sublib in $(cd "${lib}"; find lib -maxdepth 1 -type f 2>/dev/null); do
-        __shellm_psource "${arg}/${sublib}" "${lib}/${sublib}"
+        __shellm_psource "${lib}/${sublib}" "$@"
       done
     elif [ -f "${lib}" ]; then
-      __shellm_psource "${arg}" "${lib}"
+      __shellm_psource "${lib}" "$@"
     fi
-
   else
-    echo "shellm: source: no such file in LIBPATH: '${arg}'" >&2
+    >&2 echo "shellm: source: no such file in LIBPATH: '${arg}'"
     return 1
-
   fi
 }
-
-## \env __SHELLM_LIBSTACK The current stack of sources being loaded.
-declare -a __SHELLM_LIBSTACK
 
 ## \env SHELLM_SOURCES The list of sources already loaded in the current shell process.
 declare -a SHELLM_SOURCES

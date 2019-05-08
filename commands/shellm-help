@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+## \brief Print help for shellm commands
+## \usage shellm help [COMMAND]
+echo HELP

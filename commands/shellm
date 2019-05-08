@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+## \brief Main command for the shell library sourcing system.
+## \usage shellm COMMAND [ARGS]
+
+PATH="${BASHER_PACKAGES_PATH}/shellm/core/commands:${PATH}"
+export PATH
+
+command="$1"
+
+case ${command} in
+  "")
+    >&2 echo "usage: shellm COMMAND [ARGS]"
+    >&2 echo "Type 'shellm help' to print the list of commands."
+    exit 1
+  ;;
+  -h|--help)
+    shellm-help
+  ;;
+  *)
+    command_path="$(command -v "shellm-${command}" || true)"
+    if [ -z "${command_path}" ]; then
+      echo "shellm: no such command '${command}'" >&2
+      exit 1
+    fi
+
+    shift 1
+    "${command_path}" "$@"
+  ;;
+esac

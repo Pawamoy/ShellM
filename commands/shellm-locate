@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+## \brief Locate a library in LIBPATH.
+## \usage shellm locate LIBRARY
+# shellcheck source=lib/shellm.bash
+. "${BASHER_PACKAGES_PATH}/shellm/core/lib/shellm.bash"
+__shellm_locate "$@"

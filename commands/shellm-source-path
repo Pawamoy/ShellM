@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+## \brief Script used to initialize shellm.
+
+## \example Source shellm into your script:
+## \example-code bash
+##   source $(shellm source-path)
+##   # or . $(shellm source-path)
+
+## \usage shellm source-path [-h] [SHELL]
+
+shellm_path="${BASHER_PACKAGES_PATH}/shellm/core"
+
+case "$1" in
+  -h|--help)
+    shellm help source-path
+    exit 0
+  ;;
+esac
+
+shell=${1:-${BASHER_SHELL}}
+
+shellm_lib="${shellm_path}/lib/shellm.${shell}"
+
+if [ ! -f "${shellm_lib}" ]; then
+  echo "Your shell (${shell}) is not supported yet." >&2
+  echo "Please open an issue at https://github.com/shellm-org/core/issues." >&2
+  exit 1
+fi
+
+echo "${shellm_lib}"

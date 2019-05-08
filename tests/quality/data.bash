@@ -1,11 +1,9 @@
 #!/bin/bash
 
-. "${BATS_TEST_DIRNAME}/../../lib/shellm.sh"
+. "${BATS_TEST_DIRNAME}/../../lib/shellm.bash"
 
-export SHELLS="bash-4.4.12 zsh-5.4.2"
-
-scripts=$(file bin/* | grep -E 'sh(ell)? script' | cut -d: -f1)
-libs=$(find lib -name '*.sh')
+readarray -t scripts <<<"$(file commands/* | grep -E 'sh(ell)? script' | cut -d: -f1)"
+readarray -t libs <<<"$(find lib -name '*sh')"
 
 success=0
 failure=1

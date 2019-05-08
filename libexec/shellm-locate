@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-. "$(: ${0%/*}; d=${_:-.}; cd "$d/.." && echo "$PWD/lib/shellm.bash")"
-__shellm_locate "$@"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 . "${BATS_TEST_DIRNAME}/../../lib/shellm.bash"
 

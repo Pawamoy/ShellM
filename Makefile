@@ -65,7 +65,7 @@ check: ## Run the quality tests.
 	bats tests/quality/*.bats
 
 test: ## Run the unit tests.
-	bashcov -s -- $(shell type bats | cut -d' ' -f3-) tests/*.bats
+	cover $(shell type bats | cut -d' ' -f3-) tests/*.bats
 
 help: ## Print this help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort

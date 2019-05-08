@@ -10,10 +10,11 @@ stages:
     - git clone --depth=1 https://github.com/basherpm/basher "$BASHER_ROOT"
     - export PATH="$BASHER_ROOT/bin:$PATH"
     - eval "$(basher init -)"
+    - basher link "$(pwd)" shellm/core
     - basher install bats-core/bats-core
     - basher install ztombol/bats-assert
     - basher install ztombol/bats-support
-    - basher link "$(pwd)" shellm/core
+    - basher install gitlab.com/shellm/cover
 
 .quality_template: &quality_definition
   <<: *job_definition
@@ -50,4 +51,4 @@ bash-4.4:
 
 bash-5.0:
   <<: *test_definition
-  image: bash:5.0-beta
+  image: bash:5.0

@@ -1,7 +1,7 @@
 BINS="bin/shellm"
 
-BASH_COMPLETIONS="cmp/shellm-core.comp.bash"
-# ZSH_COMPLETIONS="cmp/shellm-core.comp.zsh"
-# DASH_COMPLETIONS="cmp/shellm-core.comp.dash"
-# SH_COMPLETIONS="cmp/shellm-core.comp.sh"
-# FISH_COMPLETIONS="cmp/shellm-core.comp.zsh"
+BASH_COMPLETIONS="completion/shellm-core.bash"
+# ZSH_COMPLETIONS="completion/shellm-core.zsh"
+# DASH_COMPLETIONS="completion/shellm-core.dash"
+# SH_COMPLETIONS="completion/shellm-core.sh"
+# FISH_COMPLETIONS="completion/shellm-core.zsh"

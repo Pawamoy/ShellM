@@ -1,7 +1,2 @@
-usr/
-tmp/
-ignore/
-wiki
-bin/shellman
-.idea/
-wiki
+wiki/
+coverage/

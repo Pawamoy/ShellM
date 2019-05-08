@@ -11,12 +11,15 @@ shellm() {
 
   command="${1:-}"
   (( $# > 0 )) && shift
+
   case "${command}" in
-    locate|source|trace)
+    locate|source)
       # shellcheck disable=SC2086
       __shellm_${command} "$@"
     ;;
-    *) command shellm "${command}" "$@" ;;
+    *)
+      command shellm "${command}" "$@"
+    ;;
   esac
 }
 
@@ -81,16 +84,16 @@ __shellm_psource() {
     __shellm_hook_run source_before_source "${libpath}" "$@"
 
     # shellcheck disable=SC1090
-    . "${libpath}" "$@"
+    source "${libpath}" "$@"
     status=$?
 
     __shellm_hook_run source_after_source "${status}" "${libpath}" "$@"
 
     # pop last array item
-    unset __SHELLM_LIBSTACK[-1]
+    unset '__SHELLM_LIBSTACK[-1]'
 
     if [ ${status} -ne 0 ]; then
-      >&2 echo "shellm: source: error while including '${libpath}'"
+      >&2 echo "shellm: source: error while sourcing '${libpath}'"
     fi
 
   fi
@@ -121,20 +124,29 @@ __shellm_source() {
   local arg
   local lib
   local sublib
+  local sublibs
   local status
   local options
   local force=0
-  declare -a positional
 
-  options="$(getopt -n shellm-source -o "f" -l "force" -- "$@")"
+  options="$(getopt -n shellm-source -o "fh" -l "force,help" -- "$@")"
   command eval set -- "${options}"
   while (( $# != 0 )); do
     case $1 in
       -f|--force) force=1 ;;
+      -h|--help)
+        shellm help source
+        return 0
+      ;;
       --) shift; break ;;
     esac
     shift
   done
+
+  if (( $# == 0 )); then
+    >&2 echo "usage: shellm source [-hf] <LIBRARY>"
+    return 1
+  fi
 
   arg=$1
   shift
@@ -142,9 +154,20 @@ __shellm_source() {
   if lib="$(__shellm_locate "${arg}")"; then
     if [ -d "${lib}" ]; then
       # shellcheck disable=SC2164
-      for sublib in $(cd "${lib}"; find lib -maxdepth 1 -type f 2>/dev/null); do
-        __shellm_psource "${lib}/${sublib}" "$@"
-      done
+      if [ -f "${lib}/package.sh" ]; then
+        # shellcheck disable=SC1090
+        mapfile -t sublibs <<<"$(source "${lib}/package.sh"; tr : '\n' <<<"${SHELLM_LIBS}")"
+        if [ ${#sublibs[@]} -eq 0 ]; then
+          >&2 echo "shellm: source: no libraries specified in SHELLM_LIBS array in '${lib}/package.sh'"
+          return 1
+        else
+          for sublib in "${sublibs[@]}"; do
+            __shellm_psource "${lib}/${sublib}" "$@"
+          done
+        fi
+      else
+        >&2 echo "shellm: source: cannot source a directory"
+      fi
     elif [ -f "${lib}" ]; then
       __shellm_psource "${lib}" "$@"
     fi
@@ -169,12 +192,6 @@ declare -a SHELLM_HOOKS_SOURCE_AFTER_SOURCE
 
 ## \env LIBPATH The colon-separated list of directories
 ## in which to search for library files or packages.
-if [ -d "${BASHER_PACKAGES_PATH}" ]; then
-  if ! echo "${LIBPATH}" | grep -q "${BASHER_PACKAGES_PATH}"; then
-    LIBPATH="${LIBPATH}:${BASHER_PACKAGES_PATH}"
-  fi
-elif [ -d "${BASHER_PREFIX}/packages" ]; then
-  if ! echo "${LIBPATH}" | grep -q "${BASHER_PREFIX}/packages"; then
-    LIBPATH="${LIBPATH}:${BASHER_PREFIX}/packages"
-  fi
+if ! echo "${LIBPATH}" | grep -q "${BASHER_PACKAGES_PATH}"; then
+  LIBPATH="${LIBPATH}:${BASHER_PACKAGES_PATH}"
 fi

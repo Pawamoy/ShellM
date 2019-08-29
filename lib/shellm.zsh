@@ -31,7 +31,7 @@ shellm() {
 ## \function-stdout The absolute path to the file found.
 __shellm_locate() {
   local libdir
-  IFS=':' read -r -a array <<< "${LIBPATH}"
+  IFS=: read -r -A array <<< "${LIBPATH}"
   for libdir in "${array[@]}"; do
     if [ -e "${libdir}/$1" ]; then
       echo "${libdir}/$1"
@@ -57,7 +57,7 @@ __shellm_locate() {
 __shellm_psource() {
   local src
   local has_src
-  local status
+  local retcode
   local lib
   local libpath
 
@@ -85,14 +85,14 @@ __shellm_psource() {
 
     # shellcheck disable=SC1090
     source "${libpath}" "$@"
-    status=$?
+    retcode=$?
 
-    __shellm_hook_run source_after_source "${status}" "${libpath}" "$@"
+    __shellm_hook_run source_after_source "${retcode}" "${libpath}" "$@"
 
     # pop last array item
     unset '__SHELLM_LIBSTACK[-1]'
 
-    if [ ${status} -ne 0 ]; then
+    if [ ${retcode} -ne 0 ]; then
       >&2 echo "shellm: source: error while sourcing '${libpath}'"
     fi
 
@@ -100,16 +100,7 @@ __shellm_psource() {
 
   __shellm_hook_run source_end "${libpath}" "$@"
 
-  return ${status}
-}
-
-__shellm_hook_run() {
-  local hook
-  declare -n _hooks="SHELLM_HOOKS_${1^^}"
-  shift
-  for hook in "${_hooks[@]}"; do
-    ${hook} "$@"
-  done
+  return ${retcode}
 }
 
 ## \function __shellm_source <NAME>
@@ -156,7 +147,7 @@ __shellm_source() {
       # shellcheck disable=SC2164
       if [ -f "${lib}/package.sh" ]; then
         # shellcheck disable=SC1090
-        mapfile -t sublibs <<<"$(source "${lib}/package.sh"; tr : '\n' <<<"${SHELLM_LIBS}")"
+        IFS=: read -r -A sublibs <<<"$(source "${lib}/package.sh"; echo "${SHELLM_LIBS}")"
         if [ ${#sublibs[@]} -eq 0 ]; then
           >&2 echo "shellm: source: no libraries specified in SHELLM_LIBS array in '${lib}/package.sh'"
           return 1
@@ -175,6 +166,16 @@ __shellm_source() {
     >&2 echo "shellm: source: no such file in LIBPATH: '${arg}'"
     return 1
   fi
+}
+
+__shellm_hook_run() {
+  local hook
+  local ref=SHELLM_HOOKS_${(U)1}
+  local _hooks=${(@P)${ref}}
+  shift
+  for hook in "${_hooks[@]}"; do
+    [ -n "${hook}" ] && ${hook} "$@"
+  done
 }
 
 ## \env SHELLM_SOURCES The list of sources already loaded in the current shell process.
